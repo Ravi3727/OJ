@@ -42,7 +42,7 @@ const Page = () => {
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn('credentials',{
       redirect:false,
-      identifier: data.identifier,
+      identifier: data.email,
       password: data.password
     })
     if(result?.error){
@@ -72,10 +72,10 @@ const Page = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center w-full max-w-md bg-white">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-200 ">
+        <div className="flex flex-col items-center justify-center w-full max-w-md bg-white rounded-lg">
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-5">Welcome to OJ</h1>
+            <h1 className="text-3xl font-bold mb-5 text-background mt-4">Welcome to OJ</h1>
             <p className="text-gray-600 text-lg mb-4">
               SignIn to start your problem solving journey
             </p>
@@ -86,10 +86,10 @@ const Page = () => {
 
               <FormField
                 control={form.control}
-                name="identifier"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-gray-700">Email/Username</FormLabel>
                     <FormControl>
                       <Input placeholder="email" {...field} />
                     </FormControl>
@@ -103,7 +103,7 @@ const Page = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-gray-700">Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -116,19 +116,19 @@ const Page = () => {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmiting}>
+              <Button className="bg-background text-white hover:bg-gray-800" type="submit" disabled={isSubmiting}>
                 {isSubmiting ? (
                   <>
                     <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
                     Loading
                   </>
                 ) : (
-                  "SignUp"
+                  "SignIn"
                 )}
               </Button>
             </form>
           </Form>
-          <div>
+          <div className="text-background m-4">
             <p>
               Already a member ?{" "}
               <Link

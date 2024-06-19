@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import axios, { AxiosError } from "axios";
-import { useDebounceCallback } from 'usehooks-ts';
+import { useDebounceCallback } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { ApiResponse } from "@/Types/ApiResponse";
 import {
@@ -38,7 +38,7 @@ const Page = () => {
       username: "",
       email: "",
       password: "",
-      collegename:"",
+      collegename: "",
     },
   });
 
@@ -52,7 +52,7 @@ const Page = () => {
         const response = await axios.get<ApiResponse>(
           `/api/checkUserNameUniqueness?username=${username}`
         );
-        
+
         // let message = response.data.message;
         setUsernameMsg(response.data.message);
       } catch (error) {
@@ -100,23 +100,25 @@ const Page = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center w-full max-w-md bg-white">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-200">
+        <div className="flex flex-col items-center justify-center w-full max-w-lg bg-white p-4 rounded-lg">
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-5">Welcome to OJ</h1>
+            <h1 className="text-3xl font-bold mb-5 text-gray-900 mt-4">
+              Welcome to OJ
+            </h1>
             <p className="text-gray-600 text-lg mb-4">
               SignUp to start your problem solving journey
             </p>
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel className="text-gray-700">Username</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Username"
@@ -128,7 +130,16 @@ const Page = () => {
                       />
                     </FormControl>
                     {isCheckingUsername && <Loader2 className="animate-spin" />}
-                    <p className={`text-sm ${usernameMsg=== "Username is unique" ? "text-green-500":"text-red-500"}`}> {usernameMsg}</p>
+                    <p
+                      className={`text-sm ${
+                        usernameMsg === "Username is unique"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {" "}
+                      {usernameMsg}
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -139,7 +150,7 @@ const Page = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-gray-700">Email</FormLabel>
                     <FormControl>
                       <Input placeholder="email" {...field} />
                     </FormControl>
@@ -153,7 +164,7 @@ const Page = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-gray-700">Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -166,14 +177,15 @@ const Page = () => {
                 )}
               />
 
-<FormField
+              <FormField
                 control={form.control}
                 name="collegename"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>College Name</FormLabel>
+                    <FormLabel className="text-gray-700">College Name</FormLabel>
                     <FormControl>
                       <Input
+                        className="mb-6"
                         type="collegename"
                         placeholder="collegename"
                         {...field}
@@ -184,7 +196,11 @@ const Page = () => {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmiting}>
+              <Button
+                className="bg-background text-white hover:bg-gray-700"
+                type="submit"
+                disabled={isSubmiting}
+              >
                 {isSubmiting ? (
                   <>
                     <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
@@ -196,12 +212,12 @@ const Page = () => {
               </Button>
             </form>
           </Form>
-          <div>
-            <p>
+          <div className="mt-6">
+            <p className="text-gray-900">
               Already a member ?{" "}
               <Link
                 href="/signIn"
-                className="text-green-400 hover:text-green-700"
+                className="text-blue-400 hover:text-blue-700"
               >
                 SignIn
               </Link>
