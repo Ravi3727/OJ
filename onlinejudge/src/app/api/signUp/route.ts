@@ -1,13 +1,14 @@
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
-import {dbConnect} from "@/lib/dbConnect";
+import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User";
 import bcrypt from "bcryptjs";
 
 
 export async function POST(request: Request) {
-    await dbConnect()
+    await dbConnect();
+    
     try {
-        const { username, email, password, collegeName } = await request.json();
+        const { username, email, password, collegename } = await request.json();
 
         const existVerfiedUserByUserName = await UserModel.findOne({
             username,
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
                 verifyCodeExpiry: expirydate,
                 isVarified: false,
                 userBio: "",
-                collegeName: collegeName,
+                collegeName: collegename,
                 QuestionsSolved: [],
                 ContestCompleted: [],
                 rating: 0,
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
         return Response.json({
             success: false,
             message: "User registration failed",
-        },{
+        }, {
             status: 500
         });
     }
