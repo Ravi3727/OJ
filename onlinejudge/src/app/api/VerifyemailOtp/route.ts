@@ -13,7 +13,6 @@ export async function POST(request:Request){
             username:decodedUsername
         })
 
-
         if(!user){
             return Response.json({
                 success:false,
@@ -46,7 +45,7 @@ export async function POST(request:Request){
             },{ status: 400})
         }
 
-        
+
     } catch (error) {
         console.error("Error verifying email otp" , error);
         return Response.json({
