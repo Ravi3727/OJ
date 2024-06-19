@@ -4,8 +4,9 @@ function page() {
   return (
     <>
         <div className='bg-violet-600 text-xl'>
-            signIn page
+            Welcom to OJ || SignUp page
         </div>
+
     </>
   )
 }
