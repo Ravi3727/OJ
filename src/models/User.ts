@@ -45,7 +45,7 @@ const UserSchema: Schema<userProfile> = new Schema({
     },
     collegeName:{
         type: String,
-        required: [true, "Colege name is required"],
+        required: false,
     },
     userBio: {
         type: String,

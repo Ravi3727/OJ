@@ -7,7 +7,7 @@ import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { useDebounceCallback } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { ApiResponse } from "@/Types/ApiResponse";
 import {
@@ -22,6 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { GoogleIcon } from "@/utils/googleIcon";
+import { FaGithub } from "react-icons/fa6";
 
 const Page = () => {
   const router = useRouter();
@@ -98,17 +101,18 @@ const Page = () => {
     }
   };
 
+
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-200">
-        <div className="flex flex-col items-center justify-center w-full max-w-lg bg-white p-4 rounded-lg">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-200 ">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4">
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-5 text-gray-900 mt-4">
+            <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
               Welcome to OJ
             </h1>
-            <p className="text-gray-600 text-lg mb-4">
+            <p className="text-gray-600 text-lg ">
               SignUp to start your problem solving journey
-            </p>
+            </p>  
           </div>
 
           <Form {...form}>
@@ -130,7 +134,7 @@ const Page = () => {
                       />
                     </FormControl>
                     {isCheckingUsername && <Loader2 className="animate-spin" />}
-                    <p
+                    <div
                       className={`text-sm ${
                         usernameMsg === "Username is unique"
                           ? "text-green-500"
@@ -139,7 +143,7 @@ const Page = () => {
                     >
                       {" "}
                       {usernameMsg}
-                    </p>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -212,8 +216,25 @@ const Page = () => {
               </Button>
             </form>
           </Form>
+
+          {/* SignUp with Google and Github */}
+
+          {/* <div className="mt-6 flex flex-col items-center justify-center w-8/12 gap-2">
+          <button onClick={handelGoogleSignUp} className="focus:shadow-outline h-12 w-full rounded-3xl border-2 border-gray-400 bg-background text-lg hover:bg-gray-700 focus:outline-none" type="button">
+            <div className="flex items-center justify-center">
+              <GoogleIcon />
+              <div className="mx-4 text-sm">Google</div>
+            </div>
+          </button>
+          <button onClick={()=> signIn("github")} className="focus:shadow-outline h-12 w-full rounded-3xl border-2 border-gray-400  bg-background text-lg hover:bg-gray-700 focus:outline-none" type="button">
+            <div className="flex items-center justify-center">
+            <FaGithub/>
+              <div className="mx-4 text-sm">GitHub</div>
+            </div>
+          </button>
+          </div> */}
           <div className="mt-6">
-            <p className="text-gray-900">
+            <div className="text-gray-900">
               Already a member ?{" "}
               <Link
                 href="/signIn"
@@ -221,7 +242,7 @@ const Page = () => {
               >
                 SignIn
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </div>
