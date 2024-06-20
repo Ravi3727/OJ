@@ -20,6 +20,7 @@ export async function dbConnect(): Promise<void> {
         console.log("DB connection established");
 
     } catch (error) {
+        //@ts-ignore
         console.log("databse connection failed ", + error.message);
         process.exit(1);
     }

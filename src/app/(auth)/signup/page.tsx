@@ -51,6 +51,7 @@ const Page = () => {
         setIsCheckingUsername(true);
         setUsernameMsg("");
       }
+      
       try {
         const response = await axios.get<ApiResponse>(
           `/api/checkUserNameUniqueness?username=${username}`
@@ -68,8 +69,9 @@ const Page = () => {
         setIsCheckingUsername(false);
       }
     };
-
+    
     userNameUniqueness();
+    
   }, [username]);
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
@@ -116,7 +118,7 @@ const Page = () => {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-9/12">
               <FormField
                 control={form.control}
                 name="username"
@@ -124,7 +126,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Username</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input className="bg-gray-200 border-black "
                         placeholder="Username"
                         {...field}
                         onChange={(e) => {
@@ -156,7 +158,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="email" {...field} />
+                      <Input placeholder="email" {...field}  className="bg-gray-200 border-black " />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,6 +173,7 @@ const Page = () => {
                     <FormLabel className="text-gray-700">Password</FormLabel>
                     <FormControl>
                       <Input
+                       className="bg-gray-200 border-black "
                         type="password"
                         placeholder="Password"
                         {...field}
@@ -189,7 +192,7 @@ const Page = () => {
                     <FormLabel className="text-gray-700">College Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="mb-6"
+                         className="bg-gray-200 border-black mt-6"
                         type="collegename"
                         placeholder="collegename"
                         {...field}
@@ -201,7 +204,7 @@ const Page = () => {
               />
 
               <Button
-                className="bg-background text-white hover:bg-gray-700"
+                className="bg-blue-800 text-white hover:bg-blue-600 "
                 type="submit"
                 disabled={isSubmiting}
               >
@@ -233,8 +236,8 @@ const Page = () => {
             </div>
           </button>
           </div> */}
-          <div className="mt-6">
-            <div className="text-gray-900">
+          
+            <div className="text-gray-900 mt-4">
               Already a member ?{" "}
               <Link
                 href="/signIn"
@@ -242,7 +245,6 @@ const Page = () => {
               >
                 SignIn
               </Link>
-            </div>
           </div>
         </div>
       </div>

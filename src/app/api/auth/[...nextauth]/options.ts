@@ -3,8 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs"
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User";
-// import GoogleProvider from "next-auth/providers/google";
-// import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 
 
 export const authOptions: NextAuthOptions = {
@@ -24,8 +24,8 @@ export const authOptions: NextAuthOptions = {
                     // const userName = session?.user.username;
                     const user = await UserModel.findOne({
                         $or: [
-                            { email: credentials.identifier  },
-                            { username: credentials.identifier}
+                            { email: credentials.identifier },
+                            { username: credentials.identifier }
                         ]
                     })
 
@@ -35,28 +35,26 @@ export const authOptions: NextAuthOptions = {
                     if (!user.isVerified) {
                         throw new Error("Please verify your email address")
                     }
+                    const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password)
+                    if (isPasswordCorrect) {
+                        return user
+                    } else {
+                        throw new Error("Incorrect password")
+                    }
 
-
-                    
-                        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password)
-                        if (isPasswordCorrect) {
-                            return user
-                        } else {
-                            throw new Error("Incorrect password")
-                        }
                 } catch (error: any) {
                     throw new Error(error)
                 }
             }
         }),
-        // GoogleProvider({
-        //     clientId: process.env.GOOGLE_CLIENT_ID || "",
-        //     clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
-        // }),
-        // GitHubProvider({
-        //     clientId: process.env.GITHUB_CLIENT_ID || "",
-        //     clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
-        // })
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
+        }),
+        GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID || "",
+            clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
+        })
     ],
 
     callbacks: {
