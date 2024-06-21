@@ -3,8 +3,9 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface problem extends Document {
     title: string;
     statement: string;
-    testCases: [string],
-    createdAt : Date;
+    testCases: string[],
+    tags: string[],
+    createdAt: Date;
 }
 
 const ProblemsSchema: Schema<problem> = new Schema({
@@ -18,16 +19,20 @@ const ProblemsSchema: Schema<problem> = new Schema({
         required: [true, "Statement of question is required"],
         unique: true,
     },
+    tags: {
+        type: [String],
+        required: true
+    },
     testCases: {
         type: [String],
-        required: true  
-      },
+        required: true
+    },
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: Date.now(),
     },
 });
 
-const ProblemsModel = (mongoose.models.Problems as mongoose.Model<problem>) || mongoose.model<problem>("Problems", ProblemsSchema)
+const ProblemsModel = (mongoose.models.Problems as mongoose.Model<problem>) || mongoose.model<problem>("Problems", ProblemsSchema);
 
 export default ProblemsModel;
