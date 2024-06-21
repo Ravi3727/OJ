@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/ThemeProvider";
+
+// import { Toaster } from "@/components/ui/toaster"
 
 import AuthProvider from "@/Context/AuthProvider";
 // import Navbar from "@/components/Navbar";
@@ -32,8 +33,9 @@ export default function RootLayout({
           > */}
             {children}
           {/* </ThemeProvider> */}
-          
           </AuthProvider>
+
+          
          
         </body>
       

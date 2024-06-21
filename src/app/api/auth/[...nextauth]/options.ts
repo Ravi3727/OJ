@@ -47,14 +47,14 @@ export const authOptions: NextAuthOptions = {
                 }
             }
         }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
-        }),
-        GitHubProvider({
-            clientId: process.env.GITHUB_CLIENT_ID || "",
-            clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
-        })
+        // GoogleProvider({
+        //     clientId: process.env.GOOGLE_CLIENT_ID || "",
+        //     clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
+        // }),
+        // GitHubProvider({
+        //     clientId: process.env.GITHUB_CLIENT_ID || "",
+        //     clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
+        // })
     ],
 
     callbacks: {
@@ -64,23 +64,29 @@ export const authOptions: NextAuthOptions = {
                 token._id = user._id?.toString()
                 token.isVerified = user.isVerified
                 token.username = user.username
+                token.isProblemSetter = user.isProblemSetter
             }
-            return token
+
+            // console.log("From callbacks", token);
+            return token;
+            
         },
         async session({ session, token }) {
             if (token) {
                 session.user._id = token._id
                 session.user.isVerified = token.isVerified
                 session.user.username = token.username
+                session.user.isProblemSetter = token.isProblemSetter
             }
             return session
         },
     },
-    pages: {
-        signIn: '/signin',
-    },
+   
     session: {
         strategy: "jwt"
     },
-    secret: process.env.NEXTAUTH_SECRET_KEY
+    secret: process.env.NEXTAUTH_SECRET_KEY,
+    pages: {
+        signIn: '/signIn',
+    },
 }

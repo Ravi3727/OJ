@@ -7,6 +7,7 @@ export interface userProfile extends Document {
     verifyCode:string;
     verifyCodeExpiry:Date;
     isVerified:boolean;
+    isProblemSetter:boolean;
     collegeName:string;
     userBio: string;
     QuestionsSolved: [];
@@ -40,6 +41,10 @@ const UserSchema: Schema<userProfile> = new Schema({
         required: [true, "verifyCodeExpiry is required"],
     },
     isVerified:{
+        type: Boolean,
+        default: false,
+    },
+    isProblemSetter:{
         type: Boolean,
         default: false,
     },

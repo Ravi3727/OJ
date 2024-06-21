@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { useDebounceCallback } from "usehooks-ts";
-import { useToast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { ApiResponse } from "@/Types/ApiResponse";
@@ -25,10 +24,11 @@ import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { GoogleIcon } from "@/utils/googleIcon";
 import { FaGithub } from "react-icons/fa6";
-
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Page = () => {
   const router = useRouter();
-  const { toast } = useToast();
+
   const [username, setUsername] = useState("");
   const [usernameMsg, setUsernameMsg] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -52,6 +52,7 @@ const Page = () => {
         setUsernameMsg("");
       }
       
+      // Debouncing Logic
       try {
         const response = await axios.get<ApiResponse>(
           `/api/checkUserNameUniqueness?username=${username}`
@@ -79,25 +80,45 @@ const Page = () => {
     try {
       const response = await axios.post<ApiResponse>("/api/signUp", data);
       if (response.data.success) {
-        toast({
-          title: "Success",
-          description: "You have successfully signed up",
+        toast.success("You have successfully signed up", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
         });
         router.replace(`/verify/${username}`);
         setIsSubmiting(false);
       } else {
-        toast({
-          title: "Error",
-          description: response.data.message,
-          variant: "destructive",
+        toast.error(response.data.message, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
         });
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      toast({
-        title: "Error",
-        description: axiosError.response?.data.message ?? "Error on signing up",
-        variant: "destructive",
+
+      toast.error(axiosError.response?.data.message ?? "Error on signing up", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
       });
       setIsSubmiting(false);
     }
@@ -248,6 +269,7 @@ const Page = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };

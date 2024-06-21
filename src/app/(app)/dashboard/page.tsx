@@ -11,10 +11,10 @@ const Page = () => {
 
   // setSessions(session);
   
-  if(session?.status !== 'authenticated'){
-    // console.log("no session", session);
-    router.replace('/signIn');
-  }
+  // if(session?.status !== 'authenticated'){
+  //   // console.log("no session", session);
+  //   router.replace('/signIn');
+  // }
   
   return (
     <>
