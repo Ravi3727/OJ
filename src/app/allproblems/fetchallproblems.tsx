@@ -10,8 +10,12 @@ export const fetchallproblems = async () => {
 
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
+    // console.log("get all problems", error);
     return (
       axiosError.response?.data.message ?? "Error on fetching all problems"
     );
   }
 };
+
+
+// console.log("get all problems  from fetchallproblems", fetchallproblems());

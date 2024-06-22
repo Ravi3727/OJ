@@ -22,13 +22,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { problemSchema } from "@/schemas/problemsSchema";
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 
 const Createnewproblem = () => {
   const router = useRouter();
   const session = useSession();
   const [isSubmiting, setIsSubmiting] = useState(false);
-
 
   const form = useForm<z.infer<typeof problemSchema>>({
     resolver: zodResolver(problemSchema),
@@ -37,6 +36,7 @@ const Createnewproblem = () => {
       statement: "",
       tags: [],
       testCases: [],
+      difficulty: "",
     },
   });
 
@@ -124,22 +124,19 @@ const Createnewproblem = () => {
           "/api/createProblem",
           data
         );
-        console.log("Problem created",data);
+        console.log("Problem created", data);
         if (response.data.success) {
-          toast.success(
-            "Thank for contributing to the problem set",
-            {
-              position: "bottom-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              transition: Bounce,
-            }
-          );
+          toast.success("Thank for contributing to the problem set", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
           router.replace("/allproblems");
           setIsSubmiting(false);
         } else {
@@ -187,7 +184,7 @@ const Createnewproblem = () => {
               Let&apos;s increase some challenge on OJ
             </h1>
             <p className="text-red-500 text-lg ">
-              Write problem statements carefully before submitting the problem
+              Write problem statement carefully before submitting the problem
             </p>
           </div>
 
@@ -225,9 +222,29 @@ const Createnewproblem = () => {
                         placeholder="Problem statement..."
                         {...field}
                       /> */}
-                      <Textarea className="bg-gray-200 border-black "
+                      <Textarea
+                        className="bg-gray-200 border-black "
                         placeholder="Problem statement..."
-                        {...field} />
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Difficulty</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-200 border-black "
+                        placeholder="Easy, Medium, Hard"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -277,7 +294,10 @@ const Createnewproblem = () => {
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel className="text-gray-700">Test Cases</FormLabel>
                     {testCaseFields.map((testCase, index) => (
-                      <div key={testCase.id} className="flex items-center space-x-2">
+                      <div
+                        key={testCase.id}
+                        className="flex items-center space-x-2"
+                      >
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"

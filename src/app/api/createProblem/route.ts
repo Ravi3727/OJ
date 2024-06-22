@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { title, statement, testCases, tags } = await request.json();
+        const { title, statement, testCases, tags, difficulty } = await request.json();
 
-        if (!testCases || !title || !statement || !tags) {
+        if (!testCases || !title || !statement || !tags || !difficulty) {
             return Response.json({
                 success: false,
                 message: "All feilds are required",
@@ -27,14 +27,14 @@ export async function POST(request: Request) {
             });
         }
 
-        const newProblem = { title, testCases, statement, tags}
+        const newProblem = { title, testCases, statement, tags, difficulty}
 
 
-        console.log("Coming from frontend form",newProblem);
+        // console.log("Coming from frontend form",newProblem);
 
         const problem = await ProblemsModel.create(newProblem);
 
-        console.log("After creating problem on mongoDB database ",problem);
+        // console.log("After creating problem on mongoDB database ",problem);
         return Response.json({
             success: true,
             message: "Problem created successfully",

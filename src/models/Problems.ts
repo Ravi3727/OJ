@@ -5,6 +5,7 @@ export interface problem extends Document {
     statement: string;
     testCases: string[],
     tags: string[],
+    difficulty: string,
     createdAt: Date;
 }
 
@@ -26,6 +27,10 @@ const ProblemsSchema: Schema<problem> = new Schema({
     testCases: {
         type: [String],
         required: true
+    },
+    difficulty:{
+        type: String,
+        required: [true, "Difficulty of question is required"],
     },
     createdAt: {
         type: Date,
