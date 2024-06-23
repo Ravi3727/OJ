@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
+// import { dbConnect } from "@/lib/dbConnect";
 
-export interface problem extends Document {
+// dbConnect();
+export interface Problem extends Document {
     title: string;
     statement: string;
     testCases: string[],
@@ -9,7 +11,7 @@ export interface problem extends Document {
     createdAt: Date;
 }
 
-const ProblemsSchema: Schema<problem> = new Schema({
+const ProblemsSchema: Schema<Problem> = new mongoose.Schema({
     title: {
         type: String,
         required: [true, "Title of question is required"],
@@ -34,10 +36,11 @@ const ProblemsSchema: Schema<problem> = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
 });
 
-const ProblemsModel = (mongoose.models.Problems as mongoose.Model<problem>) || mongoose.model<problem>("Problems", ProblemsSchema);
+ 
+const ProblemsModel = (mongoose.models.Problem as mongoose.Model<Problem>) || mongoose.model<Problem>("Problem", ProblemsSchema);
 
 export default ProblemsModel;

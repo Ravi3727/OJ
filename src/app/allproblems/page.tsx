@@ -1,6 +1,9 @@
-import { Allproblems, columns } from "./columns";
+import { Allproblems, columns} from "./columns";
 import { DataTable } from "@/components/data-table";
 import axios from "axios";
+
+
+
 const data2: Allproblems[] = [
   {
     id: "1",
@@ -123,11 +126,17 @@ async function getAllProblems() {
   return response.data;
 }
 
+export interface problem {
+  _id:string;
+  title:string; 
+  tags:string[];
+  difficulty:string;
+}
 async function transformProblems() {
   const UnstructuredData = await getAllProblems();
   
   if (UnstructuredData.success && Array.isArray(UnstructuredData.data)) {
-    const newData = UnstructuredData.data.map((problem, index) => ({
+    const newData = UnstructuredData.data.map((problem:problem, index:Number) => ({
       id: problem._id, 
       Title: problem.title,
       Tags: problem.tags,
@@ -149,8 +158,7 @@ const appendData2ToData = async () => {
   return data;
 };
 
-const page = async () => {
-
+const Page = async () => {
   const data = await appendData2ToData();
   
   return (
@@ -165,4 +173,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default Page;

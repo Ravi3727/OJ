@@ -14,6 +14,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/Types/ApiResponse";
 
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
@@ -25,8 +26,19 @@ async function deleteProblem(problemId: string) {
     const axiosError = error as AxiosError<ApiResponse>;
     console.log("delete problem", error);
     return axiosError.response?.data.message ?? "Error on deleting problem";
-  }
+  } 
 }
+
+
+// Function to handle problem editing (redirecting)
+async function editProblem(problemId: string) {
+  console.log("problemId", problemId);
+  window.location.href = `/editProblemui/${problemId}`;
+  console.log("problemId", problemId);
+}
+
+
+
 
 export type Allproblems = {
   id: string;
@@ -36,6 +48,7 @@ export type Allproblems = {
 };
 
 export const columns: ColumnDef<Allproblems>[] = [
+  
   {
     accessorKey: "Title",
     header: "Title",
@@ -98,7 +111,7 @@ export const columns: ColumnDef<Allproblems>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(Allproblems.id)}
+              onClick={() => editProblem(Allproblems.id)}
               className="text-yellow-500 hover:text-yellow-600"
             >
               Edit

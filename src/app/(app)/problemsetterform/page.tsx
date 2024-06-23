@@ -22,7 +22,7 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-const ProblemSetterForm = () => {
+const Page = () => {
   const router = useRouter();
   const session = useSession();
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -308,4 +308,4 @@ const ProblemSetterForm = () => {
   );
 };
 
-export default ProblemSetterForm;
+export default Page;

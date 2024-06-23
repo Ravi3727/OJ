@@ -19,9 +19,8 @@ export async function GET(request: NextRequest) {
   await dbConnect();
 
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl; // Use nextUrl instead of new URL(request.url)
 
-    
     const queryParam = {
       username: searchParams.get('username'),
     };

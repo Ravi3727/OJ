@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -20,13 +20,38 @@ import { ApiResponse } from "@/Types/ApiResponse";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { problemSchema } from "@/schemas/problemsSchema";
 import { Textarea } from "@/components/ui/textarea";
+import ProblemsModel from "@/models/Problems";
 
-const Createnewproblem = () => {
+const Page = () => {
+
+
+  // const [problemEdit,setProblemEdit] = useState();
   const router = useRouter();
   const session = useSession();
+
+
+
+
+  const  { problemId } = useParams();
+
+  // useEffect(() => {
+  //   const fetchProblem = async () => {
+  //     const response = await ProblemsModel.findById({ _id: problemId });
+  //     // setProblemEdit(response);
+  //     console.log("problemEdit",response);
+  //   };
+  //   fetchProblem();
+  // },[problemId]);
+
+
+
+  
+
+  // console.log("problemId", problemId);
+
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const form = useForm<z.infer<typeof problemSchema>>({
@@ -61,28 +86,8 @@ const Createnewproblem = () => {
   const onSubmit = async (data: z.infer<typeof problemSchema>) => {
     setIsSubmiting(true);
 
-    console.log(session);
-
     if (!session) {
       toast.success("Please login to continue", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
-      setIsSubmiting(false);
-    } else if (
-      !data.statement ||
-      !data.title ||
-      !data.tags.length ||
-      !data.testCases.length
-    ) {
-      toast.error("Please fill all the fields", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -108,6 +113,8 @@ const Createnewproblem = () => {
       });
       setIsSubmiting(false);
     } else if (session.data?.user.isProblemSetter === false) {
+      console.log("problem setter",session.data?.user.isProblemSetter);
+      console.log("problem setter",session);
       toast.error("You are not a problem setter", {
         position: "bottom-right",
         autoClose: 5000,
@@ -122,13 +129,13 @@ const Createnewproblem = () => {
       setIsSubmiting(false);
     } else {
       try {
-        const response = await axios.post<ApiResponse>(
-          "/api/createProblem",
+        const response = await axios.put<ApiResponse>(
+          `/api/editProblem/${problemId}`,
           data
         );
-        console.log("Problem created", data);
+        console.log("Problem update success", data);
         if (response.data.success) {
-          toast.success("Thank for contributing to the problem set", {
+          toast.success("Problem updated successfully", {
             position: "bottom-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -159,7 +166,7 @@ const Createnewproblem = () => {
         const axiosError = error as AxiosError<ApiResponse>;
 
         toast.error(
-          axiosError.response?.data.message ?? "Error on signing up",
+          axiosError.response?.data.message ?? "Error on updating problem",
           {
             position: "bottom-right",
             autoClose: 5000,
@@ -183,10 +190,10 @@ const Createnewproblem = () => {
         <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
-              Let&apos;s increase some challenge on OJ
+              Update Problems
             </h1>
             <p className="text-red-500 text-lg ">
-              Write problem statement carefully before submitting the problem
+              Write problems statement carefully before submitting the problems
             </p>
           </div>
 
@@ -226,7 +233,7 @@ const Createnewproblem = () => {
                       /> */}
                       <Textarea
                         className="bg-gray-200 border-black "
-                        placeholder="Problem statement..."
+                        placeholder="Problems statement..."
                         {...field}
                       />
                     </FormControl>
@@ -279,7 +286,7 @@ const Createnewproblem = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTag({ input: "", output: "" })}
+                      onClick={() => appendTag("")}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
                       Add Tag
@@ -351,4 +358,4 @@ const Createnewproblem = () => {
   );
 };
 
-export default Createnewproblem;
+export default Page;
