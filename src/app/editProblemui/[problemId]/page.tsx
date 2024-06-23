@@ -271,7 +271,7 @@ const Page = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="tag..."
+                            placeholder="[inputs],output"
                             {...form.register(`tags.${index}` as const)}
                           />
                         </FormControl>
@@ -310,7 +310,7 @@ const Page = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="test case..."
+                            placeholder="[inputs],output"
                             {...form.register(`testCases.${index}` as const)}
                           />
                         </FormControl>

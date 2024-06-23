@@ -32,13 +32,15 @@ async function deleteProblem(problemId: string) {
 
 // Function to handle problem editing (redirecting)
 async function editProblem(problemId: string) {
-  console.log("problemId", problemId);
+  // console.log("problemId", problemId);
   window.location.href = `/editProblemui/${problemId}`;
-  console.log("problemId", problemId);
+  // console.log("problemId", problemId);
 }
 
 
-
+async function redirectToCompiler(problemId: string) {
+  window.location.href = `/solveProblem/${problemId}`;
+}
 
 export type Allproblems = {
   id: string;
@@ -105,9 +107,9 @@ export const columns: ColumnDef<Allproblems>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(Allproblems.id)}
+              onClick={() => redirectToCompiler(Allproblems.id)}
             >
-              Copy problem ID
+              Solve
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
