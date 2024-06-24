@@ -1,8 +1,10 @@
-import { Allproblems, columns} from "./columns";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Allproblems, columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import axios from "axios";
-
-
+import { Loader2 } from "lucide-react";
 
 const data2: Allproblems[] = [
   {
@@ -114,56 +116,71 @@ export interface object3 {
   title: string;
   tags: string[];
   difficulty: string;
-  testCases:string[];
-};
-
-export interface object1 extends Object{
-  success: boolean,
-  data : object3,
+  testCases: string[];
 }
+
+export interface object1 extends Object {
+  success: boolean;
+  data: object3[];
+}
+
 async function getAllProblems() {
   const response = await axios.get("http://localhost:3000/api/getAllProblems");
+  console.log("hello jee");
   return response.data;
 }
 
 export interface problem {
-  _id:string;
-  title:string; 
-  tags:string[];
-  difficulty:string;
+  _id: string;
+  title: string;
+  tags: string[];
+  difficulty: string;
 }
+
 async function transformProblems() {
   const UnstructuredData = await getAllProblems();
-  
+
   if (UnstructuredData.success && Array.isArray(UnstructuredData.data)) {
-    const newData = UnstructuredData.data.map((problem:problem, index:Number) => ({
-      id: problem._id, 
-      Title: problem.title,
-      Tags: problem.tags,
-      Difficulty: problem.difficulty,
-    }));
-    
-    // console.log("newdata is here ", newData);
+    const newData = UnstructuredData.data.map(
+      (problem: problem, index: Number) => ({
+        id: problem._id,
+        Title: problem.title,
+        Tags: problem.tags,
+        Difficulty: problem.difficulty,
+      })
+    );
     return newData;
   } else {
-    console.error('Failed to fetch problems or data format is incorrect');
+    console.error("Failed to fetch problems or data format is incorrect");
   }
 }
 
 const appendData2ToData = async () => {
   const data = await transformProblems();
-  data2.forEach(item => {
+  data2.forEach((item) => {
     data.push(item);
   });
   return data;
 };
 
-const Page = async () => {
-  const data = await appendData2ToData();
-  
+const Page = () => {
+  const [data, setData] = useState<Allproblems[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      const result = await appendData2ToData();
+      setData(result);
+    };
+
+    fetchData();
+    setLoading(false);
+  }, []);
+
   return (
     <>
-      <section className="py-20">
+      <section className="py-40 bg-black/[90] text-white leading-6">
         <div className="container">
           <h1 className="text-3xl font-bold">All problems</h1>
           <DataTable columns={columns} data={data} />

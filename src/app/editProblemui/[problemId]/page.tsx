@@ -27,30 +27,10 @@ import ProblemsModel from "@/models/Problems";
 
 const Page = () => {
 
-
-  // const [problemEdit,setProblemEdit] = useState();
   const router = useRouter();
   const session = useSession();
 
-
-
-
   const  { problemId } = useParams();
-
-  // useEffect(() => {
-  //   const fetchProblem = async () => {
-  //     const response = await ProblemsModel.findById({ _id: problemId });
-  //     // setProblemEdit(response);
-  //     console.log("problemEdit",response);
-  //   };
-  //   fetchProblem();
-  // },[problemId]);
-
-
-
-  
-
-  // console.log("problemId", problemId);
 
   const [isSubmiting, setIsSubmiting] = useState(false);
 
@@ -83,11 +63,74 @@ const Page = () => {
     name: "testCases",
   });
 
+  // const onSubmit = async (data: z.infer<typeof problemSchema>) => {
+  //   setIsSubmiting(true);
+  
+  //   const showToast = (message: string, type: "success" | "error") => {
+  //     toast[type](message, {
+  //       position: "bottom-right",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "light",
+  //       transition: Bounce,
+  //     });
+  //   };
+  
+  //   const validationRules = [
+  //     {
+  //       condition: !session,
+  //       message: "Please login to continue",
+  //       type: "success" as const,
+  //     },
+  //     {
+  //       condition: session?.data?.user.isVerified === false,
+  //       message: "Please verify your email to continue",
+  //       type: "error" as const,
+  //     },
+  //     {
+  //       condition: session?.data?.user.isProblemSetter === false,
+  //       message: "You are not a problem setter",
+  //       type: "error" as const,
+  //     },
+  //   ];
+  
+  //   for (const rule of validationRules) {
+  //     if (rule.condition) {
+  //       showToast(rule.message, rule.type);
+  //       setIsSubmiting(false);
+  //       return;
+  //     }
+  //   }
+  
+  //   try {
+  //     const response = await axios.put<ApiResponse>(`/api/editProblem/${problemId}`, data);
+  
+  //     if (response.data.success) {
+  //       showToast("Problem updated successfully", "success");
+  //       router.replace("/allproblems");
+  //     } else {
+  //       showToast("Please fill all the fields", "error");
+  //     }
+  //   } catch (error) {
+  //     const axiosError = error as AxiosError<ApiResponse>;
+  //     showToast(axiosError.response?.data.message ?? "Error on updating problem", "error");
+  //   } finally {
+  //     setIsSubmiting(false);
+  //   }
+  // };
+  
+
+
+
   const onSubmit = async (data: z.infer<typeof problemSchema>) => {
     setIsSubmiting(true);
-
-    if (!session) {
-      toast.success("Please login to continue", {
+  
+    const showToast = (message: string, type: "success" | "error") => {
+      toast[type](message, {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -98,91 +141,53 @@ const Page = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    } else if (session.data?.user.isVerified === false) {
-      toast.error("Please verify your email to continue", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
-      setIsSubmiting(false);
-    } else if (session.data?.user.isProblemSetter === false) {
-      console.log("problem setter",session.data?.user.isProblemSetter);
-      console.log("problem setter",session);
-      toast.error("You are not a problem setter", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
-      setIsSubmiting(false);
-    } else {
-      try {
-        const response = await axios.put<ApiResponse>(
-          `/api/editProblem/${problemId}`,
-          data
-        );
-        console.log("Problem update success", data);
-        if (response.data.success) {
-          toast.success("Problem updated successfully", {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
-          router.replace("/allproblems");
-          setIsSubmiting(false);
-        } else {
-          toast.error("please fill all the fields", {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
-          setIsSubmiting(false);
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
-
-        toast.error(
-          axiosError.response?.data.message ?? "Error on updating problem",
-          {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          }
-        );
+    };
+  
+    const validationRules = [
+      {
+        condition: !session,
+        message: "Please login to continue",
+        type: "success" as const,
+      },
+      {
+        condition: session?.data?.user.isVerified === false,
+        message: "Please verify your email to continue",
+        type: "error" as const,
+      },
+      {
+        condition: session?.data?.user.isProblemSetter === false,
+        message: "You are not a problem setter",
+        type: "error" as const,
+      },
+    ];
+  
+    for (const rule of validationRules) {
+      if (rule.condition) {
+        showToast(rule.message, rule.type);
         setIsSubmiting(false);
+        return;
       }
     }
+  
+    try {
+      const response = await axios.put<ApiResponse>(`/api/editProblem/${problemId}`, data);
+  
+      if (response.data.success) {
+        showToast("Problem updated successfully", "success");
+        router.replace("/allproblems");
+      } else {
+        showToast("Please fill all the fields", "error");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      showToast(axiosError.response?.data.message ?? "Error on updating problem", "error");
+    } finally {
+      setIsSubmiting(false);
+    }
   };
+  
+
+
 
   return (
     <>

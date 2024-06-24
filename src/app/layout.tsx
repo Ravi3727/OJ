@@ -4,8 +4,9 @@ import { Inter } from "next/font/google";
 // import { Toaster } from "@/components/ui/toaster"
 
 import AuthProvider from "@/Context/AuthProvider";
-// import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
+
 const inter = Inter({ subsets: ["latin"] });
 // import { ToastContainer } from './reactToast';
 // import 'react-toastify/dist/ReactToastify.css';
@@ -21,45 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" >
-      
-        <body className={inter.className}>
+    <html lang="en">
+      <body className={inter.className}>
         <AuthProvider>
-        {/* <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          > */}
-            {children}
-          {/* </ThemeProvider> */}
-          </AuthProvider>
-
+         <Navbar/>
+          {children}
           
-         
-        </body>
-      
+        </AuthProvider>
+      </body>
     </html>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

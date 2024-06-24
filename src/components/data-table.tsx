@@ -76,17 +76,17 @@ export function DataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn("Difficulty")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm text-black"
           />
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto text-black">
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="">
             {table
               .getAllColumns()
               .filter(
@@ -111,14 +111,14 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* table  */}
-      <div className="rounded-md border shadow-lg">
+      <div className="rounded-md border shadow-lg  text-white leading-4 ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-purple-700 text-lg">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -137,6 +137,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-purple-400 opacity-90 hover:text-black"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -152,7 +153,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center "
                 >
                   No results.
                 </TableCell>
@@ -163,12 +164,13 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4 ">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className='bg-white text-black'
         >
           Previous
         </Button>
@@ -177,6 +179,7 @@ export function DataTable<TData, TValue>({
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className='bg-white text-black'
         >
           Next
         </Button>

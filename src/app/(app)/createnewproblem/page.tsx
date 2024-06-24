@@ -177,6 +177,71 @@ const Createnewproblem = () => {
     }
   };
 
+
+  // const onSubmit = async (data: z.infer<typeof problemSchema>) => {
+  //   setIsSubmiting(true);
+  
+  //   const showToast = (message: string, type: "success" | "error") => {
+  //     toast[type](message, {
+  //       position: "bottom-right",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "light",
+  //       transition: Bounce,
+  //     });
+  //   };
+  
+  //   const validationRules = [
+  //     {
+  //       condition: !session,
+  //       message: "Please login to continue",
+  //       type: "success" as const,
+  //     },
+  //     {
+  //       condition: session?.data?.user.isVerified === false,
+  //       message: "Please verify your email to continue",
+  //       type: "error" as const,
+  //     },
+  //     {
+  //       condition: session?.data?.user.isProblemSetter === false,
+  //       message: "You are not a problem setter",
+  //       type: "error" as const,
+  //     },
+  //   ];
+  
+  //   for (const rule of validationRules) {
+  //     if (rule.condition) {
+  //       showToast(rule.message, rule.type);
+  //       setIsSubmiting(false);
+  //       return;
+  //     }
+  //   }
+  
+  //   try {
+  //     const response = await axios.put<ApiResponse>(`/api/createProblem`, data);
+  
+  //     if (response.data.success) {
+  //       showToast("Problem created successfully than you for contribution", "success");
+  //       router.replace("/allproblems");
+  //     } else {
+  //       showToast("Please fill all the fields", "error");
+  //     }
+  //   } catch (error) {
+  //     const axiosError = error as AxiosError<ApiResponse>;
+  //     showToast(axiosError.response?.data.message ?? "Error on creating problem", error);
+  //   } finally {
+  //     setIsSubmiting(false);
+  //   }
+  // };
+  
+
+
+
+
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full bg-gray-200 space-y-20">
@@ -264,7 +329,7 @@ const Createnewproblem = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="tag..."
+                            placeholder="tags..."
                             {...form.register(`tags.${index}` as const)}
                           />
                         </FormControl>
@@ -279,7 +344,7 @@ const Createnewproblem = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTag({ input: "", output: "" })}
+                      onClick={() => appendTag("")}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
                       Add Tag
@@ -303,7 +368,7 @@ const Createnewproblem = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="test case..."
+                            placeholder="Keep fromate like this -> [inputs],output"
                             {...form.register(`testCases.${index}` as const)}
                           />
                         </FormControl>
@@ -318,7 +383,7 @@ const Createnewproblem = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTestCase({ input: "", output: "" })}
+                      onClick={() => appendTestCase("")}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
                       Add Test Case

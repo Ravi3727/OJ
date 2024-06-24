@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 const ProblemPage = () => {
+  //@ts-ignore
   const { problemId } = useParams();
   const [problem, setProblem] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
