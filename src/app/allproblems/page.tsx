@@ -180,10 +180,10 @@ const Page = () => {
 
   return (
     <>
-      <section className="py-40 bg-black/[90] text-white leading-6">
+      <section className="py-40 bg-black/[90] text-white leading-6 ">
         <div className="container">
           <h1 className="text-3xl font-bold">All problems</h1>
-          <DataTable columns={columns} data={data} />
+          {loading ?<Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /> : <DataTable columns={columns} data={data} />}
         </div>
       </section>
     </>

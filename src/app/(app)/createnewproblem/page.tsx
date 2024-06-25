@@ -244,8 +244,8 @@ const Createnewproblem = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-full bg-gray-200 space-y-20">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4">
+      <div className="flex flex-col items-center justify-center h-full bg-black/[90] space-y-20">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-24 p-4 rounded-lg m-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
               Let&apos;s increase some challenge on OJ

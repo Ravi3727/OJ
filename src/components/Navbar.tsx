@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { User } from "next-auth";
 import { Button } from "@/components/ui/button";
+
 const Navbar = () => {
   const { data: session } = useSession();
   const user: User = session?.user;
   return (
-    <nav className="inset-x-0 lg:w-full md:w-auto absolute top-4 mx-auto z-50 bg-black/[90] ">
+    <nav className="inset-x-0 lg:w-full md:w-auto absolute top-4 mx-auto z-50  ">
       <div>
         <div className="bg-black/[90] rounded-full border-2 flex items-center flex-row justify-between border-b-1  p-4 w-10/12 mx-auto text-white font-thin text-lg leading-6">
           <div className="p-2 ml-4">
@@ -70,6 +71,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+   
   );
 };
 

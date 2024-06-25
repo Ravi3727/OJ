@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import  CodeEditor  from "@/components/CodeEditor";
 const ProblemPage = () => {
   //@ts-ignore
   const { problemId } = useParams();
@@ -25,9 +26,8 @@ const ProblemPage = () => {
 
   if (!problem) {
     return (
-      <div className="text-center mt-10 items-center justify-center">
-        <Loader2 className="animate-spin mx-auto  h-8 w-8 text-black" />
-        {/* <p className="text-lg">Loading...</p> */}
+      <div className="text-center flex bg-black items-center justify-center h-screen my-auto mx-auto ">
+        <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-white" />
       </div>
     );
   }
@@ -49,9 +49,9 @@ const ProblemPage = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-10 overflow-x-hidden bg-black opacity-40">
-        <div className="w-32 h-8 flex flex-row justify-center items-center ">
-        <div className="text-black opacity-90 font-sans font-medium ">
+      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-10 overflow-x-hidden bg-black/[90]">
+        <div className="w-32 h-8 flex flex-row justify-center items-center mt-28 ng-black">
+        <div className="text-black  opacity-90 font-sans font-medium ">
           <Button
             className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-e-none"
             type="submit"
@@ -94,7 +94,7 @@ const ProblemPage = () => {
 
 
       <div className="flex flex-row justify-between w-full min-h-screen h-full overflow-x-hidden">
-        <div className="w-1/2 p-6 bg-gray-200    shadow-lg rounded-md overflow-auto">
+        <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">
             <p
@@ -154,8 +154,8 @@ const ProblemPage = () => {
           {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
         </div>
 
-        <div className="w-1/2 p-6 bg-white-400 rounded-lg overflow-auto mb-2">
-          Hello jee
+        <div className="w-1/2 bg-white-400  overflow-auto ">
+          <CodeEditor/>
         </div>
       </div>
     </>

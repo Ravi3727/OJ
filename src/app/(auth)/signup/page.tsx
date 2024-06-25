@@ -6,13 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { useDebounceCallback } from "usehooks-ts";
-import { redirect, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { ApiResponse } from "@/Types/ApiResponse";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,9 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { signIn } from "next-auth/react";
-import { GoogleIcon } from "@/utils/googleIcon";
-import { FaGithub } from "react-icons/fa6";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const Page = () => {
@@ -42,6 +38,7 @@ const Page = () => {
       email: "",
       password: "",
       collegename: "",
+      avatar:"",
     },
   });
 
@@ -51,7 +48,7 @@ const Page = () => {
         setIsCheckingUsername(true);
         setUsernameMsg("");
       }
-      
+
       // Debouncing Logic
       try {
         const response = await axios.get<ApiResponse>(
@@ -65,14 +62,13 @@ const Page = () => {
         setUsernameMsg(
           axiosError.response?.data.message ??
             "Error on checking username uniqueness"
-        );
+        );  
       } finally {
         setIsCheckingUsername(false);
       }
     };
-    
+
     userNameUniqueness();
-    
   }, [username]);
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
@@ -124,22 +120,24 @@ const Page = () => {
     }
   };
 
-
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-200 ">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-black/[90]">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4 mt-20">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
               Welcome to OJ
             </h1>
             <p className="text-gray-600 text-lg ">
               SignUp to start your problem solving journey
-            </p>  
+            </p>
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-9/12">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-2 w-9/12"
+            >
               <FormField
                 control={form.control}
                 name="username"
@@ -147,7 +145,8 @@ const Page = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Username</FormLabel>
                     <FormControl>
-                      <Input className="bg-gray-200 border-black "
+                      <Input
+                        className="bg-gray-200 border-black "
                         placeholder="Username"
                         {...field}
                         onChange={(e) => {
@@ -179,7 +178,11 @@ const Page = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="email" {...field}  className="bg-gray-200 border-black " />
+                      <Input
+                        placeholder="email"
+                        {...field}
+                        className="bg-gray-200 border-black "
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -194,7 +197,7 @@ const Page = () => {
                     <FormLabel className="text-gray-700">Password</FormLabel>
                     <FormControl>
                       <Input
-                       className="bg-gray-200 border-black "
+                        className="bg-gray-200 border-black "
                         type="password"
                         placeholder="Password"
                         {...field}
@@ -210,10 +213,12 @@ const Page = () => {
                 name="collegename"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">College Name</FormLabel>
+                    <FormLabel className="text-gray-700">
+                      College Name
+                    </FormLabel>
                     <FormControl>
                       <Input
-                         className="bg-gray-200 border-black mt-6"
+                        className="bg-gray-200 border-black mt-6"
                         type="collegename"
                         placeholder="collegename"
                         {...field}
@@ -223,6 +228,27 @@ const Page = () => {
                   </FormItem>
                 )}
               />
+
+              {/* <FormField
+                control={form.control}
+                name="avatar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">
+                      Upload Avatar
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-200 border-black mt-6"
+                        type="file"
+                        placeholder="avatar"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
 
               <Button
                 className="bg-blue-800 text-white hover:bg-blue-600 "
@@ -257,15 +283,12 @@ const Page = () => {
             </div>
           </button>
           </div> */}
-          
-            <div className="text-gray-900 mt-4">
-              Already a member ?{" "}
-              <Link
-                href="/signIn"
-                className="text-blue-400 hover:text-blue-700"
-              >
-                SignIn
-              </Link>
+
+          <div className="text-gray-900 mt-4">
+            Already a member ?{" "}
+            <Link href="/signIn" className="text-blue-400 hover:text-blue-700">
+              SignIn
+            </Link>
           </div>
         </div>
       </div>

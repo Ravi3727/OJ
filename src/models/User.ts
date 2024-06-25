@@ -14,6 +14,7 @@ export interface userProfile extends Document {
     ContestCompleted: [];
     rating: number;
     createdAt: Date;
+    avatar: string;
 }
 
 const UserSchema: Schema<userProfile> = new Schema({
@@ -49,6 +50,10 @@ const UserSchema: Schema<userProfile> = new Schema({
         default: false,
     },
     collegeName:{
+        type: String,
+        required: false,
+    },
+    avatar: {
         type: String,
         required: false,
     },

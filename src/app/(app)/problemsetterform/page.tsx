@@ -169,8 +169,8 @@ const Page = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-200">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white p-4 rounded-lg m-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-black/[90]">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-24 p-4 rounded-lg m-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
               Welcome to OJ problem setter community
