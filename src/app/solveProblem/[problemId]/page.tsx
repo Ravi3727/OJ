@@ -49,8 +49,8 @@ const ProblemPage = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-10 overflow-x-hidden bg-black/[90]">
-        <div className="w-32 h-8 flex flex-row justify-center items-center mt-28 ng-black">
+      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-28 overflow-x-hidden bg-black/[90]">
+        {/* <div className="w-32 h-8 flex flex-row justify-center items-center mt-28 ng-black">
         <div className="text-black  opacity-90 font-sans font-medium ">
           <Button
             className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-e-none"
@@ -85,15 +85,18 @@ const ProblemPage = () => {
             )}
           </Button>
         </div>
-        </div>
+        </div> */}
+
+
+
       </div>
 
 
 
-      <div className="w-full h-[2px] bg-gray-700 font-semibold"></div>
+      {/* <div className="w-full h-[2px] bg-gray-700 font-semibold mt-38"></div> */}
 
 
-      <div className="flex flex-row justify-between w-full min-h-screen h-full overflow-x-hidden">
+      <div className="flex flex-row justify-between w-full min-h-screen h-full overflow-x-hidden mt-">
         <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">

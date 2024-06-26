@@ -36,6 +36,14 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        inter:["var(--inter)"],
+        Arizonia: ["var(--Arizonia_init)"],
+        Roboto: ["var(--font-roboto)"],
+        Great_Vibes: ["var(--Great_Vibes_init)"],
+        Meow_Script_init: ["var(--Meow_Script_init)"],
+
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -71,6 +79,7 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

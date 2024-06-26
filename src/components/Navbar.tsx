@@ -40,10 +40,10 @@ const Navbar = () => {
           </div>
 
           <div className="p-2">
-            <Link href="/problemsetterform">
+            <Link href="/contests">
               <div className="group relative">
-                Add Problems
-                <div className="w-[122px] h-[2px] absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white mt-1 -ml-1"></div>
+                Contests
+                <div className="w-[80px] h-[2px] absolute opacity-0 group-hover:opacity-100  transition-opacity bg-white mt-1 -ml-1"></div>
               </div>
             </Link>
           </div>

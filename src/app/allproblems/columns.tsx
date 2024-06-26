@@ -116,7 +116,7 @@ export const columns: ColumnDef<Allproblems>[] = [
               onClick={() => editProblem(Allproblems.id)}
               className="text-yellow-500 hover:text-yellow-600"
             >
-              Edit
+              Update
             </DropdownMenuItem>
 
             <DropdownMenuItem

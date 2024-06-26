@@ -108,8 +108,8 @@ console.log(message); `;
       </div>
 
       <div
-        className="bg-gray-100 shadow-md w-full max-w-lg mb-4 mt-12 justify-center"
-        style={{ height: "300px", overflowY: "auto" }}
+        className="bg-gray-100 shadow-sm shadow-white w-full max-w-lg mb-4 mt-12 justify-center rounded-lg "
+        style={{ height: "400px", width: "100%", overflowY: "auto" }}
       >
         <Editor
           value={code}
