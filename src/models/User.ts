@@ -15,6 +15,9 @@ export interface userProfile extends Document {
     rating: number;
     createdAt: Date;
     avatar: string;
+    resetPasswordverifyCode:string;
+    resetPasswordverifyCodeExpiry:Date;
+    isResetPasswordVerified:boolean;
 }
 
 const UserSchema: Schema<userProfile> = new Schema({
@@ -66,6 +69,18 @@ const UserSchema: Schema<userProfile> = new Schema({
     rating: {
         type: Number,
         default: 0,
+    },
+    resetPasswordverifyCode:{
+        type: String,
+        required: false,
+    },
+    resetPasswordverifyCodeExpiry:{
+        type: Date,
+        required: false,
+    },
+    isResetPasswordVerified:{
+        type: Boolean,
+        default: false,
     },
     createdAt: {
         type: Date,

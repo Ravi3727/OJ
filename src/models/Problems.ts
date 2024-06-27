@@ -1,7 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-// import { dbConnect } from "@/lib/dbConnect";
 
-// dbConnect();
 export interface Problem extends Document {
     title: string;
     statement: string;

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import { signInSchema } from "@/schemas/signInSchema";
+import { resetPasswordSchema } from "@/schemas/ResetPasswordSchema";
 import { ApiResponse } from "@/Types/ApiResponse";
 import {
   Form,
@@ -21,64 +21,59 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Page = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  console.log("resetPassword se", session?.user.username);
+  console.log(session);
+  const form = useForm<z.infer<typeof resetPasswordSchema>>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       identifier: "",
-      password: "",
+      newpassword: "",
+      confirmPassword: "",
+      username: "",
     },
   });
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace('/dashboard');
-    }
-  }, [status, router]);
-
-  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+  const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
     setIsSubmitting(true);
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.identifier,
-      password: data.password,
-    });
-
-    if (result?.error) {
-      handleSignInError(result.error);
-    } else if (result?.ok === true) {
+    data.username = session?.user.username;
+    const result = await axios.post<ApiResponse>("/api/resetPassword", data);
+    if (result.data.success) {
+      toast.success("Password reset successfully", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      const email = data.identifier;
+      router.replace(`/verifyResetPassword/${email}`);
       setIsSubmitting(false);
-      router.replace('/dashboard');
-    }
-  };
-
-  const handleSignInError = (error:any) => {
-    let errorMessage = "An error occurred";
-    if (error === "CredentialsSignin") {
-      errorMessage = "Incorrect username or password";
     } else {
-      const match = error.match(/Error:\s*(.*)/);
-      if (match) {
-        errorMessage = match[1];
-      }
+      console.log("result", result);
+      console.log(result.data.message);
+      toast.error(result.data.message, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      setIsSubmitting(false);
     }
-    toast.error(errorMessage, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-    });
-    setIsSubmitting(false);
   };
 
   return (
@@ -87,11 +82,8 @@ const Page = () => {
         <div className="flex flex-col items-center justify-center w-8/12 max-w-md bg-white rounded-lg mt-20">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-black opacity-90 mt-4">
-              Welcome to OJ
+              Reset Password
             </h1>
-            <p className="text-black opacity-90 text-lg mb-4">
-              SignIn to start your problem solving journey
-            </p>
           </div>
 
           <Form {...form}>
@@ -101,7 +93,7 @@ const Page = () => {
                 name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Email/Username</FormLabel>
+                    <FormLabel className="text-gray-700">Email</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="email"
@@ -116,7 +108,7 @@ const Page = () => {
 
               <FormField
                 control={form.control}
-                name="password"
+                name="newpassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-700">Password</FormLabel>
@@ -133,6 +125,27 @@ const Page = () => {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">
+                      Confirm Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-200 border-black "
+                        type="password"
+                        placeholder="Confirm password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 className="bg-blue-800 text-white hover:bg-blue-600"
                 type="submit"
@@ -140,30 +153,15 @@ const Page = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /> Loading
+                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
+                    Loading
                   </>
                 ) : (
-                  "SignIn"
+                  "Submit"
                 )}
               </Button>
             </form>
           </Form>
-          <div className="text-center text-black opacity-90 mt-4 mb-4">
-            <p>
-              Not a member yet?{" "}
-              <Link href="/signup" className="text-blue-600 hover:text-blue-800">
-                Sign up
-              </Link>
-            </p>
-          </div>
-          <div className="text-center text-black opacity-90 mt-4 mb-4">
-            <p>
-              Forgot password?{" "}
-              <Link href="/ResetPassword" className="text-blue-600 hover:text-blue-800">
-                Reset Password
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
       <ToastContainer />

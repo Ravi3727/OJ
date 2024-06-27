@@ -5,13 +5,17 @@ export async function POST(request:Request){
     await dbConnect()
 
     try {
-        const {username, code} = await request.json()
+        const {email, code} = await request.json()
 
-        const decodedUsername = decodeURIComponent(username)
+        const decodedEmail = decodeURIComponent(email)
         
+        console.log(decodedEmail);
+        console.log(email)
         const user = await UserModel.findOne({
-            username:decodedUsername
+            email:decodedEmail
         })
+
+        console.log("user found",user);
 
         if(!user){
             return Response.json({
@@ -20,18 +24,18 @@ export async function POST(request:Request){
             },{ status: 500})
         }
 
-        console.log(user.verifyCode,code);
-        const isOtpValid = user.verifyCode === code
-        const isCodeExpired = new Date(user.verifyCodeExpiry) > new Date()
-
+        console.log("codes", user.resetPasswordverifyCode, code)
+        const isOtpValid = user.resetPasswordverifyCode === code
+        const isCodeExpired = new Date(user.resetPasswordverifyCodeExpiry) > new Date()
+        console.log("isOtpValid",isOtpValid, isCodeExpired);
 
         if(isOtpValid && isCodeExpired) {
-            user.isVerified = true;
+            user.isResetPasswordVerified = true
             await user.save()
 
-            return Response.json({
+            return Response.json({  
                 success:true,
-                message:"Account verified successfully"
+                message:"Password reset successfully"
             },{ status: 200})
         }else if(!isCodeExpired){
             return Response.json({

@@ -18,7 +18,7 @@ import {
 
 const Page = () => {
   const router = useRouter();
-  const params = useParams<{ username: string }>();
+  const params = useParams<{ email: string }>();
   const form = useForm<z.infer<typeof verifySchema>>({
     resolver: zodResolver(verifySchema),
   });
@@ -27,8 +27,8 @@ const Page = () => {
 
   const onComplete = async (data: z.infer<typeof verifySchema>) => {
     try {
-      const response = await axios.post("/api/VerifyemailOtp", {
-        username: params.username,
+      const response = await axios.post("/api/VerifyemailOtpresetpassword", {
+        email: params.email,
         code: value,
       });
 
@@ -64,7 +64,7 @@ const Page = () => {
     <div className="flex justify-center items-center h-screen bg-black">
       <div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-white">Verify your email</h1>
+          <h1 className="text-4xl font-bold text-white">Reset password</h1>
           <p className="text-md text-white mt-4">
             Enter the code sent to your email
           </p>

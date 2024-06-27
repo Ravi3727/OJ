@@ -21,47 +21,40 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { problemSchema } from "@/schemas/problemsSchema";
+import { contestSchema } from "@/schemas/ContestSchema";
 import { Textarea } from "@/components/ui/textarea";
 
-const Createnewproblem = () => {
+const CreateContest = () => {
   const router = useRouter();
   const session = useSession();
   const [isSubmiting, setIsSubmiting] = useState(false);
 
-  const form = useForm<z.infer<typeof problemSchema>>({
-    resolver: zodResolver(problemSchema),
+  const form = useForm<z.infer<typeof contestSchema>>({
+    resolver: zodResolver(contestSchema),
     defaultValues: {
       title: "",
-      statement: "",
-      tags: [],
-      testCases: [],
+      description: "",
+      eventDate: "",
+      HostedBy: "",
+      problems: [],
       difficulty: "",
     },
   });
 
   const {
-    fields: tagFields,
+    fields: problems,
     append: appendTag,
     remove: removeTag,
   } = useFieldArray({
     control: form.control,
-    name: "tags",
+    name: "problems",
   });
 
-  const {
-    fields: testCaseFields,
-    append: appendTestCase,
-    remove: removeTestCase,
-  } = useFieldArray({
-    control: form.control,
-    name: "testCases",
-  });
-
-  const onSubmit = async (data: z.infer<typeof problemSchema>) => {
+  const onSubmit = async (data: z.infer<typeof contestSchema>) => {
     setIsSubmiting(true);
 
     console.log(session);
+    console.log("Create contest", data);
 
     if (!session) {
       toast.success("Please login to continue", {
@@ -77,10 +70,12 @@ const Createnewproblem = () => {
       });
       setIsSubmiting(false);
     } else if (
-      !data.statement ||
+      !data.description ||
       !data.title ||
-      !data.tags ||
-      !data.testCases
+      !data.problems ||
+      !data.difficulty ||
+      !data.eventDate ||
+      !data.HostedBy
     ) {
       toast.error("Please fill all the fields", {
         position: "bottom-right",
@@ -123,7 +118,7 @@ const Createnewproblem = () => {
     } else {
       try {
         const response = await axios.post<ApiResponse>(
-          "/api/createProblem",
+          "/api/createContest",
           data
         );
         console.log("Problem created", data);
@@ -139,7 +134,7 @@ const Createnewproblem = () => {
             theme: "light",
             transition: Bounce,
           });
-          router.replace("/allproblems");
+          router.replace("/contests");
           setIsSubmiting(false);
         } else {
           toast.error("please fill all the fields", {
@@ -179,15 +174,12 @@ const Createnewproblem = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-full bg-black/[90] space-y-20">
+      <div className="flex flex-col items-center justify-center h-full min-h-screen bg-black/[90] space-y-20">
         <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-24 p-4 rounded-lg m-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
-              Let&apos;s increase some challenge on OJ
+              Create Contest
             </h1>
-            <p className="text-red-500 text-lg ">
-              Write problem statement carefully before submitting the problem
-            </p>
           </div>
 
           <Form {...form}>
@@ -195,6 +187,25 @@ const Createnewproblem = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-2 w-9/12"
             >
+              <FormField
+                control={form.control}
+                name="HostedBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">
+                      Your Username
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-200 border-black "
+                        placeholder="username..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="title"
@@ -214,10 +225,10 @@ const Createnewproblem = () => {
               />
               <FormField
                 control={form.control}
-                name="statement"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Statement</FormLabel>
+                    <FormLabel className="text-gray-700">Description</FormLabel>
                     <FormControl>
                       {/* <Input
                         className="bg-gray-200 border-black "
@@ -226,7 +237,7 @@ const Createnewproblem = () => {
                       /> */}
                       <Textarea
                         className="bg-gray-200 border-black "
-                        placeholder="Problem statement..."
+                        placeholder="Contest description..."
                         {...field}
                       />
                     </FormControl>
@@ -255,17 +266,41 @@ const Createnewproblem = () => {
 
               <FormField
                 control={form.control}
-                name="tags"
+                name="eventDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">
+                      Contest Date and Time
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-200 border-black "
+                        placeholder="dd-mm-yyyy-9:00-PM"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="problems"
                 render={() => (
                   <FormItem className="flex flex-col gap-2">
-                    <FormLabel className="text-gray-700">Add tags</FormLabel>
-                    {tagFields.map((tag, index) => (
-                      <div key={tag.id} className="flex items-center space-x-2">
+                    <FormLabel className="text-gray-700">
+                      Add Problems ID
+                    </FormLabel>
+                    {problems.map((problem, index) => (
+                      <div
+                        key={problem.id}
+                        className="flex items-center space-x-2"
+                      >
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="tags..."
-                            {...form.register(`tags.${index}` as const)}
+                            placeholder="problems ID..."
+                            {...form.register(`problems.${index}` as const)}
                           />
                         </FormControl>
                         <Button
@@ -282,51 +317,13 @@ const Createnewproblem = () => {
                       onClick={() => appendTag("")}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
-                      Add Tag
+                      Add Problems ID
                     </Button>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="testCases"
-                render={() => (
-                  <FormItem className="flex flex-col gap-2">
-                    <FormLabel className="text-gray-700">Test Cases</FormLabel>
-                    {testCaseFields.map((testCase, index) => (
-                      <div
-                        key={testCase.id}
-                        className="flex items-center space-x-2"
-                      >
-                        <FormControl>
-                          <Input
-                            className="bg-gray-200 border-black"
-                            placeholder="Keep fromate like this -> [inputs],output"
-                            {...form.register(`testCases.${index}` as const)}
-                          />
-                        </FormControl>
-                        <Button
-                          type="button"
-                          onClick={() => removeTestCase(index)}
-                          className="bg-red-500 text-white"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      onClick={() => appendTestCase("")}
-                      className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
-                    >
-                      Add Test Case
-                    </Button>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button
                 className="bg-violet-900 text-white hover:bg-red-600 "
                 type="submit"
@@ -351,4 +348,4 @@ const Createnewproblem = () => {
   );
 };
 
-export default Createnewproblem;
+export default CreateContest;

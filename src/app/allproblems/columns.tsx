@@ -113,6 +113,12 @@ export const columns: ColumnDef<Allproblems>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(Allproblems.id)}
+              className="text-yellow-500 hover:text-yellow-600"
+            >
+              Copy ID
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() => editProblem(Allproblems.id)}
               className="text-yellow-500 hover:text-yellow-600"
             >
