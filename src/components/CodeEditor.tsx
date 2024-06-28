@@ -1,14 +1,16 @@
+'use client';
 import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
-
+import { Button } from "./ui/button";
+import { Loader2 } from "lucide-react";
 const CodeEditor: React.FC = () => {
   const [code, setCode] = useState<string>(() => getDefaultCode("java")); // Initialize with default code for Java
   const [output, setOutput] = useState<string>("");
   const [language, setLanguage] = useState<string>("java"); // Default language is Java
-
+  const [loading, setLoading] = useState<boolean>(false);
   // Function to get default code based on language
   function getDefaultCode(lang: string): string {
     switch (lang) {
@@ -72,6 +74,7 @@ console.log(message); `;
   }, [language]);
 
   const handleSubmit = async () => {
+    setLoading(true);
     const payload = {
       language,
       code,
@@ -80,8 +83,10 @@ console.log(message); `;
     try {
       const { data } = await axios.post("/api/onlineCompiler", payload);
       setOutput(data.data.output);
+      setLoading(false);
     } catch (error) {
       console.error(error.response?.data);
+      setLoading(false);
     }
   };
 
@@ -92,25 +97,21 @@ console.log(message); `;
   );
 
   return (
-    <div className="container mx-auto w-full h-full flex flex-col justify-start bg-black/[90]">
-      <div className="absolute  right-4 ">
-        <select
-          className="select-box border border-gray-300 rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 "
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        >
-          <option value="cpp">C++</option>
-          <option value="c">C</option>
-          <option value="js">JavaScript</option>
-          <option value="java">Java</option>
-          <option value="py">Python</option>
-        </select>
-      </div>
-
-      <div
-        className="bg-gray-100 shadow-sm shadow-white w-full max-w-lg mb-4 mt-12 justify-center rounded-lg "
-        style={{ height: "400px", width: "100%", overflowY: "auto" }}
-      >
+    <div className="w-full min-h-screen flex flex-col overflow-x-hidden rounded-e-lg">
+      <div className="relative ">
+        <div className="absolute z-10 left-[78%] ">
+          <select
+            className="select-box  rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            <option className="rounde-lg " value="cpp">C++</option>
+            <option className="rounde-lg " value="c">C</option>
+            <option className="rounde-lg " value="js">JavaScript</option>
+            <option className="rounde-lg " value="java">Java</option>
+            <option className="rounde-lg " value="py">Python</option>
+          </select>
+        </div>
         <Editor
           value={code}
           onValueChange={setCode}
@@ -122,52 +123,39 @@ console.log(message); `;
             outline: "none",
             border: "none",
             backgroundColor: "#f7fafc",
-            height: "100%",
+            height: "550px",
+            width: "730px",
             overflowY: "auto",
           }}
         />
       </div>
 
-      <button
-        onClick={handleSubmit}
-        type="button"
-        className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-12 mx-auto w-24"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-5 h-5 me-2"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 12a9 9 1 0 1-18 0 9 9 0 1 1 18 0Z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"
-          />
-        </svg>
-        Run
-      </button>
-
-      {output && (
-        <div className="outputbox mt-4 bg-gray-100 rounded-md shadow-md p-4 w-full mx-auto">
-          <p
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 12,
-            }}
-            className="text-black"
-          >
-            {output}
-          </p>
+      <div className="flex flex-row justify-evenly w-[100%]  overflow-x-hidden ">
+        <div className="w-1/2 ">
+          <Button className="text-white w-full rounded-e-none h-16" onClick={handleSubmit}>
+            Run
+          </Button>
         </div>
-      )}
+        <div className="w-1/2">
+          <Button className="text-white w-full rounded-s-none h-16" onClick={handleSubmit}>
+            submit
+          </Button>
+        </div>
+      </div>
+
+      <div className="outputbox bg-white h-44 overflow-auto rounded-b-md shadow-md p-4 w-full mx-auto">
+        {loading ? <div>
+          <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-black" />
+        </div> : <p
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 12,
+          }}
+          className="text-black text-lg text-start"
+        >
+          {output}
+        </p>}
+      </div>
     </div>
   );
 };

@@ -77,7 +77,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
   return (
     <div className="p-8 bg-black/[90] min-h-screen text-white ">
-      <div className="max-w-4xl mx-auto bg-black/[90]  rounded-lg p-6 mt-28 border-1 shadow-lg shadow-white">
+      <div className="max-w-4xl mx-auto bg-black/[90]  rounded-lg p-6 mt-28 border-1 shadow-lg shadow-yellow-500">
         <div className="flex items-center justify-center mx-auto mb-6">
           {/* <div className="w-24 h-24 rounded-full bg-gray-200 mr-4"></div> */}
           <div className="flex flex-col items-center justify-center">
@@ -94,14 +94,8 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
               <textarea
                 value={newBio}
                 onChange={handleBioChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded text-black font-semibold"
               />
-              {/* <button
-                onClick={saveBio}
-                className="mt-2 mr-2 bg-blue-500 text-white py-1 px-3 rounded"
-              >
-                Save
-              </button> */}
 
               <Button
                 className="bg-blue-800 text-white hover:bg-blue-600"
@@ -130,7 +124,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
               <p>{user.userBio ? user.userBio : "No bio available."}</p>
               <button
                 onClick={() => setIsEditingBio(true)}
-                className="mt-2 text-black py-1 px-3 rounded text-2xl"
+                className="mt-2 text-white py-1 px-3 rounded text-2xl"
               >
                 <MdOutlineEdit />
               </button>

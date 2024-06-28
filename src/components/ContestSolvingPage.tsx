@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import  CodeEditor  from "@/components/CodeEditor";
-const ProblemPage = () => {
+const ContestSolvingPage = (props:any) => {
   //@ts-ignore
-  const { problemId } = useParams();
+  const  problemId  = props.problemId;
   const [problem, setProblem] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -49,52 +49,8 @@ const ProblemPage = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-28 overflow-x-hidden bg-black/[90]">
-        {/* <div className="w-32 h-8 flex flex-row justify-center items-center mt-28 ng-black">
-        <div className="text-black  opacity-90 font-sans font-medium ">
-          <Button
-            className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-e-none"
-            type="submit"
-            disabled={isRunning}
-            onClick={()=>setIsRunning(true)}
-          >
-            {isRunning ? (
-              <>
-                <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
-                Runing
-              </>
-            ) : (
-              "Run"
-            )}
-          </Button>
-        </div>
-        <div className="text-black opacity-90 font-sans font-medium ">
-          <Button
-            className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-s-none"
-            type="submit"
-            disabled={isSubmiting}
-            onClick={()=>setIsSubmiting(true)}
-          >
-            {isSubmiting ? (
-              <>
-                <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
-                Submiting
-              </>
-            ) : (
-              "Submit"
-            )}
-          </Button>
-        </div>
-        </div> */}
-
-
-
-      </div>
-
-
-
-      <div className="flex flex-row justify-between w-full min-h-screen h-full overflow-x-hidden mt-">
-        <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
+      <div className="flex flex-row justify-between w-screen min-h-screen h-full mx-auto overflow-x-hidden ">
+        <div className="w-1/2 p-2 rounded-s-lg min-h-screen bg-gray-300  shadow-lg items-start text-start  overflow-x-hidden">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">
             <p
@@ -154,12 +110,14 @@ const ProblemPage = () => {
           {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
         </div>
 
-        <div className="w-1/2 bg-white-400  overflow-auto ">
+        <div className="w-1/2 h-full overflow-x-hidden rounded-e-lg">
           <CodeEditor/>
         </div>
+
+        
       </div>
     </>
   );
 };
 
-export default ProblemPage;
+export default ContestSolvingPage;

@@ -1,9 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import * as React from "react";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,21 +22,31 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { contestSchema } from "@/schemas/ContestSchema";
 import { Textarea } from "@/components/ui/textarea";
-
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 const CreateContest = () => {
   const router = useRouter();
   const session = useSession();
-  const [isSubmiting, setIsSubmiting] = useState(false);
-
+  const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
+  const [date, setDate] = useState<Date>();
   const form = useForm<z.infer<typeof contestSchema>>({
     resolver: zodResolver(contestSchema),
     defaultValues: {
       title: "",
       description: "",
-      eventDate: "",
+      eventDate: new Date(),
       HostedBy: "",
       problems: [],
       difficulty: "",
+      duration: 0,
     },
   });
 
@@ -52,12 +61,25 @@ const CreateContest = () => {
 
   const onSubmit = async (data: z.infer<typeof contestSchema>) => {
     setIsSubmiting(true);
-
-    console.log(session);
-    console.log("Create contest", data);
-
+    data.eventDate = new Date(date);
+    // console.log(session);
+    // console.log("Create contest", data);
+    
     if (!session) {
       toast.success("Please login to continue", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      setIsSubmiting(false);
+    }if (data.eventDate < new Date()) {
+      toast.error("Please select a date in the future", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -75,7 +97,8 @@ const CreateContest = () => {
       !data.problems ||
       !data.difficulty ||
       !data.eventDate ||
-      !data.HostedBy
+      !data.HostedBy ||
+      !data.duration
     ) {
       toast.error("Please fill all the fields", {
         position: "bottom-right",
@@ -117,6 +140,8 @@ const CreateContest = () => {
       setIsSubmiting(false);
     } else {
       try {
+        data.eventDate = date || new Date();
+        console.log(data);
         const response = await axios.post<ApiResponse>(
           "/api/createContest",
           data
@@ -175,7 +200,7 @@ const CreateContest = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full min-h-screen bg-black/[90] space-y-20">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-24 p-4 rounded-lg m-4">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-28 p-4 rounded-lg m-4 ">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
               Create Contest
@@ -230,11 +255,6 @@ const CreateContest = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Description</FormLabel>
                     <FormControl>
-                      {/* <Input
-                        className="bg-gray-200 border-black "
-                        placeholder="Problem statement..."
-                        {...field}
-                      /> */}
                       <Textarea
                         className="bg-gray-200 border-black "
                         placeholder="Contest description..."
@@ -264,18 +284,41 @@ const CreateContest = () => {
                 )}
               />
 
+              <div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] justify-start text-left font-normal",
+                        !date && "text-muted-foreground border-2 border-black"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
               <FormField
                 control={form.control}
-                name="eventDate"
+                name="duration"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">
-                      Contest Date and Time
-                    </FormLabel>
+                    <FormLabel className="text-gray-700">Duration</FormLabel>
                     <FormControl>
                       <Input
                         className="bg-gray-200 border-black "
-                        placeholder="dd-mm-yyyy-9:00-PM"
+                        placeholder="In minutes"
                         {...field}
                       />
                     </FormControl>
@@ -283,6 +326,7 @@ const CreateContest = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="problems"
