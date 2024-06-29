@@ -8,6 +8,7 @@ export interface contest extends Document {
     problems: string[];
     difficulty: string,
     createdAt: Date;
+    duration: string;
 }
 
 const ContestSchema: Schema<contest> = new mongoose.Schema({
@@ -31,6 +32,10 @@ const ContestSchema: Schema<contest> = new mongoose.Schema({
     difficulty:{
         type: String,
         required: [true, "Difficulty of contest is required"],
+    },
+    duration:{
+        type:String,
+        required: [true, "Duration of contest is required"],
     },
     eventDate: {
         type: String,

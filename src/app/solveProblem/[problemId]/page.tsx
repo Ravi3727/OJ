@@ -3,21 +3,28 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import  CodeEditor  from "@/components/CodeEditor";
+import CodeEditor from "@/components/CodeEditor";
+
+interface Problem {
+  title: string;
+  difficulty: string;
+  statement: string;
+  tags: string[];
+  testCases: string[];
+  createdAt: string;
+}
+
 const ProblemPage = () => {
-  //@ts-ignore
-  const { problemId } = useParams();
-  const [problem, setProblem] = useState(null);
+  const { problemId } = useParams<{ problemId: string }>();
+  const [problem, setProblem] = useState<Problem | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isSubmiting, setIsSubmiting] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+
   useEffect(() => {
     const getProblemsById = async () => {
       try {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
         setProblem(res.data.data);
-      } catch (error) {
+      } catch (error: any) {
         setErrorMsg(error.message || "Error fetching problem by Id");
       }
     };
@@ -27,12 +34,12 @@ const ProblemPage = () => {
   if (!problem) {
     return (
       <div className="text-center flex bg-black items-center justify-center h-screen my-auto mx-auto ">
-        <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-white" />
+        <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
       </div>
     );
   }
 
-  const parseTestCase = (testCase) => {
+  const parseTestCase = (testCase: string) => {
     const [input, output] = testCase.split("],");
     return {
       input: input + "]",
@@ -40,60 +47,11 @@ const ProblemPage = () => {
     };
   };
 
-  setTimeout(() => {
-    setIsSubmiting(false);
-    setIsRunning(false);
-  }, 8000);
-
-
-
   return (
     <>
-      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-28 overflow-x-hidden bg-black/[90]">
-        {/* <div className="w-32 h-8 flex flex-row justify-center items-center mt-28 ng-black">
-        <div className="text-black  opacity-90 font-sans font-medium ">
-          <Button
-            className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-e-none"
-            type="submit"
-            disabled={isRunning}
-            onClick={()=>setIsRunning(true)}
-          >
-            {isRunning ? (
-              <>
-                <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
-                Runing
-              </>
-            ) : (
-              "Run"
-            )}
-          </Button>
-        </div>
-        <div className="text-black opacity-90 font-sans font-medium ">
-          <Button
-            className="bg-gray-400-800 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none rounded-s-none"
-            type="submit"
-            disabled={isSubmiting}
-            onClick={()=>setIsSubmiting(true)}
-          >
-            {isSubmiting ? (
-              <>
-                <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
-                Submiting
-              </>
-            ) : (
-              "Submit"
-            )}
-          </Button>
-        </div>
-        </div> */}
-
-
-
-      </div>
-
-
-
-      <div className="flex flex-row justify-between w-full min-h-screen h-full overflow-x-hidden mt-">
+      <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-screen overflow-x-hidden bg-black/[90]">
+      
+      <div className="flex flex-row justify-between w-[98%] min-h-screen h-full overflow-x-hidden mx-auto mt-28">
         <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">
@@ -154,10 +112,13 @@ const ProblemPage = () => {
           {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
         </div>
 
-        <div className="w-1/2 bg-white-400  overflow-auto ">
-          <CodeEditor/>
+        <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
+          <CodeEditor />
         </div>
       </div>
+      </div>
+
+      
     </>
   );
 };

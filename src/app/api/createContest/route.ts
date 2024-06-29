@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { title, description, eventDate, difficulty, HostedBy, problems } = await request.json();
+        const { title, description, eventDate, difficulty, HostedBy, problems, duration } = await request.json();
         // console.log(typeof(eventDate));
-        if (!title || !description || !eventDate || !difficulty || !HostedBy || !problems) {
+        if (!title || !description || !eventDate || !difficulty || !HostedBy || !problems || !duration) {
             return Response.json({
                 success: false,
                 message: "All feilds are required",
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
             });
         }
 
-        const newContest = { title, description, eventDate, problems, difficulty, HostedBy }
+        const newContest = { title, description, eventDate, problems, difficulty, HostedBy, duration }
 
 
         // console.log("Coming from frontend form", newContest);

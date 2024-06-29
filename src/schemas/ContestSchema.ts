@@ -7,5 +7,5 @@ export const contestSchema = z.object({
     difficulty: z.string().min(4, { message: 'Difficulty must be at least 4 characters' }),
     eventDate: z.date().min(new Date(), { message: 'Event date must be in the future' }),
     HostedBy : z.string().min(2, { message: 'HostedBy must be at least 2 characters' }),
-    duration : z.number().min(2, { message: 'Duration must be at least 2 minutes' }),
+    duration : z.string().min(2, { message: 'Duration must be at least 2 minutes' }),
 });

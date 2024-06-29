@@ -1,16 +1,19 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {  darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
+import { IoMdCheckmark } from "react-icons/io";
+import { TiClipboard } from "react-icons/ti";
 const CodeEditor: React.FC = () => {
   const [code, setCode] = useState<string>(() => getDefaultCode("java")); // Initialize with default code for Java
   const [output, setOutput] = useState<string>("");
   const [language, setLanguage] = useState<string>("java"); // Default language is Java
   const [loading, setLoading] = useState<boolean>(false);
+  const [copyCode, setCopyCode] = useState<boolean>(false);
   // Function to get default code based on language
   function getDefaultCode(lang: string): string {
     switch (lang) {
@@ -91,26 +94,68 @@ console.log(message); `;
   };
 
   const highlightCode = (code: string) => (
-    <SyntaxHighlighter language={language} style={docco}>
+    <SyntaxHighlighter language={language} style={darcula} >
       {code}
     </SyntaxHighlighter>
   );
 
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-x-hidden rounded-e-lg">
-      <div className="relative ">
-        <div className="absolute z-10 left-[78%] ">
-          <select
-            className="select-box  rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-          >
-            <option className="rounde-lg " value="cpp">C++</option>
-            <option className="rounde-lg " value="c">C</option>
-            <option className="rounde-lg " value="js">JavaScript</option>
-            <option className="rounde-lg " value="java">Java</option>
-            <option className="rounde-lg " value="py">Python</option>
-          </select>
+    <div className="w-full min-h-screen flex flex-col overflow-x-hidden ">
+      <div className="relative bg-stone-900   ">
+        <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[61%]">
+          <div className=" w-full -mt-2 h-10 items-center text-center">
+            {copyCode ? (
+              <button className="inline-flex items-center">
+                <div className="flex flex-row justify-evenly items-center mt-2">
+                  <div>
+                    <IoMdCheckmark className=" text-white font-semibold text-xl" />
+                  </div>
+                  <div className="text-white font-semibold text-lg ml-1 ">Copied!</div>
+                </div>
+              </button>
+            ) : (
+              <button
+                className="inline-flex items-center"
+                onClick={() => {
+                  navigator.clipboard.writeText(code);
+                  setCopyCode(true);
+                  setTimeout(() => {
+                    setCopyCode(false);
+                  }, 3000);
+                }}
+              >
+                <div className="flex flex-row justify-evenly items-center mt-2">
+                  <div>
+                    <TiClipboard className=" text-white font-semibold  text-xl" />
+                  </div>
+                  <div className="text-white font-semibold ml-1 font-lg">Copy code</div>
+                </div>
+              </button>
+            )}
+          </div>
+          <div className="">
+            <select
+              className="select-box  rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option className="rounde-lg " value="cpp">
+                C++
+              </option>
+              <option className="rounde-lg " value="c">
+                C
+              </option>
+              <option className="rounde-lg " value="js">
+                JavaScript
+              </option>
+              <option className="rounde-lg " value="java">
+                Java
+              </option>
+              <option className="rounde-lg " value="py">
+                Python
+              </option>
+            </select>
+          </div>
         </div>
         <Editor
           value={code}
@@ -119,42 +164,53 @@ console.log(message); `;
           padding={10}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 12,
+            fontSize: 16,
             outline: "none",
             border: "none",
-            backgroundColor: "#f7fafc",
+            backgroundColor: "#292524",
             height: "550px",
             width: "730px",
             overflowY: "auto",
+            marginTop: "37px",
           }}
         />
       </div>
 
       <div className="flex flex-row justify-evenly w-[100%]  overflow-x-hidden ">
         <div className="w-1/2 ">
-          <Button className="text-white w-full rounded-e-none h-16" onClick={handleSubmit}>
+          <Button
+            className="text-white w-full rounded-e-none h-16"
+            onClick={handleSubmit}
+          >
             Run
           </Button>
         </div>
         <div className="w-1/2">
-          <Button className="text-white w-full rounded-s-none h-16" onClick={handleSubmit}>
+          <Button
+            className="text-white w-full rounded-s-none h-16"
+            onClick={handleSubmit}
+          >
             submit
           </Button>
         </div>
       </div>
 
-      <div className="outputbox bg-white h-44 overflow-auto rounded-b-md shadow-md p-4 w-full mx-auto">
-        {loading ? <div>
-          <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-black" />
-        </div> : <p
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 12,
-          }}
-          className="text-black text-lg text-start"
-        >
-          {output}
-        </p>}
+      <div className="outputbox bg-stone-800 h-44 overflow-auto rounded-b-md shadow-md p-4 w-full mx-auto">
+        {loading ? (
+          <div>
+            <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-white" />
+          </div>
+        ) : (
+          <p
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 14,
+            }}
+            className="text-white text-lg font-semibold leading-10 text-start"
+          >
+            {output}
+          </p>
+        )}
       </div>
     </div>
   );

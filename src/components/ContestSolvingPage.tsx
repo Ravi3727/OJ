@@ -1,23 +1,32 @@
 "use client";
 import axios from "axios";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import  CodeEditor  from "@/components/CodeEditor";
-const ContestSolvingPage = (props:any) => {
+import CodeEditor from "@/components/CodeEditor";
+
+interface Problem {
+  title: string;
+  difficulty: string;
+  statement: string;
+  tags: string[];
+  testCases: string[];
+  createdAt: string;
+}
+
+const ContestSolvingPage = (props: any) => {
   //@ts-ignore
-  const  problemId  = props.problemId;
-  const [problem, setProblem] = useState(null);
+  const problemId = props.problemId;
+  const [problem, setProblem] = useState<Problem | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+
   useEffect(() => {
     const getProblemsById = async () => {
       try {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
         setProblem(res.data.data);
-      } catch (error) {
+      } catch (error: any) {
         setErrorMsg(error.message || "Error fetching problem by Id");
       }
     };
@@ -32,7 +41,7 @@ const ContestSolvingPage = (props:any) => {
     );
   }
 
-  const parseTestCase = (testCase) => {
+  const parseTestCase = (testCase: string) => {
     const [input, output] = testCase.split("],");
     return {
       input: input + "]",
@@ -41,16 +50,14 @@ const ContestSolvingPage = (props:any) => {
   };
 
   setTimeout(() => {
-    setIsSubmiting(false);
+    setIsSubmitting(false);
     setIsRunning(false);
   }, 8000);
-
-
 
   return (
     <>
       <div className="flex flex-row justify-between w-screen min-h-screen h-full mx-auto overflow-x-hidden ">
-        <div className="w-1/2 p-2 rounded-s-lg min-h-screen bg-gray-300  shadow-lg items-start text-start  overflow-x-hidden">
+        <div className="w-1/2 p-4 rounded-s-lg min-h-screen bg-gray-300 shadow-lg items-start text-start overflow-x-hidden">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">
             <p
@@ -110,11 +117,9 @@ const ContestSolvingPage = (props:any) => {
           {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
         </div>
 
-        <div className="w-1/2 h-full overflow-x-hidden rounded-e-lg">
-          <CodeEditor/>
+        <div className="w-1/2 h-full overflow-x-hidden ">
+          <CodeEditor />
         </div>
-
-        
       </div>
     </>
   );

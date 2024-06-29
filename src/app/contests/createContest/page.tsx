@@ -46,7 +46,7 @@ const CreateContest = () => {
       HostedBy: "",
       problems: [],
       difficulty: "",
-      duration: 0,
+      duration: "",
     },
   });
 
@@ -63,7 +63,7 @@ const CreateContest = () => {
     setIsSubmiting(true);
     data.eventDate = new Date(date);
     // console.log(session);
-    // console.log("Create contest", data);
+    console.log("Create contest", data);
     
     if (!session) {
       toast.success("Please login to continue", {
@@ -317,6 +317,7 @@ const CreateContest = () => {
                     <FormLabel className="text-gray-700">Duration</FormLabel>
                     <FormControl>
                       <Input
+                      type="text"
                         className="bg-gray-200 border-black "
                         placeholder="In minutes"
                         {...field}
