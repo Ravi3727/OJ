@@ -2,24 +2,52 @@
 import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import {  darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { IoMdCheckmark } from "react-icons/io";
 import { TiClipboard } from "react-icons/ti";
-const CodeEditor: React.FC = () => {
-  const [code, setCode] = useState<string>(() => getDefaultCode("java")); // Initialize with default code for Java
+
+interface TestCase {
+  input: string;
+  expectedOutput: string;
+}
+
+interface CodeEditorProps {
+  testCases: TestCase[];
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ testCases }) => {
+  const [code, setCode] = useState<string>(() => getDefaultCode("java"));
   const [output, setOutput] = useState<string>("");
-  const [language, setLanguage] = useState<string>("java"); // Default language is Java
+  const [language, setLanguage] = useState<string>("java");
   const [loading, setLoading] = useState<boolean>(false);
   const [copyCode, setCopyCode] = useState<boolean>(false);
-  // Function to get default code based on language
+
+  console.log("TestCases", testCases);
+
+  const transformedTestCases = testCases.map(testCase => {
+    // Trim whitespace and split into input and expectedOutput
+    const [inputStr, expectedOutputStr] = testCase.trim().split(',');
+  
+    // Remove leading and trailing brackets from input string
+    const cleanedInputStr = inputStr.replace(/^\[|\]$/g, '');
+  
+    // Parse input string to array
+    const input = JSON.parse(`[${cleanedInputStr}]`);
+  
+    return { input, expectedOutput: expectedOutputStr.trim() };
+  });
+
+  console.log("TransformedTestCases", transformedTestCases);
+
   function getDefaultCode(lang: string): string {
     switch (lang) {
       case "cpp":
         return `// Include the input/output stream library
-  #include <iostream> 
+  #include <bits/stdc++.h>
+  using namespace std;
 
   // Define the main function
   int main() { 
@@ -72,7 +100,6 @@ console.log(message); `;
   }
 
   useEffect(() => {
-    // Update code when language changes
     setCode(getDefaultCode(language));
   }, [language]);
 
@@ -81,36 +108,50 @@ console.log(message); `;
     const payload = {
       language,
       code,
+      testCases,
+    };
+
+      const mockRequest = {
+        language: 'cpp',
+        // code: '#include <iostream>\nint main() { std::cout << "Hello World!"; return 0; }',
+        code: code,
+        testCases: [
+            { input: '1,2', expectedOutput: '3' },
+            { input: '2,3', expectedOutput: '5' },
+            { input: '3,4', expectedOutput: '7' },
+        ]
     };
 
     try {
-      const { data } = await axios.post("/api/onlineCompiler", payload);
+      const { data } = await axios.post("/api/onlineCompiler", mockRequest);
       setOutput(data.data.output);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.response?.data);
       setLoading(false);
     }
   };
 
   const highlightCode = (code: string) => (
-    <SyntaxHighlighter language={language} style={darcula} >
+    <SyntaxHighlighter language={language} style={darcula}>
       {code}
     </SyntaxHighlighter>
   );
 
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-x-hidden ">
-      <div className="relative bg-stone-900   ">
+    <div className="w-full min-h-screen flex flex-col overflow-x-hidden">
+      <div className="relative bg-stone-900">
         <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[61%]">
-          <div className=" w-full -mt-2 h-10 items-center text-center">
+          <div className="w-full -mt-2 h-10 items-center text-center">
             {copyCode ? (
               <button className="inline-flex items-center">
                 <div className="flex flex-row justify-evenly items-center mt-2">
                   <div>
-                    <IoMdCheckmark className=" text-white font-semibold text-xl" />
+                    <IoMdCheckmark className="text-white font-semibold text-xl" />
                   </div>
-                  <div className="text-white font-semibold text-lg ml-1 ">Copied!</div>
+                  <div className="text-white font-semibold text-lg ml-1">
+                    Copied!
+                  </div>
                 </div>
               </button>
             ) : (
@@ -126,37 +167,30 @@ console.log(message); `;
               >
                 <div className="flex flex-row justify-evenly items-center mt-2">
                   <div>
-                    <TiClipboard className=" text-white font-semibold  text-xl" />
+                    <TiClipboard className="text-white font-semibold text-xl" />
                   </div>
-                  <div className="text-white font-semibold ml-1 font-lg">Copy code</div>
+                  <div className="text-white font-semibold ml-1 font-lg">
+                    Copy code
+                  </div>
                 </div>
               </button>
             )}
           </div>
-          <div className="">
+          <div>
             <select
-              className="select-box  rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
+              className="select-box rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
-              <option className="rounde-lg " value="cpp">
-                C++
-              </option>
-              <option className="rounde-lg " value="c">
-                C
-              </option>
-              <option className="rounde-lg " value="js">
-                JavaScript
-              </option>
-              <option className="rounde-lg " value="java">
-                Java
-              </option>
-              <option className="rounde-lg " value="py">
-                Python
-              </option>
+              <option value="cpp">C++</option>
+              <option value="c">C</option>
+              <option value="js">JavaScript</option>
+              <option value="java">Java</option>
+              <option value="py">Python</option>
             </select>
           </div>
         </div>
+        <div className="max-h-[470px] overflow-y-auto overflow-x-hidden">
         <Editor
           value={code}
           onValueChange={setCode}
@@ -167,17 +201,18 @@ console.log(message); `;
             fontSize: 16,
             outline: "none",
             border: "none",
-            backgroundColor: "#292524",
-            height: "550px",
+            // backgroundColor: "#1E293B.",
+            height: "470px",
             width: "730px",
             overflowY: "auto",
             marginTop: "37px",
           }}
         />
+        </div>
       </div>
 
-      <div className="flex flex-row justify-evenly w-[100%]  overflow-x-hidden ">
-        <div className="w-1/2 ">
+      <div className="flex flex-row justify-evenly w-[100%] overflow-x-hidden">
+        <div className="w-1/2">
           <Button
             className="text-white w-full rounded-e-none h-16"
             onClick={handleSubmit}
@@ -190,7 +225,7 @@ console.log(message); `;
             className="text-white w-full rounded-s-none h-16"
             onClick={handleSubmit}
           >
-            submit
+            Submit
           </Button>
         </div>
       </div>
@@ -198,7 +233,7 @@ console.log(message); `;
       <div className="outputbox bg-stone-800 h-44 overflow-auto rounded-b-md shadow-md p-4 w-full mx-auto">
         {loading ? (
           <div>
-            <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-white" />
+            <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
           </div>
         ) : (
           <p
