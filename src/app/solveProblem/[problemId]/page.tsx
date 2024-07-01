@@ -1,4 +1,5 @@
 "use client";
+
 import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -10,7 +11,7 @@ interface Problem {
   difficulty: string;
   statement: string;
   tags: string[];
-  testCases: { input: string; expectedOutput: string }[];
+  testCases: { input: string; output: string }[];
   createdAt: string;
 }
 
@@ -25,7 +26,7 @@ const ProblemPage = () => {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
         setProblem(res.data.data);
       } catch (error: any) {
-        setErrorMsg(error.message || "Error fetching problem by Id");
+        setErrorMsg(error.response?.data?.message || "Error fetching problem by Id");
       }
     };
     getProblemsById();
@@ -39,10 +40,10 @@ const ProblemPage = () => {
     );
   }
 
-  const parseTestCase = (testCase: { input: string; expectedOutput: string }) => {
+  const parseTestCase = (testCase: { input: string; output: string }) => {
     return {
       input: testCase.input,
-      output: testCase.expectedOutput?.trim(),
+      output: testCase.output?.trim(),
     };
   };
 
@@ -91,27 +92,15 @@ const ProblemPage = () => {
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
               <ul className="list-disc list-inside">
-                {problem.testCases.length > 2
-                  ? [...Array(2)].map((_, i) => {
-                      const { input, output } = parseTestCase(
-                        problem.testCases[i]
-                      );
-                      return (
-                        <li key={i} className="mb-1">
-                          <strong>Input:</strong> {input} <br />
-                          <strong>Output:</strong> {output}
-                        </li>
-                      );
-                    })
-                  : problem.testCases.map((testCase, index) => {
-                      const { input, output } = parseTestCase(testCase);
-                      return (
-                        <li key={index} className="mb-1">
-                          <strong>Input:</strong> {input} <br />
-                          <strong>Output:</strong> {output}
-                        </li>
-                      );
-                    })}
+                {problem.testCases.slice(0, 2).map((testCase, index) => {
+                  const { input, output } = parseTestCase(testCase);
+                  return (
+                    <li key={index} className="mb-1">
+                      <strong>Input:</strong> {input} <br />
+                      <strong>Output:</strong> {output}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
             <div className="mb-6">
@@ -122,7 +111,7 @@ const ProblemPage = () => {
           </div>
 
           <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
-            <CodeEditor testCases={problem.testCases} />
+            <CodeEditor problems={problem} />
           </div>
         </div>
       </div>

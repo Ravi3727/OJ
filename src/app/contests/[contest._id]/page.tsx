@@ -50,7 +50,7 @@ const Page = () => {
 
           <div className="mt-12 w-full min-h-screen flex flex-col items-center justify-center space-y-20 rounded-lg overflow-x-hidden">
             {contest.problems.map((problemId, index) => (
-              <ContestSolvingPage problemId={problemId} key={index} />
+              <ContestSolvingPage problemId={problemId} key={index} contestId={id} />
             ))}
           </div>
         </div>

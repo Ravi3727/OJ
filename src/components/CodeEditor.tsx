@@ -8,65 +8,77 @@ import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { IoMdCheckmark } from "react-icons/io";
 import { TiClipboard } from "react-icons/ti";
+import { useSession } from "next-auth/react";
 
 interface TestCase {
   input: string;
-  expectedOutput: string;
+  output: string;
+}
+
+interface Problem {
+  _id: string;
+  title: string;
+  difficulty: string;
+  statement: string;
+  tags: string[];
+  testCases: TestCase[];
+  createdAt: string;
+  problems: string[];
+  contestId: string;
 }
 
 interface CodeEditorProps {
-  testCases: TestCase[];
+  problems: Problem[];
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ testCases }) => {
+interface CodeSubmissionStatus {
+  codeSubmisionData: any[];
+  codeSubmisionDate: string;
+  problemId: string;
+  title: string;
+  difficulty: string;
+  tags: string[];
+  userEmail: string;
+  contestId:string;
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({problems ,contestId}) => {
+  const session = useSession();
   const [code, setCode] = useState<string>(() => getDefaultCode("java"));
-  const [output, setOutput] = useState<string>("");
+  const [output, setOutput] = useState<any[]>([]);
   const [language, setLanguage] = useState<string>("java");
   const [loading, setLoading] = useState<boolean>(false);
   const [copyCode, setCopyCode] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const problem = problems;
+  // const contestId = props.contestId;
 
-  console.log("TestCases", testCases);
 
-  const transformedTestCases = testCases.map(testCase => {
-    // Trim whitespace and split into input and expectedOutput
-    const [inputStr, expectedOutputStr] = testCase.trim().split(',');
-  
-    // Remove leading and trailing brackets from input string
-    const cleanedInputStr = inputStr.replace(/^\[|\]$/g, '');
-  
-    // Parse input string to array
-    const input = JSON.parse(`[${cleanedInputStr}]`);
-  
-    return { input, expectedOutput: expectedOutputStr.trim() };
+    console.log("Contest Id: " + contestId);
+  const transformedTestCases = problem.testCases.map((testCase: TestCase) => {
+    const input = testCase.input;
+    const expectedOutput = testCase.output;
+    return { input, expectedOutput };
   });
 
-  console.log("TransformedTestCases", transformedTestCases);
+  // console.log("TransformedTestCases", transformedTestCases);
 
   function getDefaultCode(lang: string): string {
     switch (lang) {
       case "cpp":
-        return `// Include the input/output stream library
-  #include <bits/stdc++.h>
-  using namespace std;
+        return `#include <bits/stdc++.h>
+using namespace std;
 
-  // Define the main function
-  int main() { 
-      // Output "Hello World!" to the console
-      std::cout << "Hello World! c++"; 
-      
-      // Return 0 to indicate successful execution
-      return 0; 
-  }`;
+int main() { 
+    std::cout << "Hello World! c++"; 
+    return 0; 
+}`;
 
       case "java":
         return `import java.io.*;
 
-// Define the main class (without public keyword)
 class Main {
-
-  // Define the main method
   public static void main(String[] args) {
-    // Output "Hello World!" to the console
     System.out.println("Hello World! from java");
   }
 }`;
@@ -79,20 +91,16 @@ class Main {
     return 'Hello, ' + name + ' from js!';
 }
 
-// Example: Using the function
 let message = greet('World');
 console.log(message); `;
 
       case "c":
         return `#include <stdio.h>
 
-  int main() {
-      // Output "Hello World!" to the console
-      printf("Hello World! from c");
-      
-      // Return 0 to indicate successful execution
-      return 0;
-  }`;
+int main() {
+    printf("Hello World! from c");
+    return 0;
+}`;
 
       default:
         return "";
@@ -101,30 +109,64 @@ console.log(message); `;
 
   useEffect(() => {
     setCode(getDefaultCode(language));
-  }, [language]);
+    setUserEmail(session.data?.user.email || "");
+  }, [language, session.data]);
 
-  const handleSubmit = async () => {
+
+  const submitCodeStatusToUser: CodeSubmissionStatus = {
+    codeSubmisionData: [],
+    codeSubmisionDate: new Date().toLocaleDateString("en-GB"), // Format: dd/mm/yyyy
+    problemId: problem._id,
+    title: problem.title,
+    difficulty: problem.difficulty,
+    tags: problem.tags,
+    userEmail: userEmail,
+    contestId : "",
+  };
+
+
+ if(contestId){
+  submitCodeStatusToUser.contestId = contestId;
+ }
+
+  const handleRun = async () => {
     setLoading(true);
     const payload = {
       language,
       code,
-      testCases,
-    };
-
-      const mockRequest = {
-        language: 'cpp',
-        // code: '#include <iostream>\nint main() { std::cout << "Hello World!"; return 0; }',
-        code: code,
-        testCases: [
-            { input: '1,2', expectedOutput: '3' },
-            { input: '2,3', expectedOutput: '5' },
-            { input: '3,4', expectedOutput: '7' },
-        ]
+      testCases: transformedTestCases,
     };
 
     try {
-      const { data } = await axios.post("/api/onlineCompiler", mockRequest);
-      setOutput(data.data.output);
+      const { data } = await axios.post("/api/onlineCompiler", payload);
+      setOutput(data.results);
+      submitCodeStatusToUser.codeSubmisionData = output;
+      // console.log("submitCodeStatusToUser.codeSubmisionDat",submitCodeStatusToUser.codeSubmisionData);
+      setLoading(false);
+    } catch (error: any) {
+      console.error(error.response?.data);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      submitCodeStatusToUser.codeSubmisionData = output;
+      // console.log("submitCodeStatusToUser",submitCodeStatusToUser);
+      const addProblemToUser = await axios.post(
+        "/api/AddSubmitedProblemsToUser",
+        submitCodeStatusToUser
+      );
+
+      if(contestId){
+        const addProblemOfContestGivenByUser = await axios.post(
+          "/api/addProblemOfContestGivenByuser",
+          submitCodeStatusToUser
+        );
+        console.log("Add Problem of contest given by user", addProblemOfContestGivenByUser);
+      }
+      // console.log("Add Problem to User", addProblemToUser);
       setLoading(false);
     } catch (error: any) {
       console.error(error.response?.data);
@@ -191,23 +233,22 @@ console.log(message); `;
           </div>
         </div>
         <div className="max-h-[470px] overflow-y-auto overflow-x-hidden">
-        <Editor
-          value={code}
-          onValueChange={setCode}
-          highlight={highlightCode}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 16,
-            outline: "none",
-            border: "none",
-            // backgroundColor: "#1E293B.",
-            height: "470px",
-            width: "730px",
-            overflowY: "auto",
-            marginTop: "37px",
-          }}
-        />
+          <Editor
+            value={code}
+            onValueChange={setCode}
+            highlight={highlightCode}
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 16,
+              outline: "none",
+              border: "none",
+              height: "470px",
+              width: "730px",
+              overflowY: "auto",
+              marginTop: "37px",
+            }}
+          />
         </div>
       </div>
 
@@ -215,7 +256,7 @@ console.log(message); `;
         <div className="w-1/2">
           <Button
             className="text-white w-full rounded-e-none h-16"
-            onClick={handleSubmit}
+            onClick={handleRun}
           >
             Run
           </Button>
@@ -236,15 +277,24 @@ console.log(message); `;
             <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
           </div>
         ) : (
-          <p
+          <div
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
               fontSize: 14,
             }}
             className="text-white text-lg font-semibold leading-10 text-start"
           >
-            {output}
-          </p>
+            {output.map((result, index) => (
+              <div
+                key={index}
+                className="flex flex-row justify-wrap w-full overflow-x-hidden"
+              >
+                <p className="text-white text-lg font-semibold leading-10 text-start">
+                  TC:{index + 1} -&gt; {result.passed ? "Passed" : "Failed"}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

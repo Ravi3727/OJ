@@ -1,26 +1,34 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface userProfile extends Document {
+interface SolvedProblem {
+    problemId: string;
+    status: string;
+    title: string;
+    difficulty: string;
+    codeSubmisionDate: Date;
+}
+
+export interface UserProfile extends Document {
     username: string;
     email: string;
     password: string;
-    verifyCode:string;
-    verifyCodeExpiry:Date;
-    isVerified:boolean;
-    isProblemSetter:boolean;
-    collegeName:string;
+    verifyCode: string;
+    verifyCodeExpiry: Date;
+    isVerified: boolean;
+    isProblemSetter: boolean;
+    collegeName: string;
     userBio: string;
-    QuestionsSolved: [];
-    ContestCompleted: [];
+    QuestionsSolved: SolvedProblem[];
+    ParticipatedContests: { contestId: string, problemsSolved: SolvedProblem[] }[];
     rating: number;
     createdAt: Date;
     avatar: string;
-    resetPasswordverifyCode:string;
-    resetPasswordverifyCodeExpiry:Date;
-    isResetPasswordVerified:boolean;
+    resetPasswordverifyCode: string;
+    resetPasswordverifyCodeExpiry: Date;
+    isResetPasswordVerified: boolean;
 }
 
-const UserSchema: Schema<userProfile> = new Schema({
+const UserSchema: Schema<UserProfile> = new Schema({
     username: {
         type: String,
         required: [true, "Username is required"],
@@ -30,29 +38,29 @@ const UserSchema: Schema<userProfile> = new Schema({
         type: String,
         required: [true, "Email is required"],
         unique: true,
-        match: [/.+\@.+\..+/,"Please enter a valid email"]
+        match: [/.+\@.+\..+/, "Please enter a valid email"]
     },
     password: {
         type: String,
         required: [true, "Password is required"],
     },
-    verifyCode:{
+    verifyCode: {
         type: String,
         required: [true, "Verify code is required"],
     },
-    verifyCodeExpiry:{
+    verifyCodeExpiry: {
         type: Date,
         required: [true, "verifyCodeExpiry is required"],
     },
-    isVerified:{
+    isVerified: {
         type: Boolean,
         default: false,
     },
-    isProblemSetter:{
+    isProblemSetter: {
         type: Boolean,
         default: false,
     },
-    collegeName:{
+    collegeName: {
         type: String,
         required: false,
     },
@@ -64,21 +72,71 @@ const UserSchema: Schema<userProfile> = new Schema({
         type: String,
         required: false,
     },
-    QuestionsSolved: [String],
-    ContestCompleted: [String],
+    QuestionsSolved: [{
+        problemId: {
+            type: String,
+            required: true
+        },
+        title: {
+            type: String,
+            required: true
+        },
+        difficulty: {
+            type: String,
+            required: true
+        },
+        status: {
+            type: String,
+            required: true
+        },
+        codeSubmisionDate: {
+            type: Date,
+            required: true
+        },
+    }],
+    ParticipatedContests: [
+        {
+            contestId: {
+                type: String,
+                required: true
+            },
+            problemsSolved:  [{
+                problemId: {
+                    type: String,
+                    required: false
+                },
+                title: {
+                    type: String,
+                    required: false
+                },
+                difficulty: {
+                    type: String,
+                    required: false
+                },
+                status: {
+                    type: String,
+                    required: false
+                },
+                codeSubmisionDate: {
+                    type: Date,
+                    required: false
+                },
+            }]
+        }
+    ],
     rating: {
         type: Number,
         default: 0,
     },
-    resetPasswordverifyCode:{
+    resetPasswordverifyCode: {
         type: String,
         required: false,
     },
-    resetPasswordverifyCodeExpiry:{
+    resetPasswordverifyCodeExpiry: {
         type: Date,
         required: false,
     },
-    isResetPasswordVerified:{
+    isResetPasswordVerified: {
         type: Boolean,
         default: false,
     },
@@ -88,6 +146,6 @@ const UserSchema: Schema<userProfile> = new Schema({
     },
 });
 
-const UserModel = (mongoose.models.User as mongoose.Model<userProfile>) || mongoose.model<userProfile>("User",UserSchema)
+const UserModel = (mongoose.models.User as mongoose.Model<UserProfile>) || mongoose.model<UserProfile>("User", UserSchema);
 
 export default UserModel;

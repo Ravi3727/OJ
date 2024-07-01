@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "./ui/button";
 import { MdOutlineEdit } from "react-icons/md";
+import Link from "next/link";
+
 interface Problem {
   title: string;
   status: string;
   difficulty: string;
+}
+
+interface SolvedProblem {
+  problemId: string;
+  title: string;
+  difficulty: string;
+  status: string;
+  codeSubmisionDate: Date;
+}
+
+interface ParticipatedContest {
+  contestId: string;
+  problemsSolved: SolvedProblem[];
 }
 
 interface User {
@@ -18,18 +34,39 @@ interface User {
   collegeName: string;
   rating: number;
   isProblemSetter: boolean;
-  problemsSolved: Problem[];
-  ContestCompleted: string[]; // You may need to add this in your backend or adapt it based on your needs
+  QuestionsSolved: Problem[];
+  ParticipatedContests: ParticipatedContest[];
+}
+
+interface ContestSolved {
+  _id: string;
+  title: string;
+  HostedBy: string;
+  description: string;
+  difficulty: string;
+  duration: string;
+  eventDate: string;
+  problems: string[];
 }
 
 interface UserProfileProps {
   user: User;
 }
 
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(user.userBio);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userAddedProblems, setUserAddedProblems] = useState([]);
+  const [contestSolved, setContestSolved] = useState<ContestSolved[]>([]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewBio(e.target.value);
@@ -75,52 +112,87 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
     }
   };
 
+  const getUserContestsSolved = async () => {
+    try {
+      const contests = await Promise.all(
+        user.ParticipatedContests.map(async (contest) => {
+          const res = await axios.get(`/api/getContest/${contest.contestId}`);
+          return res.data.data;
+        })
+      );
+      setContestSolved(contests);
+    } catch (error) {
+      console.log(`Contest not found`, error);
+    }
+  };
+
+  useEffect(() => {
+    const getUserAddedProblems = async () => {
+      try {
+        const res = await axios.get(`/api/problemAddedByUser/${user.username}`);
+        console.log("response Problem added by user ", res.data.data);
+        setUserAddedProblems(res.data.data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+
+    if (user.ParticipatedContests.length > 0) {
+      getUserContestsSolved();
+    }
+
+    getUserAddedProblems();
+  }, []);
+
+  console.log("user question solved ", user.QuestionsSolved);
+  console.log("user contest solved ", contestSolved);
+
   return (
-    <div className="p-8 bg-black/[90] min-h-screen text-white ">
-      <div className="max-w-4xl mx-auto bg-black/[90]  rounded-lg p-6 mt-28 border-1 shadow-lg shadow-yellow-500">
+    <div className="p-8 bg-gray-900 min-h-screen h-full text-white">
+      <div className="w-10/12 mx-auto bg-gray-800 rounded-lg p-6 mt-28 shadow-md h-full">
         <div className="flex items-center justify-center mx-auto mb-6">
-          {/* <div className="w-24 h-24 rounded-full bg-gray-200 mr-4"></div> */}
           <div className="flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold">{user.username}</h1>
             <p className="text-md ">{user.collegeName}</p>
-            <p className="text-sm text-gray-600">{user.email}</p>
+            <p className="text-sm text-gray-400">{user.email}</p>
           </div>
         </div>
 
-        <div className="mb-6  items-center justify-center flex flex-col">
+        <div className="mb-6 flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-2">Bio</h2>
           {isEditingBio ? (
-            <div>
+            <div className="w-full">
               <textarea
                 value={newBio}
                 onChange={handleBioChange}
                 className="w-full p-2 border rounded text-black font-semibold"
               />
-
-              <Button
-                className="bg-blue-800 text-white hover:bg-blue-600"
-                type="submit"
-                disabled={isSubmitting}
-                onClick={saveBio}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
-                    Loading
-                  </>
-                ) : (
-                  "Save"
-                )}
-              </Button>
-              <button
-                onClick={() => setIsEditingBio(false)}
-                className="mt-4 ml-4 bg-gray-500 text-white py-2  px-3 rounded"
-              >
-                Cancel
-              </button>
+              <div className="flex justify-end mt-2">
+                <Button
+                  className="bg-blue-600 text-white hover:bg-blue-400"
+                  type="submit"
+                  disabled={isSubmitting}
+                  onClick={saveBio}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
+                      Saving...
+                    </>
+                  ) : (
+                    "Save"
+                  )}
+                </Button>
+                <button
+                  onClick={() => setIsEditingBio(false)}
+                  className="ml-2 bg-gray-600 text-white py-2 px-3 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="flex flex-row justify-between items-center w-full p-1">
+            <div className="flex justify-between items-center w-full p-1">
               <p>{user.userBio ? user.userBio : "No bio available."}</p>
               <button
                 onClick={() => setIsEditingBio(true)}
@@ -134,27 +206,59 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Rating</h2>
-          <p>{user.rating ? user.rating : 0}</p>
+          <p className="text-xl">
+            {
+              user.QuestionsSolved.filter(
+                (problem) => problem.status === "Accepted"
+              ).length
+            }
+          </p>
         </div>
+
+        {/* Problem Solved */}
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Problems Solved</h2>
-          {user.problemsSolved ? (
+          {user.QuestionsSolved.length > 0 ? (
             <ul className="list-disc pl-5">
-              {user.problemsSolved.map((problem, index) => (
+              {user.QuestionsSolved.map((problem, index) => (
                 <li key={index} className="mb-2">
-                  <span
-                    className={`font-bold ${
-                      problem.difficulty === "Easy"
-                        ? "text-green-500"
-                        : problem.difficulty === "Medium"
-                        ? "text-yellow-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {problem.title}
-                  </span>{" "}
-                  - {problem.status}
+                  <div className="grid grid-cols-5 lg:gap-x-48 md:gap-x-16  items-center p-2 rounded-lg bg-black/[70]">
+                    <div
+                      className={`font-bold items-start ${
+                        problem.difficulty === "Easy"
+                          ? "text-green-500"
+                          : problem.difficulty === "Medium"
+                          ? "text-yellow-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {problem.title}
+                    </div>
+                    <div className="items-start">{problem.difficulty}</div>
+                    <div
+                      className={`items-start text-${
+                        problem.status === "Accepted" ? "green-500" : "red-600"
+                      }`}
+                    >
+                      {problem.status}
+                    </div>
+                    <div>
+                      {(() => {
+                        const formattedDate = formatDate(
+                          problem.codeSubmisionDate
+                        );
+                        const parts = formattedDate.split("/");
+                        const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
+                        return modifiedDate;
+                      })()}
+                    </div>
+                    <div className="items-start">
+                      <Link href={`/solveProblem/${problem.problemId}`}>
+                        <Button>Solve</Button>
+                      </Link>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -163,29 +267,117 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
           )}
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Recent Activity</h2>
-          {user.ContestCompleted ? (
-            <ul className="list-disc pl-5">
-              {user.ContestCompleted.map((activity, index) => (
-                <li key={index} className="mb-2">
-                  {activity}
-                </li>
-              ))}
-            </ul>
+        {/* Contest Solved Data */}
+        <div className="mb-6 mt-10">
+          <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
+          {user.ParticipatedContests.length > 0 ? (
+            user.ParticipatedContests.map((contest) => (
+              <div key={contest.contestId} className="mb-4">
+                <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
+                  <div>
+                    <h4 className="mb-4 mt-4 text-orange-500">
+                      Contest Name:{" "}
+                      {contestSolved.find((c) => c._id === contest.contestId)
+                        ?.title || ""}
+                    </h4>
+                  </div>
+                  <div>
+                    <Link href={`/contests/${contest.contestId}`}>
+                      <Button>View Contest</Button>
+                    </Link>
+                  </div>
+                </div>
+                <h5 className="mt-4 mb-4 ">Contest problems</h5>
+                <ul className="list-disc pl-5">
+                  {contest.problemsSolved.length > 0 ? (
+                    contest.problemsSolved.map((problem) => (
+                      <li key={problem.problemId} className="mb-2">
+                        <div className="grid grid-cols-4 gap-4 items-center">
+                          <div
+                            className={`font-bold items-start ${
+                              problem.difficulty === "Easy"
+                                ? "text-green-500"
+                                : problem.difficulty === "Medium"
+                                ? "text-yellow-500"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {problem.title}
+                          </div>
+                          <div className="items-start">
+                            {problem.difficulty}
+                          </div>
+                          <div
+                            className={`items-start text-${
+                              problem.status === "Accepted"
+                                ? "green-500"
+                                : "red-600"
+                            }`}
+                          >
+                            {problem.status}
+                          </div>
+                          <div>
+                            {(() => {
+                              const formattedDate = formatDate(
+                                problem.codeSubmisionDate
+                              );
+                              const parts = formattedDate.split("/");
+                              const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
+                              return modifiedDate;
+                            })()}
+                          </div>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <p>No problems solved in this contest yet.</p>
+                  )}
+                </ul>
+              </div>
+            ))
           ) : (
-            <p>No recent Contests.</p>
+            <p>No contests participated yet.</p>
           )}
         </div>
 
-        {user.isProblemSetter && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Problems Added</h2>
-            {user.problemsSolved  ? (
+        {/* Problems Added By You */}
+
+        {
+          <div className="mb-6 mt-4 w-full">
+            <h2 className="text-xl font-semibold mb-2">
+              Problems Added By You
+            </h2>
+            {userAddedProblems.length > 0 ? (
               <ul className="list-disc pl-5">
-                {user.problemsSolved.map((problem, index) => (
+                {userAddedProblems.map((problem, index) => (
                   <li key={index} className="mb-2">
-                    {problem.title}
+                    <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black bg-opacity-50">
+                      <div className="items-start max-w-[20%] text-red-600">
+                        {problem.title}
+                      </div>
+                      <div className="items-start max-w-[40%] overflow-x-hidden text-red-500 overflow-y-auto">
+                        {problem.statement}
+                      </div>
+                      <div
+                        className={`font-bold max-w-[15%] items-start ${
+                          problem.difficulty === "Easy"
+                            ? "text-green-500"
+                            : problem.difficulty === "Medium"
+                            ? "text-yellow-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </div>
+                      <div className="items-start max-w-[15%]">
+                        {formatDate(problem.createdAt)}
+                      </div>
+                      <div>
+                        <Link href={`/editProblemui/${problem._id}`}>
+                          <Button>Edit</Button>
+                        </Link>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -193,7 +385,9 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
               <p>No problems added yet.</p>
             )}
           </div>
-        )}
+        }
+
+        <ToastContainer />
       </div>
     </div>
   );

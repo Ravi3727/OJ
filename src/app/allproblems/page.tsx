@@ -5,6 +5,10 @@ import { Allproblems, columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+
 
 const data2: Allproblems[] = [
   {
@@ -164,8 +168,15 @@ const appendData2ToData = async () => {
 };
 
 const Page = () => {
+const session = useSession();
+console.log("Session from data table", session.data?.user.isProblemSetter);
   const [data, setData] = useState<Allproblems[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isProblemSetterss, setIsProblemSetter] = useState(false);
+
+  useEffect(()=>{
+    setIsProblemSetter(session.data?.user.isProblemSetter);
+  },[])
 
   useEffect(() => {
     setLoading(true);
@@ -182,8 +193,23 @@ const Page = () => {
     <>
       <section className="py-40 bg-black/[90] text-white leading-6 ">
         <div className="container">
-          <h1 className="text-3xl font-bold">All problems</h1>
-          {loading ?<Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /> : <DataTable columns={columns} data={data} />}
+          <div className="flex flex-row justify-between w-full  p-2">
+            <div>
+              <h1 className="text-3xl font-bold">All problems</h1>
+            </div>
+            { isProblemSetterss === true &&
+              <Link href="/createnewproblem">
+              <div className="">
+              <Button>Create+</Button>
+            </div>
+              </Link>
+            }
+          </div>
+          {loading ? (
+            <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+          ) : (
+            <DataTable columns={columns} data={data} />
+          )}
         </div>
       </section>
     </>

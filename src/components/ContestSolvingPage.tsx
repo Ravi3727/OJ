@@ -9,22 +9,25 @@ interface Problem {
   difficulty: string;
   statement: string;
   tags: string[];
-  testCases: string[];
+  testCases: { input: string; output: string }[];
   createdAt: string;
 }
 
-const ContestSolvingPage = (props: any) => {
+const ContestSolvingPage = ({problemId, contestId}: any) => {
   //@ts-ignore
-  const problemId = props.problemId;
+  // const problemId = props.problemId;
+  // const contestId = props.contestId;
+  // console.log("contestId Contest Solving Page",contestId);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     const getProblemsById = async () => {
       try {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
+        // console.log("Problem by id", res.data.data);
         setProblem(res.data.data);
       } catch (error: any) {
         setErrorMsg(error.message || "Error fetching problem by Id");
@@ -41,18 +44,17 @@ const ContestSolvingPage = (props: any) => {
     );
   }
 
-  const parseTestCase = (testCase: string) => {
-    const [input, output] = testCase.split("],");
+  const parseTestCase = (testCase: { input: string; output: string }) => {
     return {
-      input: input + "]",
-      output: output.trim(),
+      input: testCase.input,
+      output: testCase.output?.trim(),
     };
   };
 
-  setTimeout(() => {
-    setIsSubmitting(false);
-    setIsRunning(false);
-  }, 8000);
+  // setTimeout(() => {
+  //   setIsSubmitting(false);
+  //   setIsRunning(false);
+  // }, 8000);
 
   return (
     <>
@@ -96,19 +98,19 @@ const ContestSolvingPage = (props: any) => {
             </ul>
           </div>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
-            <ul className="list-disc list-inside">
-              {problem.testCases.map((testCase, index) => {
-                const { input, output } = parseTestCase(testCase);
-                return (
-                  <li key={index} className="mb-1">
-                    <strong>Input:</strong> {input} <br />
-                    <strong>Output:</strong> {output}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+              <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
+              <ul className="list-disc list-inside">
+                {problem.testCases.slice(0, 2).map((testCase, index) => {
+                  const { input, output } = parseTestCase(testCase);
+                  return (
+                    <li key={index} className="mb-1">
+                      <strong>Input:</strong> {input} <br />
+                      <strong>Output:</strong> {output}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
 
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Added At</h3>
@@ -118,7 +120,7 @@ const ContestSolvingPage = (props: any) => {
         </div>
 
         <div className="w-1/2 h-full overflow-x-hidden ">
-          <CodeEditor />
+          <CodeEditor problems={problem} contestId={contestId}  />
         </div>
       </div>
     </>

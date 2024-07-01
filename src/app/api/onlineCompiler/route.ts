@@ -216,6 +216,7 @@
 
 
 
+
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs';
@@ -223,10 +224,15 @@ import path from 'path';
 import { exec } from 'child_process';
 
 const dirCodes = path.join(process.cwd(), 'codes');
+const dirInputs = path.join(process.cwd(), 'inputs');
 const outputPath = path.join(process.cwd(), 'outputs');
 
 if (!fs.existsSync(dirCodes)) {
     fs.mkdirSync(dirCodes, { recursive: true });
+}
+
+if (!fs.existsSync(dirInputs)) {
+    fs.mkdirSync(dirInputs, { recursive: true });
 }
 
 if (!fs.existsSync(outputPath)) {
@@ -235,69 +241,94 @@ if (!fs.existsSync(outputPath)) {
 
 const generateFile = async (format: string, content: string): Promise<string> => {
     const jobID = uuid();
-    const filename = `${jobID}.${format}`;
+    let filename = `${jobID}.${format}`;
+    if (format === 'java') {
+        filename = 'Main.java';
+    }
     const filePath = path.join(dirCodes, filename);
     await fs.promises.writeFile(filePath, content);
     return filePath;
 };
 
-const executeCpp = (filepath: string, input: string): Promise<string> => {
-    const jobId = path.basename(filepath).split(".")[0];
-    const outPath = path.join(outputPath, `${jobId}.out`);
-
-    return new Promise((resolve, reject) => {
-        const process = exec(
-            `g++ ${filepath} -o ${outPath} && cd ${outputPath} && .\\${jobId}.exe`,
-            (error, stdout, stderr) => {
-                if (error) {
-                    reject({ error, stderr });
-                }
-                if (stderr) {
-                    reject(stderr);
-                }
-                resolve(stdout);
-            }
-        );
-
-        process.stdin?.write(input);
-        process.stdin?.end();
-    });
+const generateInputFile = async (input: string): Promise<string> => {
+    const jobID = uuid();
+    const filename = `${jobID}.txt`;
+    const filePath = path.join(dirInputs, filename);
+    await fs.promises.writeFile(filePath, input);
+    return filePath;
 };
 
-const executeCode = async (language: string, filepath: string, input: string): Promise<string> => {
+const executeCode = (language: string, filepath: string, inputPath: string): Promise<string> => {
+    const jobId = path.basename(filepath).split('.')[0];
+    const outPath = path.join(outputPath, jobId);
+
+    let command = '';
     switch (language) {
         case 'cpp':
-            return await executeCpp(filepath, input);
-        // Add cases for other languages as needed
+        case 'c':
+            command = `g++ ${filepath} -o ${outPath}.exe && ${outPath}.exe < ${inputPath}`;
+            break;
+        case 'java':
+            command = `javac ${filepath} && java -cp ${dirCodes} Main < ${inputPath}`;
+            break;
+        case 'py':
+            command = `python ${filepath} < ${inputPath}`;
+            break;
+        case 'js':
+            command = `node ${filepath} < ${inputPath}`;
+            break;
         default:
             throw new Error('Unsupported language');
     }
+
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message);
+            } else if (stderr) {
+                reject(stderr);
+            } else {
+                resolve(stdout);
+            }
+        });
+    });
+};
+
+const executeAndCompare = async (language: string, code: string, testCases: { input: string, expectedOutput: string }[]): Promise<{ input: string, expectedOutput: string, actualOutput: string, passed: boolean }[]> => {
+    const results: { input: string, expectedOutput: string, actualOutput: string, passed: boolean }[] = [];
+    const filePath = await generateFile(language, code);
+
+    for (const testCase of testCases) {
+        const inputFilePath = await generateInputFile(testCase.input.replace(/,/g, '\n'));
+        try {
+            const actualOutput = await executeCode(language, filePath, inputFilePath);
+            const passed = actualOutput.trim() === testCase.expectedOutput.trim();
+            results.push({ input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: actualOutput.trim(), passed });
+        } catch (error) {
+            results.push({ input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: error as string, passed: false });
+        }
+    }
+
+    return results;
 };
 
 interface Input {
     language: string;
     code: string;
-    testCases: { input: string; expectedOutput: string }[];
+    testCases: { input: string, expectedOutput: string }[];
 }
 
 export async function POST(req: NextRequest) {
+    const { language = 'cpp', code, testCases } = (await req.json()) as Input;
+
+    if (!code) {
+        return NextResponse.json({
+            success: false,
+            message: "Empty code!",
+        }, { status: 404 });
+    }
+
     try {
-        const { language = 'cpp', code, testCases } = (await req.json()) as Input;
-
-        if (!code) {
-            return NextResponse.json({
-                success: false,
-                message: "Empty code!",
-            }, { status: 404 });
-        }
-
-        if (!testCases || !testCases.length) {
-            return NextResponse.json({
-                success: false,
-                message: "No test cases provided!",
-            }, { status: 400 });
-        }
-
         const extension: { [key: string]: string } = {
             cpp: 'cpp',
             py: 'py',
@@ -314,37 +345,18 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
-        const filePath = await generateFile(fileExtension, code);
-        const results = [];
-
-        for (const testCase of testCases) {
-            if (!testCase.input) {
-                return NextResponse.json({
-                    success: false,
-                    message: "Test case input is missing!",
-                }, { status: 400 });
-            }
-            const output = await executeCode(language, filePath, testCase.input);
-            const actualOutputTrimmed = output?.trim() || '';
-            const expectedOutputTrimmed = testCase.expectedOutput?.trim() || '';
-            results.push({
-                input: testCase.input,
-                expectedOutput: testCase.expectedOutput,
-                actualOutput: output,
-                passed: actualOutputTrimmed === expectedOutputTrimmed,
-            });
-        }
+        const results = await executeAndCompare(language, code, testCases);
 
         return NextResponse.json({
             success: true,
-            data: { filePath, results },
+            results,
             message: "Code executed successfully"
         }, { status: 200 });
-    } catch (error: any) {
-        console.error('Error processing request:', error);
+    } catch (error) {
+        console.log(error);
         return NextResponse.json({
             success: false,
             message: error?.message || "Internal server error",
         }, { status: 500 });
     }
-}
+};

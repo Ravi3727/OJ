@@ -7,9 +7,14 @@ export interface Problem extends Document {
     tags: string[],
     difficulty: string,
     createdAt: Date;
+    username:string;
 }
 
 const ProblemsSchema: Schema<Problem> = new mongoose.Schema({
+    username:{
+        type:String,
+        required:[true,"Username is required"]
+    },
     title: {
         type: String,
         required: [true, "Title of question is required"],
@@ -25,10 +30,13 @@ const ProblemsSchema: Schema<Problem> = new mongoose.Schema({
         required: true
     },
     testCases: {
-        type: [String],
+        type: [{
+            input: String,
+            output: String,
+        }],
         required: true
     },
-    difficulty:{
+    difficulty: {
         type: String,
         required: [true, "Difficulty of question is required"],
     },
@@ -38,7 +46,7 @@ const ProblemsSchema: Schema<Problem> = new mongoose.Schema({
     },
 });
 
- 
+
 const ProblemsModel = (mongoose.models.Problem as mongoose.Model<Problem>) || mongoose.model<Problem>("Problem", ProblemsSchema);
 
 export default ProblemsModel;
