@@ -31,7 +31,6 @@ interface Problem {
 
 interface CodeEditorProps {
   problems: Problem[];
-  contestId: string;
 }
 
 interface CodeSubmissionStatus {
@@ -42,10 +41,9 @@ interface CodeSubmissionStatus {
   difficulty: string;
   tags: string[];
   userEmail: string;
-  contestId: string;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
+const ProblemSubmitCodeEditor: React.FC<CodeEditorProps> = (props) => {
   const session = useSession();
   const [code, setCode] = useState<string>(() => getDefaultCode("java"));
   const [output, setOutput] = useState<any[]>([]);
@@ -53,10 +51,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [copyCode, setCopyCode] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>("");
-  const problem: Problem = problems;
+  const problem: Problem = props.problems;
   // const contestId = props.contestId;
 
-  console.log("Contest Id: " + contestId);
+  //   console.log("Contest Id: " + contestId);
   const transformedTestCases = problem.testCases.map((testCase: TestCase) => {
     const input = testCase.input;
     const expectedOutput = testCase.output;
@@ -122,7 +120,6 @@ int main() {
     difficulty: problem.difficulty,
     tags: problem.tags,
     userEmail: userEmail,
-    contestId: contestId,
   };
 
   const handleRun = async () => {
@@ -137,10 +134,6 @@ int main() {
       try {
         const response = await axios.post("/api/onlineCompiler", payload);
         setOutput(response.data.results);
-        // submitCodeStatusToUser.codeSubmisionData = output;
-        // console.log("submitCodeStatusToUser.codeSubmisionDat",submitCodeStatusToUser.codeSubmisionData);
-
-        // console.log("Output of onlineCompiler runing code is",response);
         setLoading(false);
       } catch (error: any) {
         console.error(error.response?.data);
@@ -162,44 +155,32 @@ int main() {
   };
 
   const handleSubmit = async () => {
-    if (session.status === "authenticated") {
+    if(session.status === "authenticated"){
       setLoading(true);
-      try {
-        submitCodeStatusToUser.codeSubmisionData = output;
-        console.log("submitCodeStatusToUser", submitCodeStatusToUser);
-        const addProblemToUser = await axios.post(
-          "/api/AddSubmitedProblemsToUser",
-          submitCodeStatusToUser
-        );
-
-        if (contestId) {
-          const addProblemOfContestGivenByUser = await axios.post(
-            "/api/addProblemOfContestGivenByuser",
-            submitCodeStatusToUser
-          );
-          console.log(
-            "Add Problem of contest given by user",
-            addProblemOfContestGivenByUser
-          );
-        }
-        // console.log("Add Problem to User", addProblemToUser);
-        setLoading(false);
-        toast.success("Code Submitted", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-        });
-      } catch (error: any) {
-        console.error(error.response?.data);
-        setLoading(false);
-      }
-    } else {
+    try {
+      submitCodeStatusToUser.codeSubmisionData = output;
+      console.log("submitCodeStatusToUser", submitCodeStatusToUser);
+      const addProblemToUser = await axios.post(
+        "/api/AddSubmitedProblemsToUser",
+        submitCodeStatusToUser
+      );
+      setLoading(false);
+      toast.success("Code Submitted", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } catch (error: any) {
+      console.error(error.response?.data);
+      setLoading(false);
+    }
+    }else {
       toast.error("Please sign in to submit your code", {
         position: "bottom-right",
         autoClose: 5000,
@@ -222,7 +203,7 @@ int main() {
 
   return (
     <div className="w-full min-h-screen h-full justify-evenly flex flex-col overflow-x-hidden">
-      <div className="relative max-h-full h-[88vh] bg-stone-900">
+      <div className="relative h-full bg-stone-900">
         <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[61%]">
           <div className="w-full -mt-2 h-10 items-center text-center">
             {copyCode ? (
@@ -272,8 +253,7 @@ int main() {
             </select>
           </div>
         </div>
-
-        <div className="h-full overflow-y-auto overflow-x-hidden">
+        <div className="max-h-[500px] overflow-y-auto overflow-x-hidden">
           <Editor
             value={code}
             onValueChange={setCode}
@@ -314,7 +294,7 @@ int main() {
       </div>
 
       {/* Output Box */}
-      <div className="outputbox bg-stone-800 h-44 overflow-auto rounded-b-md shadow-md p-4 -mt-8 w-full mx-auto">
+      <div className="outputbox bg-stone-800 h-44 overflow-auto rounded-b-md shadow-md p-4 w-full mx-auto">
         {loading ? (
           <div>
             <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
@@ -345,4 +325,4 @@ int main() {
   );
 };
 
-export default CodeEditor;
+export default ProblemSubmitCodeEditor;

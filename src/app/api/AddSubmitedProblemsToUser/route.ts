@@ -44,9 +44,10 @@ export async function POST(request: NextRequest) {
                 break;
             }
         }
-
+        const language = codeSubmisionData[0].language;
         result = testCaseFailed ? `WA on ${testCaseFailed} test case` : "Accepted";
         const newProblemSolved = {
+            language: language,
             problemId: problemId,
             title,
             difficulty,

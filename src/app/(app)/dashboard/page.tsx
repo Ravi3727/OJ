@@ -34,11 +34,11 @@ const Page: React.FC = () => {
         setLoading(true);
         try {
           const username = session.user?.username;
-          console.log(username);
+          console.log("Dashboard",username);
 
           if (username) {
             const result = await axios.get(`/api/getUserDetails/${username}`);
-            console.log(result.data);
+            console.log("Dashboard User Details",result);
             setUser(result.data.data);
           }
         } catch (error) {
@@ -57,12 +57,6 @@ const Page: React.FC = () => {
       <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
     </div>;
   }
-
-  // if (!user) {
-  //   return <div className="flex h-screen justify-center items-center p-2 bg-black/[90] text-white my-auto">
-  //     No user data available.Please login to continue
-  // </div>;
-  // }
 
   return (
     <div>

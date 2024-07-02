@@ -54,32 +54,28 @@ export async function POST(request: NextRequest) {
                 break;
             }
         }
-
+        const language = codeSubmisionData[0].language;
         result = testCaseFailed ? `WA on ${testCaseFailed} test case` : "Accepted";
 
-        if(result === "Accepted"){
-            const newProblemSolved = {
-                problemId: problemId,
-                title,
-                difficulty,
-                status: result,
-                codeSubmisionDate: new Date(codeSubmisionDate)
-              };
-    
-            contest.problemsSolved.push(newProblemSolved);
-              console.log("Saved problem solved to contest", contest);
-              user.save();
-    
-            return NextResponse.json(
-                { message: `Problem submission updated successfully`, success: true, ProblemsSolved: contest.problemsSolved },
-                { status: 200 }
-            );
-        }else{
-            return NextResponse.json(
-                { message: `Solution not accepted so not saved in database`, success: true, ProblemsSolved: contest.problemsSolved },
-                { status: 200 }
-            );
-        }
+
+        const newProblemSolved = {
+            language:language,
+            problemId: problemId,
+            title,
+            difficulty,
+            status: result,
+            codeSubmisionDate: new Date(codeSubmisionDate),
+        };
+
+        contest.problemsSolved.push(newProblemSolved);
+        console.log("Saved problem solved to contest", contest);
+        user.save();
+
+        return NextResponse.json(
+            { message: `Problem submission updated successfully`, success: true, ProblemsSolved: contest.problemsSolved },
+            { status: 200 }
+        );
+
     } catch (error) {
         console.error('Error updating problem:', error);
         return NextResponse.json(

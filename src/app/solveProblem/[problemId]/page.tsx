@@ -4,7 +4,8 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import CodeEditor from "@/components/CodeEditor";
+import ProblemSubmitCodeEditor from "@/components/ProblemSubmitCodeEditor";
+import CountdownTimer from "@/components/Timer";
 
 interface Problem {
   title: string;
@@ -49,7 +50,10 @@ const ProblemPage = () => {
 
   return (
     <>
+    {/* <div className="bg-black text-lg p-4 text-white mx-auto w-full h-16">Set Your Own Time to Finish {" "}<CountdownTimer initialTime={300} /></div> */}
       <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-screen overflow-x-hidden bg-black/[90]">
+
+      
         <div className="flex flex-row justify-between w-[98%] min-h-screen h-full overflow-x-hidden mx-auto mt-28">
           <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
             <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
@@ -111,7 +115,7 @@ const ProblemPage = () => {
           </div>
 
           <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
-            <CodeEditor problems={problem} />
+            <ProblemSubmitCodeEditor problems={problem} />
           </div>
         </div>
       </div>

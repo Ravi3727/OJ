@@ -3,31 +3,37 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
+// import CountdownTimer from "./Timer";
+
+
+interface TestCase {
+  input: string;
+  output: string;
+}
+
 
 interface Problem {
+  _id: string;
   title: string;
   difficulty: string;
   statement: string;
   tags: string[];
-  testCases: { input: string; output: string }[];
+  testCases: TestCase[];
   createdAt: string;
+  problems: string[];
+  contestId: string;
 }
 
 const ContestSolvingPage = ({problemId, contestId}: any) => {
-  //@ts-ignore
-  // const problemId = props.problemId;
-  // const contestId = props.contestId;
-  // console.log("contestId Contest Solving Page",contestId);
+
   const [problem, setProblem] = useState<Problem | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     const getProblemsById = async () => {
       try {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
-        // console.log("Problem by id", res.data.data);
+        console.log("Problem by id", res.data.message);
         setProblem(res.data.data);
       } catch (error: any) {
         setErrorMsg(error.message || "Error fetching problem by Id");
@@ -40,6 +46,7 @@ const ContestSolvingPage = ({problemId, contestId}: any) => {
     return (
       <div className="text-center flex bg-black items-center justify-center h-screen my-auto mx-auto ">
         <Loader2 className="animate-spin mx-auto my-auto  h-8 w-8 text-white" />
+        <p className="text-white text-xl font-bold">Problem not found</p>
       </div>
     );
   }
@@ -50,15 +57,12 @@ const ContestSolvingPage = ({problemId, contestId}: any) => {
       output: testCase.output?.trim(),
     };
   };
-
-  // setTimeout(() => {
-  //   setIsSubmitting(false);
-  //   setIsRunning(false);
-  // }, 8000);
-
   return (
     <>
       <div className="flex flex-row justify-between w-screen min-h-screen h-full mx-auto overflow-x-hidden ">
+
+
+         {/* <div className="text-lg p-4 text-white mx-auto w-full h-16">Set Your Own Time to Finish {" "}<CountdownTimer initialTime={300} /></div> */}
         <div className="w-1/2 p-4 rounded-s-lg min-h-screen bg-gray-300 shadow-lg items-start text-start overflow-x-hidden">
           <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
           <div className="mb-6">

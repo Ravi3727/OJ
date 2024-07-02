@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-
 const data2: Allproblems[] = [
   {
     id: "1",
@@ -130,7 +129,7 @@ export interface object1 extends Object {
 
 async function getAllProblems() {
   const response = await axios.get("http://localhost:3000/api/getAllProblems");
-  console.log("hello jee");
+  // console.log("hello jee");
   return response.data;
 }
 
@@ -168,26 +167,26 @@ const appendData2ToData = async () => {
 };
 
 const Page = () => {
-const session = useSession();
-console.log("Session from data table", session.data?.user.isProblemSetter);
+  const session = useSession();
+  console.log("Session from data table", session.data?.user.isProblemSetter);
   const [data, setData] = useState<Allproblems[]>([]);
   const [loading, setLoading] = useState(false);
   const [isProblemSetterss, setIsProblemSetter] = useState(false);
 
-  useEffect(()=>{
-    setIsProblemSetter(session.data?.user.isProblemSetter);
-  },[])
-
   useEffect(() => {
+    setIsProblemSetter(session.data?.user.isProblemSetter);
     setLoading(true);
     const fetchData = async () => {
       const result = await appendData2ToData();
       setData(result);
     };
-
     fetchData();
     setLoading(false);
   }, []);
+
+  setTimeout(() => {
+    setIsProblemSetter(session.data?.user.isProblemSetter);
+  }, 5000);
 
   return (
     <>
@@ -197,13 +196,19 @@ console.log("Session from data table", session.data?.user.isProblemSetter);
             <div>
               <h1 className="text-3xl font-bold">All problems</h1>
             </div>
-            { isProblemSetterss === true &&
+            {isProblemSetterss === true ? (
               <Link href="/createnewproblem">
-              <div className="">
-              <Button>Create+</Button>
-            </div>
+                <div className="">
+                  <Button>Create+</Button>
+                </div>
               </Link>
-            }
+            ) : (
+              <div>
+                <Link href="/problemsetterform">
+                  <Button>Collaborate</Button>
+                </Link>
+              </div>
+            )}
           </div>
           {loading ? (
             <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />

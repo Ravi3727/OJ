@@ -9,9 +9,11 @@ import { MdOutlineEdit } from "react-icons/md";
 import Link from "next/link";
 
 interface Problem {
+  language: string;
   title: string;
   status: string;
   difficulty: string;
+  codeSubmisionDate: Date;
 }
 
 interface SolvedProblem {
@@ -146,6 +148,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
   console.log("user question solved ", user.QuestionsSolved);
   console.log("user contest solved ", contestSolved);
+  console.log("user Problems added ", userAddedProblems);
 
   return (
     <div className="p-8 bg-gray-900 min-h-screen h-full text-white">
@@ -223,7 +226,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
             <ul className="list-disc pl-5">
               {user.QuestionsSolved.map((problem, index) => (
                 <li key={index} className="mb-2">
-                  <div className="grid grid-cols-5 lg:gap-x-48 md:gap-x-16  items-center p-2 rounded-lg bg-black/[70]">
+                  <div className="grid grid-cols-6 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
                     <div
                       className={`font-bold items-start ${
                         problem.difficulty === "Easy"
@@ -252,6 +255,10 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                         const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
                         return modifiedDate;
                       })()}
+                    </div>
+
+                    <div>
+                      {problem.language}
                     </div>
                     <div className="items-start">
                       <Link href={`/solveProblem/${problem.problemId}`}>

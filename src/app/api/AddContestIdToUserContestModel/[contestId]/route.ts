@@ -29,21 +29,14 @@ export async function POST(request: NextRequest, { params }: { params: { contest
                 { status: 404 }
             );
         }
-        if(user.ParticipatedContests.find(contest => contest.contestId !== contestId)){
+
+        console.log("ye raha",user.ParticipatedContests);
+        if((user.ParticipatedContests.find(contest => contest.contestId !== contestId)) || (user.ParticipatedContests.length === 0)){
 
         
         const newContestObj = {
             contestId: contestId,
-            problemsSolved: [
-                {
-                problemId:"",
-                title: "",
-                difficulty: "",
-                status: "",
-                codeSubmisionDate: new Date(),
-                codeSubmisionData: [],
-                }
-            ],
+            problemsSolved: [],
         }
         user.ParticipatedContests.push(newContestObj);
         user.save();
@@ -54,7 +47,7 @@ export async function POST(request: NextRequest, { params }: { params: { contest
         );
     }else{
         return NextResponse.json(
-            { message: 'Contest already added to user', success: true },
+            { message: `Contest ${contestId} already added to user ${userID}`, success: true },
             { status: 200 }
         );
     }

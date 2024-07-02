@@ -50,13 +50,17 @@ const Page = () => {
 
 
   const handleParticipateContest = async (contestId: string) => {
-    try {
-      const response = await axios.post("/api/AddContestIdToUserContestModel/" + contestId);
-      console.log("Response from AddContestIdToUserContestModel", response);
-      router.replace(`/contests/${contestId}`);
-    } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>;
-      console.log("Error", axiosError);
+    if(session.status === "authenticated"){
+      try {
+        const response = await axios.post("/api/AddContestIdToUserContestModel/" + contestId);
+        console.log("Response from AddContestIdToUserContestModel", response);
+        router.replace(`/contests/${contestId}`);
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        console.log("Error", axiosError);
+      }
+    }else{
+      router.replace("/signIn");
     }
   };
 
@@ -185,11 +189,13 @@ const Page = () => {
                       </p>
                       <div className="flex flex-row justify-evenly p-2 mt-2">
                         <p className="text-md text-orange-500 text-center">
-                          {(() => {
-                            const parts = contest.eventDate.split("/");
-                            const modifiedDate = `${parts[2]}/${parts[2]}/${parts[0]}`;
-                            return modifiedDate;
-                          })()}
+                        {(() => {
+                              const formattedDate =
+                                contest.eventDate.split("T")[0]; // '2024-07-01'
+                              const parts = formattedDate.split("-"); // ['2024', '07', '01']
+                              const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
+                              return modifiedDate;
+                            })()}
                         </p>
                         <p className="text-md text-orange-500 text-center">
                           {contest.duration} minutes
@@ -200,9 +206,7 @@ const Page = () => {
                       </p>
                       <div className="flex justify-center mt-2">
                         <Button
-                          onClick={() =>
-                            router.replace(`/contests/${contest._id}`)
-                          }
+                          onClick={() => handleParticipateContest(contest._id)}
                         >
                           Participate Now
                         </Button>

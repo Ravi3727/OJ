@@ -270,6 +270,7 @@ const executeCode = (language: string, filepath: string, inputPath: string): Pro
             break;
         case 'java':
             command = `javac ${filepath} && java -cp ${dirCodes} Main < ${inputPath}`;
+            // command = `javac ${filepath} && java -cp ${dirCodes} ${jobId}`;
             break;
         case 'py':
             command = `python ${filepath} < ${inputPath}`;
@@ -295,7 +296,7 @@ const executeCode = (language: string, filepath: string, inputPath: string): Pro
 };
 
 const executeAndCompare = async (language: string, code: string, testCases: { input: string, expectedOutput: string }[]): Promise<{ input: string, expectedOutput: string, actualOutput: string, passed: boolean }[]> => {
-    const results: { input: string, expectedOutput: string, actualOutput: string, passed: boolean }[] = [];
+    const results: {language:string, input: string, expectedOutput: string, actualOutput: string, passed: boolean }[] = [];
     const filePath = await generateFile(language, code);
 
     for (const testCase of testCases) {
@@ -303,9 +304,9 @@ const executeAndCompare = async (language: string, code: string, testCases: { in
         try {
             const actualOutput = await executeCode(language, filePath, inputFilePath);
             const passed = actualOutput.trim() === testCase.expectedOutput.trim();
-            results.push({ input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: actualOutput.trim(), passed });
+            results.push({language:language, input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: actualOutput.trim(), passed });
         } catch (error) {
-            results.push({ input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: error as string, passed: false });
+            results.push({language:language, input: testCase.input, expectedOutput: testCase.expectedOutput, actualOutput: error as string, passed: false });
         }
     }
 
