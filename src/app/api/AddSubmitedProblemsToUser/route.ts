@@ -37,24 +37,30 @@ export async function POST(request: NextRequest) {
 
         let testCaseFailed: number | undefined;
         let result: string;
-
-        for (let i = 0; i < codeSubmisionData.length; i++) {
-            if (!codeSubmisionData[i].passed) {
-                testCaseFailed = i + 1;
-                break;
+        if(codeSubmisionData.length === 1){
+            result = "Failed to compile"
+        }
+        else{
+            for (let i = 0; i < codeSubmisionData.length; i++) {
+                if (!codeSubmisionData[i].passed) {
+                    testCaseFailed = i + 1;
+                    break;
+                }
             }
         }
-        const language = codeSubmisionData[0].language;
+
+
+        // const language = codeSubmisionData[0].language;
         result = testCaseFailed ? `WA on ${testCaseFailed} test case` : "Accepted";
         const newProblemSolved = {
-            language: language,
+            // language: language,
             problemId: problemId,
             title,
             difficulty,
             status: result,
-            codeSubmisionDate: new Date(codeSubmisionDate)
+            codeSubmisionDate: new Date(codeSubmisionDate),
           };
-          console.log(typeof(newProblemSolved))
+          console.log("Mill gai language",newProblemSolved)
           user.QuestionsSolved.push(newProblemSolved);
         
         // user.QuestionsSolved.push(newProblemSolved);

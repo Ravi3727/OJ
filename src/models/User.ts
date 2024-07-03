@@ -6,6 +6,7 @@ interface SolvedProblem {
     title: string;
     difficulty: string;
     codeSubmisionDate: Date;
+    // language: string;
 }
 
 export interface UserProfile extends Document {
@@ -93,6 +94,10 @@ const UserSchema: Schema<UserProfile> = new Schema({
             type: Date,
             required: true
         },
+        // language: {
+        //     type: String,
+        //     required: false
+        // },
     }],
     ParticipatedContests: [
         {
@@ -121,6 +126,10 @@ const UserSchema: Schema<UserProfile> = new Schema({
                     type: Date,
                     required: false
                 },
+                // language: {
+                //     type: String,
+                //     required: false
+                // },
             }]
         }
     ],

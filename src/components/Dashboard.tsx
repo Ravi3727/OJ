@@ -279,10 +279,10 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
           <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
           {user.ParticipatedContests.length > 0 ? (
             user.ParticipatedContests.map((contest) => (
-              <div key={contest.contestId} className="mb-4">
+              <div key={contest.contestId} className="mb-4 border-1 rounded-lg shadow-md ">
                 <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
                   <div>
-                    <h4 className="mb-4 mt-4 text-orange-500">
+                    <h4 className="mt-4 text-orange-500">
                       Contest Name:{" "}
                       {contestSolved.find((c) => c._id === contest.contestId)
                         ?.title || ""}

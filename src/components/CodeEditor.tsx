@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import { darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {
+  darcula,
+  atomOneDark,
+  dark,
+} from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
@@ -30,7 +34,7 @@ interface Problem {
 }
 
 interface CodeEditorProps {
-  problems: Problem[];
+  problems: Problem;
   contestId: string;
 }
 
@@ -43,27 +47,43 @@ interface CodeSubmissionStatus {
   tags: string[];
   userEmail: string;
   contestId: string;
+  // language: string;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
   const session = useSession();
-  const [code, setCode] = useState<string>(() => getDefaultCode("java"));
+  const [code, setCode] = useState<string>(() => {
+    const savedCode = localStorage.getItem("userCode");
+    return savedCode ? savedCode : getDefaultCode("cpp");
+  });
   const [output, setOutput] = useState<any[]>([]);
-  const [language, setLanguage] = useState<string>("java");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [language, setLanguage] = useState<string>("cpp");
+  const [loadingRun, setloadingRun] = useState<boolean>(false);
+  const [loadingSubmit, setloadingSubmit] = useState<boolean>(false);
   const [copyCode, setCopyCode] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>("");
-  const problem: Problem = problems;
-  // const contestId = props.contestId;
 
-  console.log("Contest Id: " + contestId);
+  const problem: Problem = problems;
+
+  useEffect(() => {
+    if (session.data?.user.email) {
+      setUserEmail(session.data.user.email);
+    }
+  }, [session.data]);
+
+  useEffect(() => {
+    setCode(getDefaultCode(language));
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem("userCode", code);
+  }, [code]);
+
   const transformedTestCases = problem.testCases.map((testCase: TestCase) => {
     const input = testCase.input;
     const expectedOutput = testCase.output;
     return { input, expectedOutput };
   });
-
-  // console.log("TransformedTestCases", transformedTestCases);
 
   function getDefaultCode(lang: string): string {
     switch (lang) {
@@ -109,42 +129,48 @@ int main() {
     }
   }
 
-  useEffect(() => {
-    setCode(getDefaultCode(language));
-    setUserEmail(session.data?.user.email || "");
-  }, [language, session.data]);
-
   const submitCodeStatusToUser: CodeSubmissionStatus = {
     codeSubmisionData: [],
-    codeSubmisionDate: new Date().toLocaleDateString("en-GB"), // Format: dd/mm/yyyy
+    codeSubmisionDate: new Date().toLocaleDateString("en-GB"),
     problemId: problem._id,
     title: problem.title,
     difficulty: problem.difficulty,
     tags: problem.tags,
     userEmail: userEmail,
     contestId: contestId,
+    // language: "",
   };
-
+  const payload = {
+    language,
+    code,
+    testCases: transformedTestCases,
+  };
   const handleRun = async () => {
     if (session.status === "authenticated") {
-      setLoading(true);
-      const payload = {
-        language,
-        code,
-        testCases: transformedTestCases,
-      };
+      setloadingRun(true);
 
       try {
-        const response = await axios.post("/api/onlineCompiler", payload);
-        setOutput(response.data.results);
-        // submitCodeStatusToUser.codeSubmisionData = output;
-        // console.log("submitCodeStatusToUser.codeSubmisionDat",submitCodeStatusToUser.codeSubmisionData);
+        const response = await axios.post("http://localhost:8000/execute", payload);
 
-        // console.log("Output of onlineCompiler runing code is",response);
-        setLoading(false);
+        if (response.data.results[0].actualOutput.includes("error")) {
+          const errorMessage = response.data.results[0].actualOutput;
+          const regex = /error: (.*)/s;
+          const match = errorMessage.match(regex);
+
+          if (match && match[1]) {
+            const result = match[1].trim();
+            setOutput([result]);
+          } else {
+            setOutput(["No match found"]);
+          }
+        } else {
+          setOutput(response.data.results);
+        }
+
+        setloadingRun(false);
       } catch (error: any) {
         console.error(error.response?.data);
-        setLoading(false);
+        setloadingRun(false);
       }
     } else {
       toast.error("Please sign in to run your code", {
@@ -163,10 +189,28 @@ int main() {
 
   const handleSubmit = async () => {
     if (session.status === "authenticated") {
-      setLoading(true);
+      setloadingSubmit(true);
       try {
+        if (output.length === 0) {
+          const response = await axios.post("http://localhost:8000/execute", payload);
+
+          if (response.data.results[0].actualOutput.includes("error")) {
+            const errorMessage = response.data.results[0].actualOutput;
+            const regex = /error: (.*)/s;
+            const match = errorMessage.match(regex);
+
+            if (match && match[1]) {
+              const result = match[1].trim();
+              setOutput([result]);
+            } else {
+              setOutput(["No match found"]);
+            }
+          } else {
+            setOutput(response.data.results);
+          }
+        }
         submitCodeStatusToUser.codeSubmisionData = output;
-        console.log("submitCodeStatusToUser", submitCodeStatusToUser);
+        // submitCodeStatusToUser.language = output[0].language;
         const addProblemToUser = await axios.post(
           "/api/AddSubmitedProblemsToUser",
           submitCodeStatusToUser
@@ -177,13 +221,11 @@ int main() {
             "/api/addProblemOfContestGivenByuser",
             submitCodeStatusToUser
           );
-          console.log(
-            "Add Problem of contest given by user",
-            addProblemOfContestGivenByUser
-          );
         }
-        // console.log("Add Problem to User", addProblemToUser);
-        setLoading(false);
+
+        console.log("submitCodeStatusToUser", submitCodeStatusToUser);
+
+        setloadingSubmit(false);
         toast.success("Code Submitted", {
           position: "bottom-right",
           autoClose: 5000,
@@ -197,7 +239,18 @@ int main() {
         });
       } catch (error: any) {
         console.error(error.response?.data);
-        setLoading(false);
+        toast.error(error.response?.data, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        setloadingSubmit(false);
       }
     } else {
       toast.error("Please sign in to submit your code", {
@@ -215,15 +268,15 @@ int main() {
   };
 
   const highlightCode = (code: string) => (
-    <SyntaxHighlighter language={language} style={darcula}>
+    <SyntaxHighlighter language={language} style={dark}>
       {code}
     </SyntaxHighlighter>
   );
 
   return (
-    <div className="w-full min-h-screen h-full justify-evenly flex flex-col overflow-x-hidden">
+    <div className="w-full max-h-screen h-full justify-evenly flex flex-col overflow-x-hidden">
       <div className="relative max-h-full h-[88vh] bg-stone-900">
-        <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[61%]">
+        <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[64%]">
           <div className="w-full -mt-2 h-10 items-center text-center">
             {copyCode ? (
               <button className="inline-flex items-center">
@@ -273,10 +326,10 @@ int main() {
           </div>
         </div>
 
-        <div className="h-full overflow-y-auto overflow-x-hidden">
+        <div className=" max-h-[60vh] overflow-y-auto overflow-x-hidden mt-9">
           <Editor
             value={code}
-            onValueChange={setCode}
+            onValueChange={(newCode) => setCode(newCode)}
             highlight={highlightCode}
             padding={10}
             style={{
@@ -284,42 +337,55 @@ int main() {
               fontSize: 16,
               outline: "none",
               border: "none",
-              height: "100%",
-              width: "730px",
-              overflowY: "auto",
-              marginTop: "37px",
+              // backgroundColor: "#2d2d2d",
+              backgroundColor: "#1C1917",
+              color: "#f8f8f2",
             }}
           />
         </div>
       </div>
-
-      {/* Buttons save and submit */}
-      <div className="flex flex-row justify-evenly w-[100%] h-[92px] overflow-x-hidden">
-        <div className="w-1/2">
-          <Button
-            className="text-white w-full rounded-e-none h-16"
-            onClick={handleRun}
-          >
-            Run
-          </Button>
-        </div>
-        <div className="w-1/2">
-          <Button
-            className="text-white w-full rounded-s-none h-16"
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
-        </div>
-      </div>
-
-      {/* Output Box */}
-      <div className="outputbox bg-stone-800 h-44 overflow-auto rounded-b-md shadow-md p-4 -mt-8 w-full mx-auto">
-        {loading ? (
-          <div>
-            <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
+      <div className="min-h-[32vh] mt-1 bg-stone-900  flex flex-col ">
+        {/* Buttons  */}
+        <div className="flex justify-end gap-2 max-h-14 flex-row mr-17 items-center ">
+          <div className="max-w-[33%] text-center">
+            <Button onClick={handleRun} variant="secondary">
+              <div className="text-lg flex flex-row justify-evenly items-center">
+                {loadingRun ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  ""
+                )}
+                <span>Run</span>
+              </div>
+            </Button>
           </div>
-        ) : (
+          <div className="max-w-[33%] text-center">
+            <Button
+              onClick={handleSubmit}
+              variant="secondary"
+              disabled={loadingRun}
+            >
+              <div className="text-lg flex flex-row justify-evenly items-center">
+                {loadingSubmit ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  ""
+                )}
+                <span>Submit</span>
+              </div>
+            </Button>
+          </div>
+        </div>
+
+        <div className="w-full h-[1px] mt-1 mb-1 bg-stone-700"></div>
+
+        {/* Output Box */}
+        <div className=" overflow-auto rounded-b-md  p-4 w-full mx-auto max-h-full">
+          {/* {loading ? (
+            <div>
+              <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
+            </div>
+          ) : ( */}
           <div
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
@@ -332,13 +398,18 @@ int main() {
                 key={index}
                 className="flex flex-row justify-wrap w-full overflow-x-hidden"
               >
-                <p className="text-white text-lg font-semibold leading-10 text-start">
+                <p
+                  className={`text-lg font-semibold leading-10 text-start ${
+                    result.passed ? "text-green-500" : "text-red-500"
+                  }`}
+                >
                   TC:{index + 1} -&gt; {result.passed ? "Passed" : "Failed"}
                 </p>
               </div>
             ))}
           </div>
-        )}
+          {/* )} */}
+        </div>
       </div>
       <ToastContainer />
     </div>

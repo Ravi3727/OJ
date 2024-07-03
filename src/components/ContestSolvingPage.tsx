@@ -59,7 +59,7 @@ const ContestSolvingPage = ({problemId, contestId}: any) => {
   };
   return (
     <>
-      <div className="flex flex-row justify-between w-screen min-h-screen h-full mx-auto overflow-x-hidden ">
+      <div className="flex flex-row justify-between w-full min-h-screen h-full mx-auto overflow-x-hidden ">
 
 
          {/* <div className="text-lg p-4 text-white mx-auto w-full h-16">Set Your Own Time to Finish {" "}<CountdownTimer initialTime={300} /></div> */}
@@ -123,7 +123,7 @@ const ContestSolvingPage = ({problemId, contestId}: any) => {
           {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
         </div>
 
-        <div className="w-1/2 h-full overflow-x-hidden ">
+        <div className="w-1/2 h-full overflow-x-hidden">
           <CodeEditor problems={problem} contestId={contestId}  />
         </div>
       </div>

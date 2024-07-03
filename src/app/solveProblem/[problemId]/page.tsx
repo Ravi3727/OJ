@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import ProblemSubmitCodeEditor from "@/components/ProblemSubmitCodeEditor";
 import CountdownTimer from "@/components/Timer";
+import CodeEditor from "@/components/CodeEditor";
 
 interface Problem {
   title: string;
@@ -115,7 +116,8 @@ const ProblemPage = () => {
           </div>
 
           <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
-            <ProblemSubmitCodeEditor problems={problem} />
+            {/* <ProblemSubmitCodeEditor problems={problem} /> */}
+            <CodeEditor problems={problem}  />
           </div>
         </div>
       </div>

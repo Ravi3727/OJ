@@ -2,8 +2,8 @@
 .env
 .env*.local
 
-codes
-inputs
+/codes
+/inputs
 
 # Dependencies
 /node_modules
