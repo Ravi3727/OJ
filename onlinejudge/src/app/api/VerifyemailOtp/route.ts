@@ -20,7 +20,7 @@ export async function POST(request:Request){
             },{ status: 500})
         }
 
-
+        console.log(user.verifyCode,code);
         const isOtpValid = user.verifyCode === code
         const isCodeExpired = new Date(user.verifyCodeExpiry) > new Date()
 
