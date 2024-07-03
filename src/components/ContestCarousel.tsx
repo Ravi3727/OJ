@@ -19,10 +19,8 @@ import Autoplay from "embla-carousel-autoplay";
 import AOS from "aos";
 import "aos/dist/aos.css";
 AOS.init();
-import contests from "@/contests.json";
 import Image from "next/image";
 import ContestImage from "../../public/Contest.png"
-import Link from "next/link";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

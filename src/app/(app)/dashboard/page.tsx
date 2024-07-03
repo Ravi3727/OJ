@@ -6,11 +6,29 @@ import Dashboard from "@/components/Dashboard";
 import { Loader2 } from "lucide-react";
 
 interface Problem {
+  statement: string;
+  createdAt: Date;
+  _id: string;
+  problemId: string;
+  language: string;
   title: string;
   status: string;
   difficulty: string;
+  codeSubmisionDate: Date;
 }
 
+interface SolvedProblem {
+  problemId: string;
+  title: string;
+  difficulty: string;
+  status: string;
+  codeSubmisionDate: Date;
+}
+
+interface ParticipatedContest {
+  contestId: string;
+  problemsSolved: SolvedProblem[];
+}
 
 interface User {
   username: string;
@@ -19,9 +37,10 @@ interface User {
   collegeName: string;
   rating: number;
   isProblemSetter: boolean;
-  problemsSolved: Problem[];
-  ContestCompleted: string[];  // You may need to add this in your backend or adapt it based on your needs
+  QuestionsSolved: Problem[];
+  ParticipatedContests: ParticipatedContest[];
 }
+
 
 const Page: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);

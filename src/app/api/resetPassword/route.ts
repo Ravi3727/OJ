@@ -17,12 +17,12 @@ export async function POST(request: Request) {
             }, { status: 400 })
         }
 
-        console.log("resetPassword backend se identifier ", identifier);
+        // console.log("resetPassword backend se identifier ", identifier);
         const existingUserByEmail = await UserModel.findOne({
             email: identifier
         })
 
-        console.log("resetPassword backend ", existingUserByEmail);
+        // console.log("resetPassword backend ", existingUserByEmail);
         let verifyCodeOtp = Math.floor(100000 + Math.random() * 900000).toString()
 
         if (existingUserByEmail) {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
             await existingUserByEmail.save();
         }
 
-        console.log("added restPasswordVerifyCode", existingUserByEmail);
+        // console.log("added restPasswordVerifyCode", existingUserByEmail);
 
         const verifyEmailResponse = await sendVerificationEmail(
             identifier, username, verifyCodeOtp

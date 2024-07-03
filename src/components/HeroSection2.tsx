@@ -1,8 +1,5 @@
 "use client";
 
-// import AOS from "aos";
-// import "aos/dist/aos.css";
-// AOS.init();
 import Image from "next/image";
 import codeImage from "../../public/secondCode.png";
 function HeroSection2() {
@@ -24,7 +21,7 @@ function HeroSection2() {
               Code On-the-Go with Quick Compiler
             </div>
             <div className="text-xl text-white items-start justify-start mt-4">
-              Whether you're fine-tuning your code or exploring new languages,
+              Whether you&apos;re fine-tuning your code or exploring new languages,
               Quick Compiler simplifies the coding process, making it faster and
               more accessible for every developer
             </div>

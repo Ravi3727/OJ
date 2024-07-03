@@ -51,7 +51,7 @@ const Page = () => {
     remove: removeTag,
   } = useFieldArray({
     control: form.control,
-    name: "tags",
+    name: "testCases",
   });
 
   const {
@@ -291,7 +291,7 @@ const Page = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTag("")}
+                      onClick={() => appendTag({ input: "", output: "" })}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
                       Add Tag

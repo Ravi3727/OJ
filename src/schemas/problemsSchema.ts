@@ -8,7 +8,10 @@ export const problemSchema = z.object({
         input: z.string(),
         output: z.string()
     })).min(1, { message: 'At least one testCase is required' }),
-    tags: z.array(z.string()).min(1, { message: 'At least one tag is required' }),
+    
+    tags: z.array(z.string()).min(1, { message: 'At least one tag is required' }), // Rename to "tags"
+    
+
     difficulty: z.string().min(4, { message: 'Difficulty must be at least 4 characters' }),
 });
 

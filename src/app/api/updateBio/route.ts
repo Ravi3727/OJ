@@ -22,15 +22,20 @@ export async function POST(request: NextRequest) {
     // console.log("User ", User);
 
     try {
+        if (!User) {
+            return NextResponse.json(
+                { message: `User not found`, success: false },
+                { status: 404 }
+            );
+        } else {
+            User.userBio = bio;
+            await User.save();
+            return NextResponse.json(
+                { message: `Bio updated successfully`, success: true, userBio: User.userBio },
+                { status: 200 }
+            );
+        }
 
-        User.userBio = bio;
-        await User.save();
-
-
-        return NextResponse.json(
-            { message: `Bio updated successfully`, success: true, userBio: User.userBio },
-            { status: 200 }
-        );
     } catch (error) {
         console.error('Error updating problem:', error);
         return NextResponse.json(

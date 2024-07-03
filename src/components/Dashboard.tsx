@@ -9,6 +9,10 @@ import { MdOutlineEdit } from "react-icons/md";
 import Link from "next/link";
 
 interface Problem {
+  statement: string;
+  createdAt: Date;
+  _id: string;
+  problemId: string;
   language: string;
   title: string;
   status: string;
@@ -67,7 +71,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(user.userBio);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userAddedProblems, setUserAddedProblems] = useState([]);
+  const [userAddedProblems, setUserAddedProblems] = useState<Problem[]>([]);
   const [contestSolved, setContestSolved] = useState<ContestSolved[]>([]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -99,7 +103,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
       user.userBio = newBio;
       setIsEditingBio(false);
     } catch (error) {
-      toast.error(error?.message, {
+      toast.error("Something went wrong", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -114,20 +118,6 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
     }
   };
 
-  const getUserContestsSolved = async () => {
-    try {
-      const contests = await Promise.all(
-        user.ParticipatedContests.map(async (contest) => {
-          const res = await axios.get(`/api/getContest/${contest.contestId}`);
-          return res.data.data;
-        })
-      );
-      setContestSolved(contests);
-    } catch (error) {
-      console.log(`Contest not found`, error);
-    }
-  };
-
   useEffect(() => {
     const getUserAddedProblems = async () => {
       try {
@@ -139,12 +129,26 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
       }
     };
 
+    const getUserContestsSolved = async () => {
+      try {
+        const contests = await Promise.all(
+          user.ParticipatedContests.map(async (contest) => {
+            const res = await axios.get(`/api/getContest/${contest.contestId}`);
+            return res.data.data;
+          })
+        );
+        setContestSolved(contests);
+      } catch (error) {
+        console.log(`Contest not found`, error);
+      }
+    };
+
     if (user.ParticipatedContests.length > 0) {
       getUserContestsSolved();
     }
 
     getUserAddedProblems();
-  }, []);
+  }, [user.ParticipatedContests, user.username]);
 
   console.log("user question solved ", user.QuestionsSolved);
   console.log("user contest solved ", contestSolved);
@@ -249,7 +253,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                     <div>
                       {(() => {
                         const formattedDate = formatDate(
-                          problem.codeSubmisionDate
+                          problem.codeSubmisionDate.toString()
                         );
                         const parts = formattedDate.split("/");
                         const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
@@ -257,9 +261,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                       })()}
                     </div>
 
-                    <div>
-                      {problem.language}
-                    </div>
+                    <div>{problem.language}</div>
                     <div className="items-start">
                       <Link href={`/solveProblem/${problem.problemId}`}>
                         <Button>Solve</Button>
@@ -279,7 +281,10 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
           <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
           {user.ParticipatedContests.length > 0 ? (
             user.ParticipatedContests.map((contest) => (
-              <div key={contest.contestId} className="mb-4 border-1 rounded-lg shadow-md ">
+              <div
+                key={contest.contestId}
+                className="mb-4 border-1 rounded-lg shadow-md "
+              >
                 <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
                   <div>
                     <h4 className="mt-4 text-orange-500">
@@ -326,7 +331,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                           <div>
                             {(() => {
                               const formattedDate = formatDate(
-                                problem.codeSubmisionDate
+                                (problem.codeSubmisionDate).toString()
                               );
                               const parts = formattedDate.split("/");
                               const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
@@ -349,50 +354,43 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
         {/* Problems Added By You */}
 
-        {
-          <div className="mb-6 mt-4 w-full">
-            <h2 className="text-xl font-semibold mb-2">
-              Problems Added By You
-            </h2>
-            {userAddedProblems.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {userAddedProblems.map((problem, index) => (
-                  <li key={index} className="mb-2">
-                    <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black bg-opacity-50">
-                      <div className="items-start max-w-[20%] text-red-600">
-                        {problem.title}
-                      </div>
-                      <div className="items-start max-w-[40%] overflow-x-hidden text-red-500 overflow-y-auto">
-                        {problem.statement}
-                      </div>
-                      <div
-                        className={`font-bold max-w-[15%] items-start ${
-                          problem.difficulty === "Easy"
-                            ? "text-green-500"
-                            : problem.difficulty === "Medium"
-                            ? "text-yellow-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {problem.difficulty}
-                      </div>
-                      <div className="items-start max-w-[15%]">
-                        {formatDate(problem.createdAt)}
-                      </div>
-                      <div>
-                        <Link href={`/editProblemui/${problem._id}`}>
-                          <Button>Edit</Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No problems added yet.</p>
-            )}
-          </div>
-        }
+        {userAddedProblems.length > 0 ? (
+          <ul className="list-disc pl-5">
+            {userAddedProblems.map((problem, index) => (
+              <li key={index} className="mb-2">
+                <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black bg-opacity-50">
+                  <div className="items-start max-w-[20%] text-red-600">
+                    {problem.title}
+                  </div>
+                  <div className="items-start max-w-[40%] overflow-x-hidden text-red-500 overflow-y-auto">
+                    {problem.statement}
+                  </div>
+                  <div
+                    className={`font-bold max-w-[15%] items-start ${
+                      problem.difficulty === "Easy"
+                        ? "text-green-500"
+                        : problem.difficulty === "Medium"
+                        ? "text-yellow-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {problem.difficulty}
+                  </div>
+                  <div className="items-start max-w-[15%]">
+                    {formatDate((problem.createdAt).toString())}
+                  </div>
+                  <div>
+                    <Link href={`/editProblemui/${problem._id}`}>
+                      <Button>Edit</Button>
+                    </Link>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No problems added yet.</p>
+        )}
 
         <ToastContainer />
       </div>

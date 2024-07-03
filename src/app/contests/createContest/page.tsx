@@ -32,11 +32,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 const CreateContest = () => {
   const router = useRouter();
   const session = useSession();
-  const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
-  const [date, setDate] = useState<Date>();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [date, setDate] = useState<Date>(new Date());
+
   const form = useForm<z.infer<typeof contestSchema>>({
     resolver: zodResolver(contestSchema),
     defaultValues: {
@@ -52,21 +54,19 @@ const CreateContest = () => {
 
   const {
     fields: problems,
-    append: appendTag,
-    remove: removeTag,
+    append: appendProblem,
+    remove: removeProblem,
   } = useFieldArray({
     control: form.control,
-    name: "problems",
+    name: "problems" as never,
   });
 
   const onSubmit = async (data: z.infer<typeof contestSchema>) => {
-    setIsSubmiting(true);
+    setIsSubmitting(true);
     data.eventDate = new Date(date);
-    // console.log(session);
-    console.log("Create contest", data);
-    
+
     if (!session) {
-      toast.success("Please login to continue", {
+      toast.error("Please login to continue", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -77,8 +77,11 @@ const CreateContest = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    }if (data.eventDate < new Date()) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (data.eventDate < new Date()) {
       toast.error("Please select a date in the future", {
         position: "bottom-right",
         autoClose: 5000,
@@ -90,16 +93,11 @@ const CreateContest = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    } else if (
-      !data.description ||
-      !data.title ||
-      !data.problems ||
-      !data.difficulty ||
-      !data.eventDate ||
-      !data.HostedBy ||
-      !data.duration
-    ) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!data.description || !data.title || !data.problems.length || !data.difficulty || !data.eventDate || !data.HostedBy || !data.duration) {
       toast.error("Please fill all the fields", {
         position: "bottom-right",
         autoClose: 5000,
@@ -111,8 +109,11 @@ const CreateContest = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    } else if (session.data?.user.isVerified === false) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!session.data?.user.isVerified) {
       toast.error("Please verify your email to continue", {
         position: "bottom-right",
         autoClose: 5000,
@@ -124,8 +125,11 @@ const CreateContest = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    } else if (session.data?.user.isProblemSetter === false) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!session.data?.user.isProblemSetter) {
       toast.error("You are not a problem setter", {
         position: "bottom-right",
         autoClose: 5000,
@@ -137,72 +141,66 @@ const CreateContest = () => {
         theme: "light",
         transition: Bounce,
       });
-      setIsSubmiting(false);
-    } else {
-      try {
-        data.eventDate = date || new Date();
-        console.log(data);
-        const response = await axios.post<ApiResponse>(
-          "/api/createContest",
-          data
-        );
-        console.log("Problem created", data);
-        if (response.data.success) {
-          toast.success("Thank for contributing to the problem set", {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
-          router.replace("/contests");
-          setIsSubmiting(false);
-        } else {
-          toast.error("please fill all the fields", {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
-          setIsSubmiting(false);
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
+      setIsSubmitting(false);
+      return;
+    }
 
-        toast.error(
-          axiosError.response?.data.message ?? "Error on signing up",
-          {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          }
-        );
-        setIsSubmiting(false);
+    try {
+      const response = await axios.post<ApiResponse>("/api/createContest", data);
+
+      if (response.data.success) {
+        toast.success("Thank you for contributing to the problem set", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        router.replace("/contests");
+      } else {
+        toast.error("Failed to create the contest. Please try again.", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
       }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(
+        axiosError.response?.data.message ?? "Error on creating contest",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        }
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full min-h-screen bg-black/[90] space-y-20">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-28 p-4 rounded-lg m-4 ">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-lg bg-white mt-28 p-4 rounded-lg m-4">
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-5 text-gray-900 ">
+            <h1 className="text-3xl font-bold mb-5 text-gray-900">
               Create Contest
             </h1>
           </div>
@@ -217,12 +215,10 @@ const CreateContest = () => {
                 name="HostedBy"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">
-                      Your Username
-                    </FormLabel>
+                    <FormLabel className="text-gray-700">Your Username</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-200 border-black "
+                        className="bg-gray-200 border-black"
                         placeholder="username..."
                         {...field}
                       />
@@ -239,7 +235,7 @@ const CreateContest = () => {
                     <FormLabel className="text-gray-700">Title</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-200 border-black "
+                        className="bg-gray-200 border-black"
                         placeholder="title..."
                         {...field}
                       />
@@ -256,7 +252,7 @@ const CreateContest = () => {
                     <FormLabel className="text-gray-700">Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        className="bg-gray-200 border-black "
+                        className="bg-gray-200 border-black"
                         placeholder="Contest description..."
                         {...field}
                       />
@@ -274,7 +270,7 @@ const CreateContest = () => {
                     <FormLabel className="text-gray-700">Difficulty</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-200 border-black "
+                        className="bg-gray-200 border-black"
                         placeholder="Easy, Medium, Hard"
                         {...field}
                       />
@@ -302,7 +298,11 @@ const CreateContest = () => {
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={setDate}
+                      onSelect={(selectedDate) => {
+                        if (selectedDate !== undefined) {
+                          setDate(selectedDate);
+                        }
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -317,8 +317,8 @@ const CreateContest = () => {
                     <FormLabel className="text-gray-700">Duration</FormLabel>
                     <FormControl>
                       <Input
-                      type="text"
-                        className="bg-gray-200 border-black "
+                        type="text"
+                        className="bg-gray-200 border-black"
                         placeholder="In minutes"
                         {...field}
                       />
@@ -333,9 +333,7 @@ const CreateContest = () => {
                 name="problems"
                 render={() => (
                   <FormItem className="flex flex-col gap-2">
-                    <FormLabel className="text-gray-700">
-                      Add Problems ID
-                    </FormLabel>
+                    <FormLabel className="text-gray-700">Add Problems ID</FormLabel>
                     {problems.map((problem, index) => (
                       <div
                         key={problem.id}
@@ -344,13 +342,14 @@ const CreateContest = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="problems ID..."
+                            placeholder="problem ID..."
+                            // {...form.register(`problems.${index}._id` as const)}
                             {...form.register(`problems.${index}` as const)}
                           />
                         </FormControl>
                         <Button
                           type="button"
-                          onClick={() => removeTag(index)}
+                          onClick={() => removeProblem(index)}
                           className="bg-red-500 text-white"
                         >
                           Remove
@@ -359,10 +358,10 @@ const CreateContest = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTag("")}
+                      onClick={() => appendProblem({ id: "" })}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
-                      Add Problems ID
+                      Add Problem ID
                     </Button>
                     <FormMessage />
                   </FormItem>
@@ -370,13 +369,13 @@ const CreateContest = () => {
               />
 
               <Button
-                className="bg-violet-900 text-white hover:bg-red-600 "
+                className="bg-violet-900 text-white hover:bg-red-600"
                 type="submit"
-                disabled={isSubmiting}
+                disabled={isSubmitting}
               >
-                {isSubmiting ? (
+                {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
+                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
                     Loading
                   </>
                 ) : (

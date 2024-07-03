@@ -41,13 +41,15 @@ const Createnewproblem = () => {
     },
   });
 
+  
   const {
+    
     fields: tagFields,
     append: appendTag,
     remove: removeTag,
   } = useFieldArray({
     control: form.control,
-    name: "tags",
+    name: "testCases",
   });
 
   const {
@@ -177,7 +179,7 @@ const Createnewproblem = () => {
       }
     }
   };
-
+//@ts-ignore
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full bg-black/[90] space-y-20">
@@ -293,7 +295,7 @@ const Createnewproblem = () => {
                     ))}
                     <Button
                       type="button"
-                      onClick={() => appendTag("")}
+                      onClick={() =>appendTag({ input: "", output: "" })}
                       className="bg-violet-900 hover:bg-violet-800 text-white mt-2"
                     >
                       Add Tag

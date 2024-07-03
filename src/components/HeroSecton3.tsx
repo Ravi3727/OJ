@@ -1,8 +1,5 @@
 "use client";
 
-// import AOS from "aos";
-// import "aos/dist/aos.css";
-// AOS.init();
 import Image from "next/image";
 import codeImage from "../../public/ProblemTable.png";
 function HeroSection3() {
@@ -21,7 +18,7 @@ function HeroSection3() {
           <div className="w-1/3 h-full flex flex-col items-start justify-start p-4">
           <div className="text-2xl font-bold text-yellow-600 leading-10 ">Customizable Table</div>
           <div className="text-4xl text-white font-extrabold leading-12 mt-4">Pick challenges from your customizable problem set table </div>
-          <div className="text-xl text-white items-start justify-start mt-4">Whether you're fine-tuning your problem solving skills or exploring new problems, Quick Compiler simplifies the coding process, making it faster and more accessible for every problem solver</div>
+          <div className="text-xl text-white items-start justify-start mt-4">Whether you&apos;re fine-tuning your problem solving skills or exploring new problems, Quick Compiler simplifies the coding process, making it faster and more accessible for every problem solver</div>
           </div>
           <div className="w-1/2 h-full p-4">
             <Image

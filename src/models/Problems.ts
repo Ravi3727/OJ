@@ -25,7 +25,7 @@ const ProblemsSchema: Schema<Problem> = new mongoose.Schema({
         required: [true, "Statement of question is required"],
         unique: true,
     },
-    tags: {
+    tags: { 
         type: [String],
         required: true
     },

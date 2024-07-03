@@ -182,7 +182,7 @@ const Page = () => {
     };
     fetchData();
     setLoading(false);
-  }, []);
+  }, [session.data?.user.isProblemSetter]);
 
   setTimeout(() => {
     setIsProblemSetter(session.data?.user.isProblemSetter);

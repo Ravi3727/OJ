@@ -4,17 +4,24 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import ProblemSubmitCodeEditor from "@/components/ProblemSubmitCodeEditor";
-import CountdownTimer from "@/components/Timer";
 import CodeEditor from "@/components/CodeEditor";
 
+
+interface TestCase {
+  input: string;
+  output: string;
+}
+
 interface Problem {
+  _id: string;
   title: string;
   difficulty: string;
   statement: string;
   tags: string[];
-  testCases: { input: string; output: string }[];
+  testCases: TestCase[];
   createdAt: string;
+  problems: string[];
+  contestId: string;
 }
 
 const ProblemPage = () => {
@@ -117,7 +124,7 @@ const ProblemPage = () => {
 
           <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
             {/* <ProblemSubmitCodeEditor problems={problem} /> */}
-            <CodeEditor problems={problem}  />
+            <CodeEditor problems={problem} contestId={"none"} />
           </div>
         </div>
       </div>

@@ -34,7 +34,7 @@ const Page = () => {
       }
     };
     getContestById();
-  },[]);
+  },[id]);
 
   if (!contest) {
     return <div><Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /></div>;

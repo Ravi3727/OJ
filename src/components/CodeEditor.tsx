@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
-  darcula,
-  atomOneDark,
   dark,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
@@ -216,7 +214,7 @@ int main() {
           submitCodeStatusToUser
         );
 
-        if (contestId) {
+        if (contestId !== "none") {
           const addProblemOfContestGivenByUser = await axios.post(
             "/api/addProblemOfContestGivenByuser",
             submitCodeStatusToUser
