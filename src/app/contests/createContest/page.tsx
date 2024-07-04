@@ -1,4 +1,5 @@
 "use client";
+
 import * as React from "react";
 import {
   Form,
@@ -25,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -97,7 +98,15 @@ const CreateContest = () => {
       return;
     }
 
-    if (!data.description || !data.title || !data.problems.length || !data.difficulty || !data.eventDate || !data.HostedBy || !data.duration) {
+    if (
+      !data.description ||
+      !data.title ||
+      !data.problems.length ||
+      !data.difficulty ||
+      !data.eventDate ||
+      !data.HostedBy ||
+      !data.duration
+    ) {
       toast.error("Please fill all the fields", {
         position: "bottom-right",
         autoClose: 5000,
@@ -146,7 +155,10 @@ const CreateContest = () => {
     }
 
     try {
-      const response = await axios.post<ApiResponse>("/api/createContest", data);
+      const response = await axios.post<ApiResponse>(
+        "/api/createContest",
+        data
+      );
 
       if (response.data.success) {
         toast.success("Thank you for contributing to the problem set", {
@@ -343,7 +355,6 @@ const CreateContest = () => {
                           <Input
                             className="bg-gray-200 border-black"
                             placeholder="problem ID..."
-                            // {...form.register(`problems.${index}._id` as const)}
                             {...form.register(`problems.${index}` as const)}
                           />
                         </FormControl>

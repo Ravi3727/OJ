@@ -52,7 +52,7 @@ const Page = () => {
       // Debouncing Logic
       try {
         const response = await axios.get<ApiResponse>(
-          `/api/checkUserNameUniqueness?username=${username}`
+          `/api/checkUserNameUniqueness/${username}`
         );
 
         // let message = response.data.message;

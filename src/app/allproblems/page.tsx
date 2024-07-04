@@ -1,15 +1,15 @@
-"use client";
-
+"use client"
 import { useEffect, useState } from "react";
-import { Allproblems, columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { columns } from "./columns";
 
-const data2: Allproblems[] = [
+// Sample data for initial rendering
+const initialData: Allproblems[] = [
   {
     id: "1",
     Title: "Problem 1",
@@ -114,110 +114,85 @@ const data2: Allproblems[] = [
   },
 ];
 
-export interface object3 {
-  _id: string;
-  title: string;
-  tags: string[];
-  difficulty: string;
-  testCases: string[];
+export interface Allproblems {
+  id: string;
+  Title: string;
+  Tags: string[];
+  Difficulty: string;
 }
-
-export interface object1 extends Object {
-  success: boolean;
-  data: object3[];
-}
-
-async function getAllProblems() {
-  const response = await axios.get("http://localhost:3000/api/getAllProblems");
-  // console.log("hello jee");
-  return response.data;
-}
-
-export interface problem {
-  _id: string;
-  title: string;
-  tags: string[];
-  difficulty: string;
-}
-
-async function transformProblems() {
-  const UnstructuredData = await getAllProblems();
-
-  if (UnstructuredData.success && Array.isArray(UnstructuredData.data)) {
-    const newData = UnstructuredData.data.map(
-      (problem: problem, index: Number) => ({
-        id: problem._id,
-        Title: problem.title,
-        Tags: problem.tags,
-        Difficulty: problem.difficulty,
-      })
-    );
-    return newData;
-  } else {
-    console.error("Failed to fetch problems or data format is incorrect");
-  }
-}
-
-const appendData2ToData = async () => {
-  const data = await transformProblems();
-  data2.forEach((item) => {
-    data.push(item);
-  });
-  return data;
-};
 
 const Page = () => {
-  const session = useSession();
-  console.log("Session from data table", session.data?.user.isProblemSetter);
-  const [data, setData] = useState<Allproblems[]>([]);
+  const { data: session, status } = useSession();
+  const [data, setData] = useState<Allproblems[]>(initialData);
   const [loading, setLoading] = useState(false);
-  const [isProblemSetterss, setIsProblemSetter] = useState(false);
+  const [isProblemSetter, setIsProblemSetter] = useState(false);
 
   useEffect(() => {
-    setIsProblemSetter(session.data?.user.isProblemSetter);
-    setLoading(true);
     const fetchData = async () => {
-      const result = await appendData2ToData();
-      setData(result);
+      setLoading(true);
+      try {
+        // Call your API to fetch all problems
+        const response = await axios.get("http://localhost:3000/api/getAllProblems");
+        if (response.status === 200 && Array.isArray(response.data.data)) {
+          const transformedData: Allproblems[] = response.data.data.map((problem: any) => ({
+            id: problem._id,
+            Title: problem.title,
+            Tags: problem.tags,
+            Difficulty: problem.difficulty,
+          }));
+          // Append initialData if needed
+          transformedData.push(...initialData);
+          setData(transformedData);
+        } else {
+          console.error("Failed to fetch problems or data format is incorrect");
+        }
+      } catch (error) {
+        console.error("Error fetching problems:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchData();
-    setLoading(false);
-  }, [session.data?.user.isProblemSetter]);
 
-  setTimeout(() => {
-    setIsProblemSetter(session.data?.user.isProblemSetter);
-  }, 5000);
+    const checkProblemSetter = () => {
+      setIsProblemSetter(session?.user.isProblemSetter || false);
+    };
+
+    if (status === "authenticated") {
+      checkProblemSetter();
+      fetchData();
+    }
+  }, [session?.user.isProblemSetter, status]);
 
   return (
-    <>
-      <section className="py-40 bg-black/[90] text-white leading-6 ">
-        <div className="container">
-          <div className="flex flex-row justify-between w-full  p-2">
-            <div>
-              <h1 className="text-3xl font-bold">All problems</h1>
-            </div>
-            {isProblemSetterss === true ? (
-              <Link href="/createnewproblem">
-                <div className="">
-                  <Button>Create+</Button>
-                </div>
-              </Link>
-            ) : (
-              <div>
-                <Link href="/problemsetterform">
-                  <Button>Collaborate</Button>
-                </Link>
-              </div>
-            )}
+    <section className="py-40 bg-black/[90] text-white leading-6">
+      <div className="container">
+        <div className="flex flex-row justify-between w-full p-2">
+          <div>
+            <h1 className="text-3xl font-bold">All problems</h1>
           </div>
-          {loading ? (
-            <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+          {isProblemSetter ? (
+            <Link href="/createnewproblem">
+              <div>
+                <Button>Create+</Button>
+              </div>
+            </Link>
           ) : (
-            <DataTable columns={columns} data={data} />
+            <Link href="/problemsetterform">
+              <div>
+                <Button>Collaborate</Button>
+              </div>
+            </Link>
           )}
         </div>
-      </section>
-    </>
+        {loading ? (
+          <div className="flex h-screen justify-center items-center p-2 bg-black/[90] text-white my-auto">
+            <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+          </div>
+        ) : (
+          <DataTable columns={columns} data={data} />
+        )}
+      </div>
+    </section>
   );
 };
 

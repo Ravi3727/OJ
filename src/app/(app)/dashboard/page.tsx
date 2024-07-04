@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -41,7 +42,6 @@ interface User {
   ParticipatedContests: ParticipatedContest[];
 }
 
-
 const Page: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,11 +53,11 @@ const Page: React.FC = () => {
         setLoading(true);
         try {
           const username = session.user?.username;
-          console.log("Dashboard",username);
+          console.log("Dashboard", username);
 
           if (username) {
             const result = await axios.get(`/api/getUserDetails/${username}`);
-            console.log("Dashboard User Details",result);
+            console.log("Dashboard User Details", result);
             setUser(result.data.data);
           }
         } catch (error) {
@@ -72,14 +72,16 @@ const Page: React.FC = () => {
   }, [session]);
 
   if (loading || !user) {
-    return <div className="flex h-screen justify-center items-center p-2 bg-black/[90] text-white my-auto">
-      <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
-    </div>;
+    return (
+      <div className="flex h-screen justify-center items-center p-2 bg-black/[90] text-white my-auto">
+        <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+      </div>
+    );
   }
 
   return (
     <div>
-     <Dashboard user={user} /> 
+      <Dashboard user={user} />
     </div>
   );
 };

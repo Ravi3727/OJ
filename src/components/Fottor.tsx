@@ -1,3 +1,4 @@
+'use client';
 import React from "react";
 // import Signature from "../../public/signature_new.png";
 // import Image from "next/image";

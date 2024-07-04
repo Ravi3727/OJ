@@ -32,9 +32,8 @@ async function deleteProblem(problemId: string) {
 
 // Function to handle problem editing (redirecting)
 async function editProblem(problemId: string) {
-  // console.log("problemId", problemId);
+
   window.location.href = `/editProblemui/${problemId}`;
-  // console.log("problemId", problemId);
 }
 
 

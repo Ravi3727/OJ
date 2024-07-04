@@ -1,13 +1,7 @@
 "use client";
-import * as React from "react";
 
-import {
-  Card,
-  CardContent,
- 
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -18,16 +12,14 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import AOS from "aos";
 import "aos/dist/aos.css";
-AOS.init();
 import Image from "next/image";
-import ContestImage from "../../public/Contest.png"
+import ContestImage from "../../public/Contest.png";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/Types/ApiResponse";
 import { useSession } from "next-auth/react";
-
 
 type Contest = {
   _id: string;
@@ -37,46 +29,47 @@ type Contest = {
   duration: number;
   HostedBy: string;
 };
+
 const ContestCarousel = () => {
   const [contests, setContests] = useState<Contest[]>([]);
   const router = useRouter();
   const session = useSession();
-  // console.log("session", session);
+  
   useEffect(() => {
     const getAllContests = async () => {
       try {
-        if (!contests.length) {
-          const contest = await axios.get("/api/getContests");
-          console.log("Contest", contest.data.data);
-          setContests(contest.data.data);
+        if (contests.length === 0) {
+          const response = await axios.get("/api/getContests");
+          console.log("Contest", response.data.data);
+          setContests(response.data.data);
         }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
-        console.log("Error", axiosError);
+        console.log("Error fetching contests", axiosError);
       }
     };
 
     getAllContests();
   }, [contests]);
 
-
-  const handleParticipateContest = async (contestId: string) => {
-   if(session.status === "authenticated"){
-
-   
+  const handleParticipateContest = async (contest_id: string) => {
     try {
-      const response = await axios.post("/api/AddContestIdToUserContestModel/" + contestId);
+      const response = await axios.post(
+        "/api/AddContestIdToUserContestModel/" + contest_id
+      );
       console.log("Response from AddContestIdToUserContestModel", response);
-      router.replace(`/contests/${contestId}`);
+
+      if (response.status === 200) {
+        router.replace(`/contests/${contest_id}`);
+      } else {
+        console.log("User not found");
+      }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      console.log("Error", axiosError);
+      console.log("Error participating in contest", axiosError);
     }
-
-  }else{
-    router.replace("/signIn");
-  }
   };
+
   return (
     <>
       <div
@@ -102,7 +95,7 @@ const ContestCarousel = () => {
             {contests.map((contest, index) => (
               <CarouselItem key={index}>
                 <div className="max-h-[70vh] p-4 ">
-                <Card
+                  <Card
                     key={index}
                     className="shadow-sm rounded-lg shadow-white overflow-hidden hover:scale-105 transition-all duration-500"
                   >
@@ -124,16 +117,12 @@ const ContestCarousel = () => {
                       </p>
                       <div className="flex flex-row justify-evenly p-2 mt-2">
                         <p className="text-md text-orange-500 text-center">
-                          {/* {contest.eventDate.split("T")[0]} */}
-                          <div>
-                            {(() => {
-                              const formattedDate =
-                                contest.eventDate.split("T")[0]; // '2024-07-01'
-                              const parts = formattedDate.split("-"); // ['2024', '07', '01']
-                              const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
-                              return modifiedDate;
-                            })()}
-                          </div>
+                          {(() => {
+                            const formattedDate = contest.eventDate.split("T")[0]; // '2024-07-01'
+                            const parts = formattedDate.split("-"); // ['2024', '07', '01']
+                            const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
+                            return modifiedDate;
+                          })()}
                         </p>
                         <p className="text-md text-orange-500 text-center">
                           {contest.duration} minutes
@@ -145,7 +134,6 @@ const ContestCarousel = () => {
                       <div className="flex justify-center mt-2">
                         <Button
                           className=""
-
                           onClick={() => handleParticipateContest(contest._id)}
                         >
                           Participate Now

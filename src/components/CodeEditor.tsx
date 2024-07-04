@@ -152,7 +152,7 @@ int main() {
 
         if (response.data.results[0].actualOutput.includes("error")) {
           const errorMessage = response.data.results[0].actualOutput;
-          const regex = /error: (.*)/s;
+          const regex =  /error: ([\s\S]*)/;
           const match = errorMessage.match(regex);
 
           if (match && match[1]) {
@@ -194,7 +194,7 @@ int main() {
 
           if (response.data.results[0].actualOutput.includes("error")) {
             const errorMessage = response.data.results[0].actualOutput;
-            const regex = /error: (.*)/s;
+            const regex =  /error: ([\s\S]*)/;
             const match = errorMessage.match(regex);
 
             if (match && match[1]) {

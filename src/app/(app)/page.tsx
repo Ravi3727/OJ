@@ -8,9 +8,13 @@ import "aos/dist/aos.css";
 import HeroSection3 from "@/components/HeroSecton3";
 import ContestCarousel from "@/components/ContestCarousel";
 import Fottor from "@/components/Fottor";
-AOS.init();
+import { useEffect } from "react";
 
-export default function Home() {
+const Home = () => {
+  useEffect(() => {
+    AOS.init();
+  }, []);
+
   return (
     <>
       <div className="flex min-h-screen h-full flex-col items-center justify-between p-2 bg-black/[90] text-white">
@@ -21,12 +25,18 @@ export default function Home() {
         >
           <HeroSection />
         </div>
-        <div  data-aos="fade-up"
-          data-aos-duration="3000" className="h-screen w-full flex flex-col items-center justify-center space-y-20">
+        <div
+          data-aos="fade-up"
+          data-aos-duration="3000"
+          className="h-screen w-full flex flex-col items-center justify-center space-y-20"
+        >
           <HeroSection2 />
         </div>
-        <div  data-aos="fade-up"
-          data-aos-duration="3000" className="h-screen w-full flex flex-col items-center justify-center space-y-20">
+        <div
+          data-aos="fade-up"
+          data-aos-duration="3000"
+          className="h-screen w-full flex flex-col items-center justify-center space-y-20"
+        >
           <HeroSection3 />
         </div>
         <div className="h-screen w-full flex flex-col items-center justify-center space-y-20">
@@ -39,4 +49,6 @@ export default function Home() {
       <BackgroundBeams />
     </>
   );
-}
+};
+
+export default Home;

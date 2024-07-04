@@ -25,10 +25,10 @@ import axios from "axios";
 
 const Page = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const session = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log("resetPassword se", session?.user.username);
-  console.log(session);
+  // console.log("resetPassword se", session?.user.username);
+  // console.log(session);
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -41,7 +41,7 @@ const Page = () => {
 
   const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
     setIsSubmitting(true);
-    data.username = session?.user.username;
+    data.username = session?.data?.user.username;
     const result = await axios.post<ApiResponse>("/api/resetPassword", data);
     if (result.data.success) {
       toast.success("Password reset successfully", {

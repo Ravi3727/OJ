@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
@@ -131,22 +132,22 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
     const getUserContestsSolved = async () => {
       try {
-        const contests = await Promise.all(
-          user.ParticipatedContests.map(async (contest) => {
-            const res = await axios.get(`/api/getContest/${contest.contestId}`);
-            return res.data.data;
-          })
-        );
-        setContestSolved(contests);
+        // Fetch contest data only if user has participated in contests
+        if (user.ParticipatedContests.length > 0) {
+          const contests = await Promise.all(
+            user.ParticipatedContests.map(async (contest) => {
+              const res = await axios.get(`/api/getContest/${contest.contestId}`);
+              return res.data.data;
+            })
+          );
+          setContestSolved(contests);
+        }
       } catch (error) {
         console.log(`Contest not found`, error);
       }
     };
 
-    if (user.ParticipatedContests.length > 0) {
-      getUserContestsSolved();
-    }
-
+    getUserContestsSolved();
     getUserAddedProblems();
   }, [user.ParticipatedContests, user.username]);
 
@@ -331,7 +332,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                           <div>
                             {(() => {
                               const formattedDate = formatDate(
-                                (problem.codeSubmisionDate).toString()
+                                problem.codeSubmisionDate.toString()
                               );
                               const parts = formattedDate.split("/");
                               const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
@@ -377,7 +378,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                     {problem.difficulty}
                   </div>
                   <div className="items-start max-w-[15%]">
-                    {formatDate((problem.createdAt).toString())}
+                    {formatDate(problem.createdAt.toString())}
                   </div>
                   <div>
                     <Link href={`/editProblemui/${problem._id}`}>

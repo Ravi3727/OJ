@@ -1,19 +1,17 @@
 "use client";
+
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AOS from "aos";
 import "aos/dist/aos.css";
-AOS.init();
-// import contests from "@/contests.json";
 import Image from "next/image";
 import ContestImage from "../../../public/Contest.png";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/Types/ApiResponse";
+import { Button } from "@/components/ui/button";
 
 type Contest = {
   _id: string;
@@ -26,10 +24,9 @@ type Contest = {
 
 const Page = () => {
   const [contests, setContests] = useState<Contest[]>([]);
+  const [isProblemSetter, setIsProblemSetter] = useState<boolean>(false);
   const router = useRouter();
   const session = useSession();
-  // console.log(session.data?.user.isProblemSetter);
-  const isProblemSetter = session.data?.user.isProblemSetter;
 
   useEffect(() => {
     const getAllContests = async () => {
@@ -48,18 +45,32 @@ const Page = () => {
     getAllContests();
   }, [contests]);
 
+  useEffect(() => {
+    AOS.init();
+  }, []);
 
-  const handleParticipateContest = async (contestId: string) => {
-    if(session.status === "authenticated"){
+  useEffect(() => {
+    if (session.data) {
+      setIsProblemSetter(session.data.user.isProblemSetter);
+    }
+  }, [session]);
+
+  const handleParticipateContest = async (contest_id: string) => {
+    if (session.status === "authenticated") {
       try {
-        const response = await axios.post("/api/AddContestIdToUserContestModel/" + contestId);
-        console.log("Response from AddContestIdToUserContestModel", response);
-        router.replace(`/contests/${contestId}`);
+        const response = await axios.post(
+          "/api/AddContestIdToUserContestModel/" + contest_id
+        );
+        console.log(
+          "Response from AddContestIdToUserContestModel",
+          response
+        );
+        router.replace(`/contests/${contest_id}`);
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
         console.log("Error", axiosError);
       }
-    }else{
+    } else {
       router.replace("/signIn");
     }
   };
@@ -122,14 +133,15 @@ const Page = () => {
                       </p>
                       <div className="flex flex-row justify-evenly p-2 mt-2">
                         <p className="text-md text-orange-500 text-center">
-                          {/* {contest.eventDate.split("T")[0]} */}
                           <div>
                             {(() => {
-                              const formattedDate =
-                                contest.eventDate.split("T")[0]; // '2024-07-01'
-                              const parts = formattedDate.split("-"); // ['2024', '07', '01']
-                              const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
-                              return modifiedDate;
+                              if (typeof window !== "undefined") {
+                                const formattedDate =
+                                  contest.eventDate.split("T")[0]; // '2024-07-01'
+                                const parts = formattedDate.split("-"); // ['2024', '07', '01']
+                                const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
+                                return modifiedDate;
+                              }
                             })()}
                           </div>
                         </p>
@@ -143,8 +155,9 @@ const Page = () => {
                       <div className="flex justify-center mt-2">
                         <Button
                           className=""
-
-                          onClick={() => handleParticipateContest(contest._id)}
+                          onClick={() =>
+                            handleParticipateContest(contest._id)
+                          }
                         >
                           Participate Now
                         </Button>
@@ -189,13 +202,15 @@ const Page = () => {
                       </p>
                       <div className="flex flex-row justify-evenly p-2 mt-2">
                         <p className="text-md text-orange-500 text-center">
-                        {(() => {
+                          {(() => {
+                            if (typeof window !== "undefined") {
                               const formattedDate =
                                 contest.eventDate.split("T")[0]; // '2024-07-01'
                               const parts = formattedDate.split("-"); // ['2024', '07', '01']
                               const modifiedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // '01-07-2024'
                               return modifiedDate;
-                            })()}
+                            }
+                          })()}
                         </p>
                         <p className="text-md text-orange-500 text-center">
                           {contest.duration} minutes
@@ -206,7 +221,9 @@ const Page = () => {
                       </p>
                       <div className="flex justify-center mt-2">
                         <Button
-                          onClick={() => handleParticipateContest(contest._id)}
+                          onClick={() =>
+                            handleParticipateContest(contest._id)
+                          }
                         >
                           Participate Now
                         </Button>

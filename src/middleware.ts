@@ -3,10 +3,6 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 export { default } from "next-auth/middleware"
 
-
-
-
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
     '/signIn',
@@ -45,3 +41,7 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
  
+
+
+
+// "dev": "next dev --turbo",
