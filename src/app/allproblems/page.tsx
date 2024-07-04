@@ -132,7 +132,7 @@ const Page = () => {
       setLoading(true);
       try {
         // Call your API to fetch all problems
-        const response = await axios.get("http://localhost:3000/api/getAllProblems");
+        const response = await axios.get("/api/getAllProblems");
         if (response.status === 200 && Array.isArray(response.data.data)) {
           const transformedData: Allproblems[] = response.data.data.map((problem: any) => ({
             id: problem._id,
