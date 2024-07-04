@@ -5,7 +5,7 @@ import codeImage from "../../public/secondCode.png";
 function HeroSection2() {
   return (
     <>
-      <div className="p-4 relative z-10 w-full text-center">
+      <div className="p-4 relative z-10 w-10/12 text-center">
         <h1 className="mt-20 md:mt-0 text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
           Explore Innovation FruitboxFlex and Quick Compiler
         </h1>

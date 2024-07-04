@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google";
-// import { Roboto, Arizonia, Great_Vibes, Meow_Script } from "next/font/google";
 import AuthProvider from "@/Context/AuthProvider";
 import Navbar from "@/components/Navbar";
 import "./globals.css";

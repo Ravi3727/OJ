@@ -1,8 +1,3 @@
-export const metadata = {
-  title: "OJ",
-  description: "Real plateform for programers",
-};
-
 export default function RootLayout({
   children,
 }: {

@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
@@ -87,7 +85,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         email: user.email,
       });
       console.log(res);
-      if (res.status) {
+      if (res.status === 200) {
         toast.success("Bio updated successfully", {
           position: "bottom-right",
           autoClose: 5000,
@@ -278,76 +276,82 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         {/* Contest Solved Data */}
-        <div className="mb-6 mt-10">
+        <div className="mb-6 mt-10 ">
           <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
           {user.ParticipatedContests.length > 0 ? (
-            user.ParticipatedContests.map((contest) => (
-              <div
-                key={contest.contestId}
-                className="mb-4 border-1 rounded-lg shadow-md "
-              >
-                <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
-                  <div>
-                    <h4 className="mt-4 text-orange-500">
-                      Contest Name:{" "}
-                      {contestSolved.find((c) => c._id === contest.contestId)
-                        ?.title || ""}
-                    </h4>
+            user.ParticipatedContests.map((contest) => {
+              const foundContest = contestSolved.find((c) => c !== null && c._id === contest.contestId);
+              return foundContest ? (
+                <div
+                  key={contest.contestId}
+                  className="mb-4 border-1 rounded-lg shadow-md p-4"
+                >
+                  <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
+                    <div>
+                      <h4 className="mt-4 text-orange-500">
+                        Contest Name: {foundContest.title}
+                      </h4>
+                    </div>
+                    <div>
+                      <Link href={`/contests/${contest.contestId}`}>
+                        <Button>View Contest</Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div>
-                    <Link href={`/contests/${contest.contestId}`}>
-                      <Button>View Contest</Button>
-                    </Link>
-                  </div>
+                  <h5 className="mt-4 mb-4 ">Contest problems</h5>
+                  <ul className="list-disc pl-5">
+                    {contest.problemsSolved.length > 0 ? (
+                      contest.problemsSolved.map((problem) => (
+                        <li key={problem.problemId} className="mb-2">
+                          <div className="grid grid-cols-4 gap-4 items-center">
+                            <div
+                              className={`font-bold items-start ${
+                                problem.difficulty === "Easy"
+                                  ? "text-green-500"
+                                  : problem.difficulty === "Medium"
+                                  ? "text-yellow-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {problem.title}
+                            </div>
+                            <div className="items-start">
+                              {problem.difficulty}
+                            </div>
+                            <div
+                              className={`items-start text-${
+                                problem.status === "Accepted"
+                                  ? "green-500"
+                                  : "red-600"
+                              }`}
+                            >
+                              {problem.status}
+                            </div>
+                            <div>
+                              {(() => {
+                                const formattedDate = formatDate(
+                                  problem.codeSubmisionDate.toString()
+                                );
+                                const parts = formattedDate.split("/");
+                                const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
+                                return modifiedDate;
+                              })()}
+                            </div>
+                          </div>
+                        </li>
+                      ))
+                    ) : (
+                      <p>No problems solved in this contest yet.</p>
+                    )}
+                  </ul>
                 </div>
-                <h5 className="mt-4 mb-4 ">Contest problems</h5>
-                <ul className="list-disc pl-5">
-                  {contest.problemsSolved.length > 0 ? (
-                    contest.problemsSolved.map((problem) => (
-                      <li key={problem.problemId} className="mb-2">
-                        <div className="grid grid-cols-4 gap-4 items-center">
-                          <div
-                            className={`font-bold items-start ${
-                              problem.difficulty === "Easy"
-                                ? "text-green-500"
-                                : problem.difficulty === "Medium"
-                                ? "text-yellow-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {problem.title}
-                          </div>
-                          <div className="items-start">
-                            {problem.difficulty}
-                          </div>
-                          <div
-                            className={`items-start text-${
-                              problem.status === "Accepted"
-                                ? "green-500"
-                                : "red-600"
-                            }`}
-                          >
-                            {problem.status}
-                          </div>
-                          <div>
-                            {(() => {
-                              const formattedDate = formatDate(
-                                problem.codeSubmisionDate.toString()
-                              );
-                              const parts = formattedDate.split("/");
-                              const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
-                              return modifiedDate;
-                            })()}
-                          </div>
-                        </div>
-                      </li>
-                    ))
-                  ) : (
-                    <p>No problems solved in this contest yet.</p>
-                  )}
-                </ul>
-              </div>
-            ))
+              ) : (
+                <div key={contest.contestId}>
+                  {/* <p>Loading contest details...</p> */}
+                  <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                </div>
+              );
+            })
           ) : (
             <p>No contests participated yet.</p>
           )}

@@ -42,7 +42,7 @@ const Home = () => {
         <div className="h-screen w-full flex flex-col items-center justify-center space-y-20">
           <ContestCarousel />
         </div>
-        <div className="h-screen w-full flex flex-col items-center justify-center space-y-20">
+        <div className="h-[24rem] w-full mt-20 mb- 16 mb-flex flex-col items-center justify-center space-y-20">
           <Fottor />
         </div>
       </div>

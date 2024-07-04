@@ -346,7 +346,7 @@ int main() {
         {/* Buttons  */}
         <div className="flex justify-end gap-2 max-h-14 flex-row mr-17 items-center ">
           <div className="max-w-[33%] text-center">
-            <Button onClick={handleRun} variant="secondary">
+            <Button onClick={handleRun} variant="secondary" disabled={loadingSubmit}>
               <div className="text-lg flex flex-row justify-evenly items-center">
                 {loadingRun ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />

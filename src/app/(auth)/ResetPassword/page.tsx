@@ -41,7 +41,7 @@ const Page = () => {
 
   const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
     setIsSubmitting(true);
-    data.username = session?.data?.user.username;
+    data.username = await session?.data?.user.username;
     const result = await axios.post<ApiResponse>("/api/resetPassword", data);
     if (result.data.success) {
       toast.success("Password reset successfully", {
