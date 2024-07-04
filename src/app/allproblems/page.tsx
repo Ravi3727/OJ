@@ -132,7 +132,8 @@ const Page = () => {
       setLoading(true);
       try {
         // Call your API to fetch all problems
-        const response = await axios.get("/api/getAllProblems");
+        console.log("inside fetchData");
+        const response = await axios.get("https://oj-frontend-rust.vercel.app/api/getAllProblems");
         if (response.status === 200 && Array.isArray(response.data.data)) {
           const transformedData: Allproblems[] = response.data.data.map((problem: any) => ({
             id: problem._id,
