@@ -148,7 +148,7 @@ int main() {
       setloadingRun(true);
 
       try {
-        const response = await axios.post("http://localhost:8000/execute", payload);
+        const response = await axios.post("https://oj-compiler-2old.onrender.com/execute", payload);
 
         if (response.data.results[0].actualOutput.includes("error")) {
           const errorMessage = response.data.results[0].actualOutput;
@@ -190,7 +190,7 @@ int main() {
       setloadingSubmit(true);
       try {
         if (output.length === 0) {
-          const response = await axios.post("http://localhost:8000/execute", payload);
+          const response = await axios.post("https://oj-compiler-2old.onrender.com/execute", payload);
 
           if (response.data.results[0].actualOutput.includes("error")) {
             const errorMessage = response.data.results[0].actualOutput;
