@@ -21,21 +21,19 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { problemSchema } from "@/schemas/problemsSchema";
+import { EditProblemSchema } from "@/schemas/EditProblemSchema";
 import { Textarea } from "@/components/ui/textarea";
 import ProblemsModel from "@/models/Problems";
 
 const Page = () => {
-
   const router = useRouter();
   const session = useSession();
 
-  const  { problemId } = useParams();
+  const { problemId } = useParams<{ problemId: string }>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isSubmiting, setIsSubmiting] = useState(false);
-
-  const form = useForm<z.infer<typeof problemSchema>>({
-    resolver: zodResolver(problemSchema),
+  const form = useForm<z.infer<typeof EditProblemSchema>>({
+    resolver: zodResolver(EditProblemSchema),
     defaultValues: {
       title: "",
       statement: "",
@@ -63,72 +61,52 @@ const Page = () => {
     name: "testCases",
   });
 
-  // const onSubmit = async (data: z.infer<typeof problemSchema>) => {
-  //   setIsSubmiting(true);
-  
-  //   const showToast = (message: string, type: "success" | "error") => {
-  //     toast[type](message, {
-  //       position: "bottom-right",
-  //       autoClose: 5000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //       theme: "light",
-  //       transition: Bounce,
-  //     });
-  //   };
-  
-  //   const validationRules = [
-  //     {
-  //       condition: !session,
-  //       message: "Please login to continue",
-  //       type: "success" as const,
-  //     },
-  //     {
-  //       condition: session?.data?.user.isVerified === false,
-  //       message: "Please verify your email to continue",
-  //       type: "error" as const,
-  //     },
-  //     {
-  //       condition: session?.data?.user.isProblemSetter === false,
-  //       message: "You are not a problem setter",
-  //       type: "error" as const,
-  //     },
-  //   ];
-  
-  //   for (const rule of validationRules) {
-  //     if (rule.condition) {
-  //       showToast(rule.message, rule.type);
-  //       setIsSubmiting(false);
-  //       return;
-  //     }
-  //   }
-  
-  //   try {
-  //     const response = await axios.put<ApiResponse>(`/api/editProblem/${problemId}`, data);
-  
-  //     if (response.data.success) {
-  //       showToast("Problem updated successfully", "success");
-  //       router.replace("/allproblems");
-  //     } else {
-  //       showToast("Please fill all the fields", "error");
-  //     }
-  //   } catch (error) {
-  //     const axiosError = error as AxiosError<ApiResponse>;
-  //     showToast(axiosError.response?.data.message ?? "Error on updating problem", "error");
-  //   } finally {
-  //     setIsSubmiting(false);
-  //   }
-  // };
-  
+  useEffect(() => {
+    const fetchProblemData = async () => {
+      try {
+        const response = await axios.get(`/api/getproblembyid/${problemId}`);
+        if (response.data.success) {
+          const problemData = response.data.data;
+          console.log("Problem data fetched successfully", problemData);
+          form.reset(problemData);
+        } else {
+          toast.error("Failed to fetch problem data", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast.error(
+          axiosError.response?.data.message ?? "Error fetching problem data",
+          {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+      }
+    };
 
+    fetchProblemData();
+  }, [problemId, form]);
 
+  const onSubmit = async (data: z.infer<typeof EditProblemSchema>) => {
+    setIsSubmitting(true);
 
-  const onSubmit = async (data: z.infer<typeof problemSchema>) => {
-    setIsSubmiting(true);
-  
     const showToast = (message: string, type: "success" | "error") => {
       toast[type](message, {
         position: "bottom-right",
@@ -142,7 +120,7 @@ const Page = () => {
         transition: Bounce,
       });
     };
-  
+
     const validationRules = [
       {
         condition: !session,
@@ -160,18 +138,21 @@ const Page = () => {
         type: "error" as const,
       },
     ];
-  
+
     for (const rule of validationRules) {
       if (rule.condition) {
         showToast(rule.message, rule.type);
-        setIsSubmiting(false);
+        setIsSubmitting(false);
         return;
       }
     }
-  
+
     try {
-      const response = await axios.put<ApiResponse>(`/api/editProblem/${problemId}`, data);
-  
+      const response = await axios.put<ApiResponse>(
+        `/api/editProblem/${problemId}`,
+        data
+      );
+
       if (response.data.success) {
         showToast("Problem updated successfully", "success");
         router.replace("/allproblems");
@@ -180,14 +161,14 @@ const Page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      showToast(axiosError.response?.data.message ?? "Error on updating problem", "error");
+      showToast(
+        axiosError.response?.data.message ?? "Error updating problem",
+        "error"
+      );
     } finally {
-      setIsSubmiting(false);
+      setIsSubmitting(false);
     }
   };
-  
-
-
 
   return (
     <>
@@ -231,11 +212,6 @@ const Page = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700">Statement</FormLabel>
                     <FormControl>
-                      {/* <Input
-                        className="bg-gray-200 border-black "
-                        placeholder="Problem statement..."
-                        {...field}
-                      /> */}
                       <Textarea
                         className="bg-gray-200 border-black "
                         placeholder="Problems statement..."
@@ -276,7 +252,7 @@ const Page = () => {
                         <FormControl>
                           <Input
                             className="bg-gray-200 border-black"
-                            placeholder="[inputs],output"
+                            placeholder="tags..."
                             {...form.register(`tags.${index}` as const)}
                           />
                         </FormControl>
@@ -308,24 +284,46 @@ const Page = () => {
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel className="text-gray-700">Test Cases</FormLabel>
                     {testCaseFields.map((testCase, index) => (
-                      <div
-                        key={testCase.id}
-                        className="flex items-center space-x-2"
-                      >
-                        <FormControl>
-                          <Input
-                            className="bg-gray-200 border-black"
-                            placeholder="[inputs],output"
-                            {...form.register(`testCases.${index}` as const)}
-                          />
-                        </FormControl>
-                        <Button
-                          type="button"
-                          onClick={() => removeTestCase(index)}
-                          className="bg-red-500 text-white"
-                        >
-                          Remove
-                        </Button>
+                      <div key={testCase.id} className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <FormControl>
+                            <Textarea
+                              className="bg-gray-200 border-black"
+                              placeholder="Input"
+                              {...form.register(
+                                `testCases.${index}.input` as const
+                              )}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.stopPropagation();
+                                }
+                              }}
+                            />
+                          </FormControl>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FormControl>
+                            <Textarea
+                              className="bg-gray-200 border-black"
+                              placeholder="Output"
+                              {...form.register(
+                                `testCases.${index}.output` as const
+                              )}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.stopPropagation();
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            onClick={() => removeTestCase(index)}
+                            className="bg-red-500 text-white"
+                          >
+                            Remove
+                          </Button>
+                        </div>
                       </div>
                     ))}
                     <Button
@@ -335,16 +333,16 @@ const Page = () => {
                     >
                       Add Test Case
                     </Button>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
+
               <Button
                 className="bg-violet-900 text-white hover:bg-red-600 "
                 type="submit"
-                disabled={isSubmiting}
+                disabled={isSubmitting}
               >
-                {isSubmiting ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
                     Loading

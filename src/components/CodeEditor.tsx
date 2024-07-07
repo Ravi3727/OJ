@@ -2,9 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  dark,
-} from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import axios from "axios";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
@@ -55,6 +53,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
     return savedCode ? savedCode : getDefaultCode("cpp");
   });
   const [output, setOutput] = useState<any[]>([]);
+  const [CompileError, setCompileError] = useState<string>("");
   const [language, setLanguage] = useState<string>("cpp");
   const [loadingRun, setloadingRun] = useState<boolean>(false);
   const [loadingSubmit, setloadingSubmit] = useState<boolean>(false);
@@ -148,23 +147,93 @@ int main() {
       setloadingRun(true);
 
       try {
-        const response = await axios.post("https://oj-compiler-2old.onrender.com/execute", payload);
+        const response = await axios.post(
+          // "http://localhost:8000/execute",
+          "https://oj-compiler-2old.onrender.com/execute",
+          payload
+        );
 
-        if (response.data.results[0].actualOutput.includes("error")) {
-          const errorMessage = response.data.results[0].actualOutput;
-          const regex =  /error: ([\s\S]*)/;
-          const match = errorMessage.match(regex);
+        if (response.data.results[0].passed === false) {
+          switch (response.data.results[0].language) {
+            case "cpp" || "c":
+              const errorMessagecp = response.data.results[0].actualOutput;
+              const errorRegexcp = /\.cpp:(\d+:\d+: .*)/;
+              // Extract the error message
+              const matchcp = errorMessagecp.match(errorRegexcp);
+              const errorCppMessage = matchcp
+                ? matchcp[1]
+                : "Something went wrong, please check your code";
 
-          if (match && match[1]) {
-            const result = match[1].trim();
-            setOutput([result]);
-          } else {
-            setOutput(["No match found"]);
+              console.log("Error Message CPP", errorCppMessage);
+
+              if (errorCppMessage.length > 0) {
+                setCompileError(errorCppMessage);
+              } else {
+                setOutput(response.data.results);
+              }
+              break;
+
+            case "java":
+              const errorMessagejava = response.data.results[0].actualOutput;
+              const errorRegexjava = /Error: ([^\n\r]*)/;
+              // Extract the error message
+              const matchjava = errorMessagejava.match(errorRegexjava);
+              const errorJavaMessage = matchjava
+                ? matchjava[1]
+                : "Something went wrong, please check your code";
+
+              console.log("Error Message Java", errorJavaMessage);
+
+              if (errorJavaMessage.length > 0) {
+                setCompileError(errorJavaMessage);
+              } else {
+                setOutput(response.data.results);
+              }
+              break;
+
+            case "py":
+              const errorMessagepy = response.data.results[0].actualOutput;
+              const errorRegexpy = /SyntaxError: ([^\r\n]*)/;
+              // Extract the error message
+              const matchpy = errorMessagepy.match(errorRegexpy);
+              const errorPyMessage = matchpy
+                ? matchpy[1]
+                : "Something went wrong, please check your code";
+
+              console.log("Error Message Python", errorPyMessage);
+
+              if (errorPyMessage.length > 0) {
+                setCompileError(errorPyMessage);
+              } else {
+                setOutput(response.data.results);
+              }
+              break;
+
+            case "js":
+              const errorMessagejs = response.data.results[0].actualOutput;
+              const errorRegexjs =
+                /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
+              // Extract the error message
+              const matchjs = errorMessagejs.match(errorRegexjs);
+              const errorJsMessage = matchjs
+                ? matchjs[1]
+                : "Something went wrong, please check your code";
+
+              console.log("Error Message JS", errorJsMessage);
+
+              if (errorJsMessage.length > 0) {
+                setCompileError(errorJsMessage);
+              } else {
+                setOutput(response.data.results);
+              }
+              break;
+
+            default:
+              break;
           }
         } else {
           setOutput(response.data.results);
         }
-
         setloadingRun(false);
       } catch (error: any) {
         console.error(error.response?.data);
@@ -190,18 +259,88 @@ int main() {
       setloadingSubmit(true);
       try {
         if (output.length === 0) {
-          const response = await axios.post("https://oj-compiler-2old.onrender.com/execute", payload);
+          const response = await axios.post(
+            "https://oj-compiler-2old.onrender.com/execute",
+            // "http://localhost:8000/execute",
+            payload
+          );
+          if (response.data.results[0].passed === false) {
+            switch (response.data.results[0].language) {
+              case "cpp" || "c":
+                const errorMessagecp = response.data.results[0].actualOutput;
+                const errorRegexcp = /\.cpp:(\d+:\d+: .*)/;
+                // Extract the error message
+                const matchcp = errorMessagecp.match(errorRegexcp);
+                const errorCppMessage = matchcp
+                  ? matchcp[1]
+                  : "Something went wrong, please check your code";
 
-          if (response.data.results[0].actualOutput.includes("error")) {
-            const errorMessage = response.data.results[0].actualOutput;
-            const regex =  /error: ([\s\S]*)/;
-            const match = errorMessage.match(regex);
+                console.log("Error Message CPP", errorCppMessage);
 
-            if (match && match[1]) {
-              const result = match[1].trim();
-              setOutput([result]);
-            } else {
-              setOutput(["No match found"]);
+                if (errorCppMessage.length > 0) {
+                  setCompileError(errorCppMessage);
+                } else {
+                  setOutput(response.data.results);
+                }
+                break;
+
+              case "java":
+                const errorMessagejava = response.data.results[0].actualOutput;
+                const errorRegexjava = /Error: ([^\n\r]*)/;
+                // Extract the error message
+                const matchjava = errorMessagejava.match(errorRegexjava);
+                const errorJavaMessage = matchjava
+                  ? matchjava[1]
+                  : "Something went wrong, please check your code";
+
+                console.log("Error Message Java", errorJavaMessage);
+
+                if (errorJavaMessage.length > 0) {
+                  setCompileError(errorJavaMessage);
+                } else {
+                  setOutput(response.data.results);
+                }
+                break;
+
+              case "py":
+                const errorMessagepy = response.data.results[0].actualOutput;
+                const errorRegexpy = /SyntaxError: ([^\r\n]*)/;
+                // Extract the error message
+                const matchpy = errorMessagepy.match(errorRegexpy);
+                const errorPyMessage = matchpy
+                  ? matchpy[1]
+                  : "Something went wrong, please check your code";
+
+                console.log("Error Message Python", errorPyMessage);
+
+                if (errorPyMessage.length > 0) {
+                  setCompileError(errorPyMessage);
+                } else {
+                  setOutput(response.data.results);
+                }
+                break;
+
+              case "js":
+                const errorMessagejs = response.data.results[0].actualOutput;
+                const errorRegexjs =
+                  /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
+                // Extract the error message
+                const matchjs = errorMessagejs.match(errorRegexjs);
+                const errorJsMessage = matchjs
+                  ? matchjs[1]
+                  : "Something went wrong, please check your code";
+
+                console.log("Error Message JS", errorJsMessage);
+
+                if (errorJsMessage.length > 0) {
+                  setCompileError(errorJsMessage);
+                } else {
+                  setOutput(response.data.results);
+                }
+                break;
+
+              default:
+                break;
             }
           } else {
             setOutput(response.data.results);
@@ -272,8 +411,8 @@ int main() {
   );
 
   return (
-    <div className="w-full max-h-screen h-full justify-evenly flex flex-col overflow-x-hidden">
-      <div className="relative max-h-full h-[88vh] bg-stone-900">
+    <div className="w-full max-h-screen  h-full justify-evenly flex flex-col overflow-x-hidden">
+      <div className="relative max-h-full h-[100vh] bg-stone-900">
         <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[64%]">
           <div className="w-full -mt-2 h-10 items-center text-center">
             {copyCode ? (
@@ -346,7 +485,11 @@ int main() {
         {/* Buttons  */}
         <div className="flex justify-end gap-2 max-h-14 flex-row mr-17 items-center ">
           <div className="max-w-[33%] text-center">
-            <Button onClick={handleRun} variant="secondary" disabled={loadingSubmit}>
+            <Button
+              onClick={handleRun}
+              variant="secondary"
+              disabled={loadingSubmit}
+            >
               <div className="text-lg flex flex-row justify-evenly items-center">
                 {loadingRun ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -379,11 +522,6 @@ int main() {
 
         {/* Output Box */}
         <div className=" overflow-auto rounded-b-md  p-4 w-full mx-auto max-h-full">
-          {/* {loading ? (
-            <div>
-              <Loader2 className="animate-spin mx-auto my-auto h-8 w-8 text-white" />
-            </div>
-          ) : ( */}
           <div
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
@@ -391,22 +529,27 @@ int main() {
             }}
             className="text-white text-lg font-semibold leading-10 text-start"
           >
-            {output.map((result, index) => (
-              <div
-                key={index}
-                className="flex flex-row justify-wrap w-full overflow-x-hidden"
-              >
-                <p
-                  className={`text-lg font-semibold leading-10 text-start ${
-                    result.passed ? "text-green-500" : "text-red-500"
-                  }`}
+            {CompileError.length > 0 ? (
+              <p className="text-lg font-semibold leading-10 text-start text-red-500">
+                {CompileError}
+              </p>
+            ) : (
+              output.map((result, index) => (
+                <div
+                  key={index}
+                  className="flex flex-row justify-wrap w-full overflow-x-hidden"
                 >
-                  TC:{index + 1} -&gt; {result.passed ? "Passed" : "Failed"}
-                </p>
-              </div>
-            ))}
+                  <p
+                    className={`text-lg font-semibold leading-10 text-start ${
+                      result.passed ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    TC:{index + 1} -&gt; {result.passed ? "Passed" : "Failed"}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
-          {/* )} */}
         </div>
       </div>
       <ToastContainer />

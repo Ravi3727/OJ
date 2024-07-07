@@ -305,7 +305,7 @@ const Createnewproblem = () => {
                 )}
               />
 
-              <FormField
+<FormField
                 control={form.control}
                 name="testCases"
                 render={() => (
@@ -315,23 +315,33 @@ const Createnewproblem = () => {
                       <div key={testCase.id} className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <FormControl>
-                            <Input
+                            <Textarea
                               className="bg-gray-200 border-black"
                               placeholder="Input"
                               {...form.register(
                                 `testCases.${index}.input` as const
                               )}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.stopPropagation();
+                                }
+                              }}
                             />
                           </FormControl>
                         </div>
                         <div className="flex items-center space-x-2">
                           <FormControl>
-                            <Input
+                            <Textarea
                               className="bg-gray-200 border-black"
                               placeholder="Output"
                               {...form.register(
                                 `testCases.${index}.output` as const
                               )}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.stopPropagation();
+                                }
+                              }}
                             />
                           </FormControl>
                           <Button
@@ -351,7 +361,6 @@ const Createnewproblem = () => {
                     >
                       Add Test Case
                     </Button>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

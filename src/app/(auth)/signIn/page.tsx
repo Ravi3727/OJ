@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -35,29 +35,7 @@ const Page = () => {
     },
   });
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace('/dashboard');
-    }
-  }, [status, router]);
-
-  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    setIsSubmitting(true);
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.identifier,
-      password: data.password,
-    });
-
-    if (result?.error) {
-      handleSignInError(result.error);
-    } else if (result?.ok === true) {
-      setIsSubmitting(false);
-      router.replace('/dashboard');
-    }
-  };
-
-  const handleSignInError = (error:any) => {
+  const handleSignInError = (error: any) => {
     let errorMessage = "An error occurred";
     if (error === "CredentialsSignin") {
       errorMessage = "Incorrect username or password";
@@ -81,6 +59,24 @@ const Page = () => {
     setIsSubmitting(false);
   };
 
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    setIsSubmitting(true);
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
+    });
+
+    console.log(result);
+
+    if (result?.error != null) {
+      handleSignInError(result.error);
+    } else {
+      setIsSubmitting(false);
+      router.replace("/dashboard");
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col items-center justify-center h-screen bg-black/[90]">
@@ -101,7 +97,9 @@ const Page = () => {
                 name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Email/Username</FormLabel>
+                    <FormLabel className="text-gray-700">
+                      Email/Username
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="email"
@@ -140,7 +138,8 @@ const Page = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /> Loading
+                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />{" "}
+                    Loading
                   </>
                 ) : (
                   "SignIn"
@@ -151,7 +150,10 @@ const Page = () => {
           <div className="text-center text-black opacity-90 mt-4 mb-4">
             <p>
               Not a member yet?{" "}
-              <Link href="/signup" className="text-blue-600 hover:text-blue-800">
+              <Link
+                href="/signup"
+                className="text-blue-600 hover:text-blue-800"
+              >
                 Sign up
               </Link>
             </p>
@@ -159,7 +161,10 @@ const Page = () => {
           <div className="text-center text-black opacity-90 mt-4 mb-4">
             <p>
               Forgot password?{" "}
-              <Link href="/ResetPassword" className="text-blue-600 hover:text-blue-800">
+              <Link
+                href="/ResetPassword"
+                className="text-blue-600 hover:text-blue-800"
+              >
                 Reset Password
               </Link>
             </p>

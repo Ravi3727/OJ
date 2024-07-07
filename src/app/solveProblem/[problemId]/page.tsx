@@ -34,6 +34,7 @@ const ProblemPage = () => {
       try {
         const res = await axios.get(`/api/getproblembyid/${problemId}`);
         setProblem(res.data.data);
+        console.log("Problem data fetched successfully By Id", res.data.data);
       } catch (error: any) {
         setErrorMsg(error.response?.data?.message || "Error fetching problem by Id");
       }
@@ -49,12 +50,32 @@ const ProblemPage = () => {
     );
   }
 
+  // const parseTestCase = (testCase: { input: string; output: string }) => {
+  //   return {
+  //     input: testCase.input,
+  //     output: testCase.output?.trim(),
+  //   };
+  // };
   const parseTestCase = (testCase: { input: string; output: string }) => {
+    let formattedInput = testCase.input;
+    
+    // Check if '\n' is present in the input
+    if (formattedInput.includes('\n')) {
+      // Split the input by '\n' to preserve multiline structure
+      const lines = formattedInput.split('\n');
+      // Join lines with '<br />' for display in HTML
+      formattedInput = lines.join('<br />');
+    }
+    
+    // Trim output to remove any leading/trailing whitespace
+    const trimmedOutput = testCase.output?.trim() ?? '';
+  
     return {
-      input: testCase.input,
-      output: testCase.output?.trim(),
+      input: formattedInput,
+      output: trimmedOutput,
     };
   };
+
 
   return (
     <>
@@ -62,8 +83,8 @@ const ProblemPage = () => {
       <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-screen overflow-x-hidden bg-black/[90]">
 
       
-        <div className="flex flex-row justify-between w-[98%] min-h-screen h-full overflow-x-hidden mx-auto mt-28">
-          <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-md overflow-auto">
+        <div className="flex flex-row justify-between w-[100vw] max-h-screen h-full overflow-x-hidden overflow-y-auto mx-auto mt-28 mb-12 " >
+          <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-lg overflow-auto">
             <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>
             <div className="mb-6">
               <p
@@ -108,7 +129,8 @@ const ProblemPage = () => {
                   const { input, output } = parseTestCase(testCase);
                   return (
                     <li key={index} className="mb-1">
-                      <strong>Input:</strong> {input} <br />
+                      <p><strong>Input:</strong></p>
+                      <p dangerouslySetInnerHTML={{ __html: input }} />
                       <strong>Output:</strong> {output}
                     </li>
                   );
@@ -122,7 +144,7 @@ const ProblemPage = () => {
             {errorMsg && <div className="text-red-500 mt-4">{errorMsg}</div>}
           </div>
 
-          <div className="w-1/2 rounded-t-lg bg-white-400 overflow-auto">
+          <div className="w-1/2 max-h-screen rounded-lg bg-white-400 overflow-auto">
             {/* <ProblemSubmitCodeEditor problems={problem} /> */}
             <CodeEditor problems={problem} contestId={"none"} />
           </div>
