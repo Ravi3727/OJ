@@ -1,33 +1,49 @@
-'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
-interface CountdownProps {
-  initialTime: number; // Time in seconds
-}
-
-const CountdownTimer: React.FC<CountdownProps> = ({ initialTime }) => {
-  const [timeLeft, setTimeLeft] = useState(initialTime);
+const CountdownTimer = ({ initialTime }) => {
+  const [time, setTime] = useState(initialTime);
+  const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
-    if (timeLeft === 0) return;
+    if (isActive && !isPaused) {
+      intervalRef.current = setInterval(() => {
+        setTime((time) => time > 0 ? time - 1 : 0);
+      }, 1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isActive, isPaused]);
 
-    const timer = setInterval(() => {
-      setTimeLeft(prevTime => prevTime - 1);
-    }, 1000);
+  useEffect(() => {
+    setTime(initialTime);
+  }, [initialTime]);
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+  const startTimer = () => {
+    setIsActive(true);
+    setIsPaused(false);
+  };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  const pauseTimer = () => {
+    setIsPaused(true);
+  };
+
+  const resetTimer = () => {
+    setIsActive(false);
+    setIsPaused(false);
+    setTime(initialTime);
   };
 
   return (
-    <div>
-      <h1 className='text-white text-md'>Countdown Timer</h1>
-      <p className='text-orange-500 text-xl'>{formatTime(timeLeft)}</p>
+    <div className="flex flex-col items-center justify-center mt-4">
+      <div className="text-5xl">{time}</div>
+      <div className="flex space-x-2 mt-4">
+        <button onClick={startTimer} className="px-4 py-2 bg-green-500 text-white rounded">Start</button>
+        <button onClick={pauseTimer} className="px-4 py-2 bg-yellow-500 text-white rounded">Pause</button>
+        <button onClick={resetTimer} className="px-4 py-2 bg-red-500 text-white rounded">Reset</button>
+      </div>
     </div>
   );
 };
