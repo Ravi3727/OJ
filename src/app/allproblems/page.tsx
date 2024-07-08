@@ -23,48 +23,12 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [isProblemSetter, setIsProblemSetter] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       // Call your API to fetch all problems
-  //       console.log("inside fetchData");
-  //       const response = await axios.get("https://oj-frontend-rust.vercel.app/api/getAllProblems");
-  //       if (response.status === 200 && Array.isArray(response.data.data)) {
-  //         const transformedData: Allproblems[] = response.data.data.map((problem: any) => ({
-  //           id: problem._id,
-  //           Title: problem.title,
-  //           Tags: problem.tags,
-  //           Difficulty: problem.difficulty,
-  //         }));
-  //         // Append initialData if needed
-  //         transformedData.push(...initialData);
-  //         setData(transformedData);
-  //       } else {
-  //         console.error("Failed to fetch problems or data format is incorrect");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching problems:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   const checkProblemSetter = () => {
-  //     setIsProblemSetter(session?.user.isProblemSetter || false);
-  //   };
-
-  //   if (status === "authenticated") {
-  //     checkProblemSetter();
-  //     fetchData();
-  //   }
-  // }, [session?.user.isProblemSetter, status]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/getAllProblems");
+        const response = await axios.get("https://oj-chi.vercel.app/api/getAllProblems");
         if (response.data.success) {
           const problems = response.data.data;
           const transformedData: Allproblems[] = problems.map((problem: any) => ({
