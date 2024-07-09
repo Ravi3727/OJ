@@ -28,7 +28,7 @@ const Page = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/getAllProblems");
+        const response = await axios.get("https://oj-sigma.vercel.app/api/getAllProblems");
         if (response.data.success) {
           const problems = response.data.data;
           const transformedData: Allproblems[] = problems.map((problem: any) => ({
