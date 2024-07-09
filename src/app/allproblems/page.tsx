@@ -8,8 +8,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { columns } from "./columns";
 
-// Sample data for initial rendering
-
 export interface Allproblems {
   id: string;
   Title: string;
@@ -23,43 +21,39 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [isProblemSetter, setIsProblemSetter] = useState(false);
 
-
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
-        const response = await axios.get("https://oj-chi.vercel.app/api/getAllProblems");
+        const response = await axios.get("/api/getAllProblems");
         if (response.data.success) {
           const problems = response.data.data;
-          const transformedData: Allproblems[] = problems.map((problem: any) => ({
-            id: problem._id,
-            Title: problem.title,
-            Tags: problem.tags,
-            Difficulty: problem.difficulty,
-          }));
-          // Append initialData if needed
-          // transformedData.push(...initialData);
+          const transformedData: Allproblems[] = problems.map(
+            (problem: any) => ({
+              id: problem._id,
+              Title: problem.title,
+              Tags: problem.tags,
+              Difficulty: problem.difficulty,
+            })
+          );
+
           setData(transformedData);
         } else {
           console.error("Failed to fetch problems:", response.data.message);
         }
       } catch (error) {
         console.error("Error fetching problems:", error);
-      } finally {
-        setLoading(false);
       }
     };
     const checkProblemSetter = () => {
-          setIsProblemSetter(session?.user.isProblemSetter || false);
-        };
-    
-  
+      setIsProblemSetter(session?.user.isProblemSetter || false);
+    };
+
+    fetchData();
+
     if (status === "authenticated") {
       checkProblemSetter();
-      fetchData();
     }
   }, [session?.user.isProblemSetter, status]);
-  
 
   return (
     <section className="py-40 bg-black/[90] text-white leading-6">
