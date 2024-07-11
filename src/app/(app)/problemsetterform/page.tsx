@@ -56,8 +56,8 @@ const Page = () => {
       });
       setIsSubmiting(false);
 
-    } else if (!data.leetCode && !data.codeForces && !data.codeCheaf) {
-      toast.error("Please fill all the fields", {
+    } else if (!data.leetCode) {
+      toast.error("Please fill leetCode URL", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,

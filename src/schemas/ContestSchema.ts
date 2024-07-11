@@ -6,6 +6,11 @@ export const contestSchema = z.object({
     problems: z.array(z.string()).min(1, { message: 'Problems must be at least 1 problems' }),
     difficulty: z.string().min(4, { message: 'Difficulty must be at least 4 characters' }),
     eventDate: z.date().min(new Date(), { message: 'Event date must be in the future' }),
-    HostedBy : z.string().min(2, { message: 'HostedBy must be at least 2 characters' }),
-    duration : z.string().min(2, { message: 'Duration must be at least 2 minutes' }),
+    HostedBy: z.string().min(2, { message: 'HostedBy must be at least 2 characters' }),
+    duration: z.string().min(2, { message: 'Duration must be at least 2 minutes' }),
+    users: z.array(z.object({
+        username: z.string(),
+        score: z.string()
+    })),
+    time: z.string(),
 });

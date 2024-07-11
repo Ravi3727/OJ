@@ -6,7 +6,7 @@ interface SolvedProblem {
     title: string;
     difficulty: string;
     codeSubmisionDate: Date;
-    // language: string;
+    // language: string;s
 }
 
 export interface UserProfile extends Document {
@@ -27,6 +27,7 @@ export interface UserProfile extends Document {
     resetPasswordverifyCode: string;
     resetPasswordverifyCodeExpiry: Date;
     isResetPasswordVerified: boolean;
+    Admin: boolean;
 }
 
 const UserSchema: Schema<UserProfile> = new Schema({
@@ -146,6 +147,10 @@ const UserSchema: Schema<UserProfile> = new Schema({
         required: false,
     },
     isResetPasswordVerified: {
+        type: Boolean,
+        default: false,
+    },
+    Admin:{
         type: Boolean,
         default: false,
     },

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
-
+import CountDown from "@/components/CountDown";
 
 interface TestCase {
   input: string;
@@ -49,13 +49,6 @@ const ProblemPage = () => {
       </div>
     );
   }
-
-  // const parseTestCase = (testCase: { input: string; output: string }) => {
-  //   return {
-  //     input: testCase.input,
-  //     output: testCase.output?.trim(),
-  //   };
-  // };
   const parseTestCase = (testCase: { input: string; output: string }) => {
     let formattedInput = testCase.input;
     
@@ -82,7 +75,9 @@ const ProblemPage = () => {
     {/* <div className="bg-black text-lg p-4 text-white mx-auto w-full h-16">Set Your Own Time to Finish {" "}<CountdownTimer initialTime={300} /></div> */}
       <div className="flex flex-row justify-center gap-2 p-3 w-full min-h-screen overflow-x-hidden bg-black/[90]">
 
-      
+      <div className="">
+        <CountDown />
+      </div>
         <div className="flex flex-row justify-between w-[100vw] max-h-screen h-full overflow-x-hidden overflow-y-auto mx-auto mt-28 mb-12 " >
           <div className="w-1/2 p-6 bg-gray-300 shadow-lg rounded-lg overflow-auto">
             <h1 className="text-3xl font-bold mb-2">{problem.title}</h1>

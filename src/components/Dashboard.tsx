@@ -121,7 +121,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
     const getUserAddedProblems = async () => {
       try {
         const res = await axios.get(`/api/problemAddedByUser/${user.username}`);
-        console.log("response Problem added by user ", res.data.data);
+        // console.log("response Problem added by user ", res.data.data);
         setUserAddedProblems(res.data.data);
       } catch (error) {
         console.log("error", error);
@@ -134,7 +134,9 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         if (user.ParticipatedContests.length > 0) {
           const contests = await Promise.all(
             user.ParticipatedContests.map(async (contest) => {
-              const res = await axios.get(`/api/getContest/${contest.contestId}`);
+              const res = await axios.get(
+                `/api/getContest/${contest.contestId}`
+              );
               return res.data.data;
             })
           );
@@ -149,13 +151,13 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
     getUserAddedProblems();
   }, [user.ParticipatedContests, user.username]);
 
-  console.log("user question solved ", user.QuestionsSolved);
-  console.log("user contest solved ", contestSolved);
-  console.log("user Problems added ", userAddedProblems);
+  // console.log("user question solved ", user.QuestionsSolved);
+  // console.log("user contest solved ", contestSolved);
+  // console.log("user Problems added ", userAddedProblems);
 
   return (
-    <div className="p-8 bg-gray-900 min-h-screen h-full text-white">
-      <div className="w-10/12 mx-auto bg-gray-800 rounded-lg p-6 mt-28 shadow-md h-full">
+    <div className="p-8 bg-black/[90] min-h-screen h-full text-white">
+      <div className="w-10/12 mx-auto bg-stone-600 rounded-lg p-6 mt-28 shadow-md h-full">
         <div className="flex items-center justify-center mx-auto mb-6">
           <div className="flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold">{user.username}</h1>
@@ -163,6 +165,8 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
             <p className="text-sm text-gray-400">{user.email}</p>
           </div>
         </div>
+
+        {/* User Bio */}
 
         <div className="mb-6 flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-2">Bio</h2>
@@ -223,13 +227,14 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
         {/* Problem Solved */}
 
-        <div className="mb-6">
+        <div className="mb-6  max-h-[50vh] overflow-y-auto">
           <h2 className="text-xl font-semibold mb-2">Problems Solved</h2>
           {user.QuestionsSolved.length > 0 ? (
             <ul className="list-disc pl-5">
               {user.QuestionsSolved.map((problem, index) => (
                 <li key={index} className="mb-2">
                   <div className="grid grid-cols-6 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
+                    <div className="items-start">{problem.title}</div>
                     <div
                       className={`font-bold items-start ${
                         problem.difficulty === "Easy"
@@ -239,9 +244,9 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                           : "text-red-500"
                       }`}
                     >
-                      {problem.title}
+                      {problem.difficulty}
                     </div>
-                    <div className="items-start">{problem.difficulty}</div>
+
                     <div
                       className={`items-start text-${
                         problem.status === "Accepted" ? "green-500" : "red-600"
@@ -276,11 +281,13 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         {/* Contest Solved Data */}
-        <div className="mb-6 mt-10 ">
+        <div className="mb-6 mt-10 max-h-[50vh] overflow-y-auto">
           <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
           {user.ParticipatedContests.length > 0 ? (
             user.ParticipatedContests.map((contest) => {
-              const foundContest = contestSolved.find((c) => c !== null && c._id === contest.contestId);
+              const foundContest = contestSolved.find(
+                (c) => c !== null && c._id === contest.contestId
+              );
               return foundContest ? (
                 <div
                   key={contest.contestId}
@@ -304,6 +311,9 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                       contest.problemsSolved.map((problem) => (
                         <li key={problem.problemId} className="mb-2">
                           <div className="grid grid-cols-4 gap-4 items-center">
+                            <div className="items-start">
+                              {problem.title}
+                            </div>
                             <div
                               className={`font-bold items-start ${
                                 problem.difficulty === "Easy"
@@ -313,11 +323,9 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                                   : "text-red-500"
                               }`}
                             >
-                              {problem.title}
-                            </div>
-                            <div className="items-start">
                               {problem.difficulty}
                             </div>
+                            
                             <div
                               className={`items-start text-${
                                 problem.status === "Accepted"
@@ -358,44 +366,47 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         {/* Problems Added By You */}
+        <div className=" mb-6 mt-10 max-h-[50vh] overflow-y-auto">
+          <h2 className="text-xl font-semibold mb-2">Problems Added By You</h2>
 
-        {userAddedProblems.length > 0 ? (
-          <ul className="list-disc pl-5">
-            {userAddedProblems.map((problem, index) => (
-              <li key={index} className="mb-2">
-                <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black bg-opacity-50">
-                  <div className="items-start max-w-[20%] text-red-600">
-                    {problem.title}
+          {userAddedProblems.length > 0 ? (
+            <ul className="list-disc pl-5">
+              {userAddedProblems.map((problem, index) => (
+                <li key={index} className="mb-2">
+                  <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black/[70] ">
+                    <div className="items-start max-w-[20%] text-red-600">
+                      {problem.title}
+                    </div>
+                    <div className="items-start text-start max-w-[40%] max-h-20  overflow-x-hidden text-red-500 overflow-y-auto">
+                      {problem.statement}
+                    </div>
+                    <div
+                      className={`font-bold max-w-[15%] items-start ${
+                        problem.difficulty === "Easy"
+                          ? "text-green-500"
+                          : problem.difficulty === "Medium"
+                          ? "text-yellow-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {problem.difficulty}
+                    </div>
+                    <div className="items-start max-w-[15%]">
+                      {formatDate(problem.createdAt.toString())}
+                    </div>
+                    <div>
+                      <Link href={`/editProblemui/${problem._id}`}>
+                        <Button>Edit</Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="items-start max-w-[40%] overflow-x-hidden text-red-500 overflow-y-auto">
-                    {problem.statement}
-                  </div>
-                  <div
-                    className={`font-bold max-w-[15%] items-start ${
-                      problem.difficulty === "Easy"
-                        ? "text-green-500"
-                        : problem.difficulty === "Medium"
-                        ? "text-yellow-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {problem.difficulty}
-                  </div>
-                  <div className="items-start max-w-[15%]">
-                    {formatDate(problem.createdAt.toString())}
-                  </div>
-                  <div>
-                    <Link href={`/editProblemui/${problem._id}`}>
-                      <Button>Edit</Button>
-                    </Link>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No problems added yet.</p>
-        )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No problems added yet.</p>
+          )}
+        </div>
 
         <ToastContainer />
       </div>

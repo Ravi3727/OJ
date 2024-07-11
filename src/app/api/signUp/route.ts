@@ -48,6 +48,7 @@ export async function POST(request: Request) {
             const expirydate = new Date()
             expirydate.setHours(expirydate.getHours() + 1)
 
+
             const newUser = new UserModel({
                 username,
                 email,
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
                 QuestionsSolved: [],
                 ContestCompleted: [],
                 rating: 0,
+                avatar: "",
                 createdAt: Date.now(),
             })
 

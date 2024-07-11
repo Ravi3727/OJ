@@ -1,14 +1,28 @@
 // Import necessary dependencies
 import { sendproblemSetterEmail } from "@/helpers/sendproblemSetterEmail";
 import { dbConnect } from "@/lib/dbConnect";
+import problemSetterModel from "@/models/ProblemSetterForm";
+import { NextResponse } from "next/server";
 
 // Export the POST method function
-export async function POST(request: Request) {
+export async function POST(request: Request,response:NextResponse) {
     await dbConnect(); // Assuming this function connects to your database
 
     try {
         // Destructure request body variables
         const { leetCode, codeForces, codeCheaf, other, username } = await request.json();
+
+        if ( !username || !codeForces || !leetCode) {
+            return NextResponse.json({
+                success: false,
+                message: "Username, codeForces and leetCode URL are required",
+            }, {
+                status: 400
+            });
+        }
+
+        const participant = { leetCode, codeForces, codeCheaf, other, username, createdAt: new Date()};
+        const savedParticipant = await problemSetterModel.create(participant);
 
         // Call function to send problem setter email
         const verifyEmailResponse = await sendproblemSetterEmail(
@@ -24,10 +38,11 @@ export async function POST(request: Request) {
         }
 
         // Return success response if email sent successfully
-        return new Response(JSON.stringify({
+        return NextResponse.json({
             success: true,
-            message: "Success problem setter",
-        }), { status: 201 });
+            message: "Problem Setter Participant saved successfully",
+            data: savedParticipant
+        }, { status: 200 });
 
     } catch (error) {
         // Handle any errors that occur during the process

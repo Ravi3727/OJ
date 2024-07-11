@@ -48,13 +48,14 @@ interface CodeSubmissionStatus {
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
   const session = useSession();
+  const [language, setLanguage] = useState<string>("cpp");
   const [code, setCode] = useState<string>(() => {
-    const savedCode = localStorage.getItem("userCode");
-    return savedCode ? savedCode : getDefaultCode("cpp");
+    const savedCode = localStorage.getItem(language);
+    return savedCode ? savedCode : getDefaultCode(language);
   });
   const [output, setOutput] = useState<any[]>([]);
   const [CompileError, setCompileError] = useState<string>("");
-  const [language, setLanguage] = useState<string>("cpp");
+
   const [loadingRun, setloadingRun] = useState<boolean>(false);
   const [loadingSubmit, setloadingSubmit] = useState<boolean>(false);
   const [copyCode, setCopyCode] = useState<boolean>(false);
@@ -69,18 +70,33 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
   }, [session.data]);
 
   useEffect(() => {
-    setCode(getDefaultCode(language));
+    const savedCode = localStorage.getItem(language);
+    if (savedCode) {
+      setCode(savedCode);
+    } else {
+      setCode(getDefaultCode(language));
+    }
   }, [language]);
 
   useEffect(() => {
-    localStorage.setItem("userCode", code);
-  }, [code]);
+    localStorage.setItem(language, code);
+  }, [language, code]);
 
   const transformedTestCases = problem.testCases.map((testCase: TestCase) => {
     const input = testCase.input;
     const expectedOutput = testCase.output;
     return { input, expectedOutput };
   });
+
+  localStorage.removeItem("userCode");
+
+  setTimeout(() => {
+    localStorage.removeItem("py");
+    localStorage.removeItem("cpp");
+    localStorage.removeItem("js");
+    localStorage.removeItem("java");
+    localStorage.removeItem("c");
+  }, 1000 * 60 * 60 * 5);
 
   function getDefaultCode(lang: string): string {
     switch (lang) {
@@ -260,11 +276,14 @@ int main() {
       try {
         if (output.length === 0) {
           const response = await axios.post(
-            "https://oj-compiler-2old.onrender.com/execute",
-            // "http://localhost:8000/execute",
+            // "https://oj-compiler-2old.onrender.com/execute",
+            "http://localhost:8000/execute",
             payload
           );
-          if (response.data.results[0].passed === false) {
+          if (
+            response.data.results[0].passed !== false ||
+            response.data.results[0].passed !== true
+          ) {
             switch (response.data.results[0].language) {
               case "cpp" || "c":
                 const errorMessagecp = response.data.results[0].actualOutput;
@@ -360,7 +379,47 @@ int main() {
           );
         }
 
-        console.log("submitCodeStatusToUser", submitCodeStatusToUser);
+        let ContestScore = 0;
+
+        for (let i = 0; i < output.length; i++) {
+          if (submitCodeStatusToUser.difficulty === "Easy") {
+            if (output[i].passed === true) {
+              const score = 20 / problem.testCases.length;
+              ContestScore = ContestScore + parseFloat(score.toFixed(4));
+            } else {
+              const score = 20 / problem.testCases.length;
+              ContestScore = ContestScore - parseFloat(score.toFixed(4));
+            }
+          } else if (submitCodeStatusToUser.difficulty === "Medium") {
+            if (output[i].passed === true) {
+              const score = 30 / problem.testCases.length;
+              ContestScore = ContestScore + parseFloat(score.toFixed(4));
+            } else {
+              const score = 30 / problem.testCases.length;
+              ContestScore = ContestScore - parseFloat(score.toFixed(4));
+            }
+          } else {
+            if (output[i].passed === true) {
+              const score = 40 / problem.testCases.length;
+              ContestScore = ContestScore + parseFloat(score.toFixed(4));
+            } else {
+              const score = 40 / problem.testCases.length;
+              ContestScore = ContestScore - parseFloat(score.toFixed(4));
+            }
+          }
+        }
+        const uniqueId = contestId + userEmail;
+        const existingScore = localStorage.getItem(uniqueId);
+        if (existingScore === null) {
+          localStorage.setItem(uniqueId, ContestScore.toString());
+        } else {
+          const updatedScore = parseInt(existingScore) + ContestScore;
+          localStorage.setItem(uniqueId, updatedScore.toString());
+        }
+        setTimeout(() => {
+          localStorage.removeItem(uniqueId);
+        }, 1000 * 60 * 60 * 2);
+        // console.log("submitCodeStatusToUser", submitCodeStatusToUser);
 
         setloadingSubmit(false);
         toast.success("Code Submitted", {

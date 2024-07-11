@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
                 token.isVerified = user.isVerified
                 token.username = user.username
                 token.isProblemSetter = user.isProblemSetter
+                token.Admin = user.Admin
             }
 
             // console.log("From callbacks", token);
@@ -68,6 +69,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.isVerified = token.isVerified
                 session.user.username = token.username
                 session.user.isProblemSetter = token.isProblemSetter
+                session.user.Admin = token.Admin
             }
             return session
         },

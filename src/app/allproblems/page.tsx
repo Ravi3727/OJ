@@ -56,7 +56,7 @@ const Page = () => {
   }, [session?.user.isProblemSetter, status]);
 
   return (
-    <section className="py-40 bg-black/[90] text-white leading-6">
+    <section className="py-40 bg-black/[90] min-h-screen h-full text-white leading-6">
       <div className="container">
         <div className="flex flex-row justify-between w-full p-2">
           <div>

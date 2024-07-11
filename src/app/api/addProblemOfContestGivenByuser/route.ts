@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log("Find contest from user participated contests", contest);
+        // console.log("Find contest from user participated contests", contest);
 
         let testCaseFailed: number | undefined;
         let result: string;
@@ -54,12 +54,12 @@ export async function POST(request: NextRequest) {
                 break;
             }
         }
-        const language = codeSubmisionData[0].language;
+        // const language = codeSubmisionData[0].language;
         result = testCaseFailed ? `WA on ${testCaseFailed} test case` : "Accepted";
 
 
         const newProblemSolved = {
-            language:language,
+            // language:language,
             problemId: problemId,
             title,
             difficulty,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         };
 
         contest.problemsSolved.push(newProblemSolved);
-        console.log("Saved problem solved to contest", contest);
+        // console.log("Saved problem solved to contest", contest);
         user.save();
 
         return NextResponse.json(

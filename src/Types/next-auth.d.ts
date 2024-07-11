@@ -6,6 +6,7 @@ declare module 'next-auth'{
         isVerified?:boolean;
         username?:string;
         isProblemSetter?:boolean;
+        Admin?:boolean;
     }
     interface Session{
         user:{
@@ -13,6 +14,7 @@ declare module 'next-auth'{
             isVerified?:boolean;
             username?:string;
             isProblemSetter?:boolean;
+            Admin?:boolean;
         } & DefaultSession['user']
     }
 }

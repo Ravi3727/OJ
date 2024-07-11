@@ -94,7 +94,7 @@ const ContestCarousel = () => {
           <CarouselContent>
             {contests.map((contest, index) => (
               <CarouselItem key={index}>
-                <div className="max-h-[70vh] p-4 ">
+                <div className="lg:max-h-[70vh] sm:w-3/12 lg:w-full p-4 ">
                   <Card
                     key={index}
                     className="shadow-sm rounded-lg shadow-white overflow-hidden hover:scale-105 transition-all duration-500"

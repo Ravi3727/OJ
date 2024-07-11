@@ -13,6 +13,8 @@ export async function POST(request:Request){
             username:decodedUsername
         })
 
+        console.log(user);
+
         if(!user){
             return Response.json({
                 success:false,

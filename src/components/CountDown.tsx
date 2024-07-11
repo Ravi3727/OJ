@@ -1,10 +1,10 @@
 "use client";
 
-import CountdownTimer from "@/components/Timer";
+import CountdownTimer from "./Timer";
 import React, { useState } from "react";
 import { MdLockClock } from "react-icons/md";
 
-const Page = () => {
+const CountDown = () => {
   const [inputTime, setInputTime] = useState("");
   const [time, setTime] = useState(0);
 
@@ -47,4 +47,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default CountDown;

@@ -48,10 +48,10 @@ import {
             <Heading as="h2">CodeForces link = <a href={codeForces}>Click here to visit CodeForces</a></Heading>
           </Row>
           <Row>
-            <Heading as="h2">Codechef Link = <a href={leetCode}>Click here to visit Codechef</a></Heading>
+            <Heading as="h2">Codechef Link = <a href={codeCheaf}>Click here to visit Codechef</a></Heading>
           </Row>
           <Row>
-            <Heading as="h2">Other Link = <a href={leetCode}>Click here to visit Other</a></Heading>
+            <Heading as="h2">Other Link = <a href={other}>Click here to visit Other</a></Heading>
           </Row>
           
           <Row>

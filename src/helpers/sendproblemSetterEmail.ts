@@ -1,4 +1,4 @@
-'use client'
+
 import { resend } from '@/lib/resend';
 import FormSubmitEmail from '../../Emails/FormSubmitEmail';
 

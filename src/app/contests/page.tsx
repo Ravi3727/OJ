@@ -74,7 +74,9 @@ const Page = () => {
       router.replace("/signIn");
     }
   };
-
+  const showLeaderboard = async (contest_id: string) => {
+    router.replace(`/contests/leaderboard/${contest_id}`);
+  }
   return (
     <>
       <div className="bg-black min-h-screen w-full">
@@ -131,7 +133,7 @@ const Page = () => {
                       <p className="text-lg text-gray-700 text-center mb-4">
                         {contest.description}
                       </p>
-                      <div className="flex flex-row justify-evenly p-2 mt-2">
+                      <div className="flex flex-row justify-evenly p-2 mt-2 ">
                         <p className="text-md text-orange-500 text-center">
                           <div>
                             {(() => {
@@ -152,6 +154,7 @@ const Page = () => {
                       <p className="text-md text-gray-500 text-center mt-2">
                         Hosted by {contest.HostedBy}
                       </p>
+                    
                       <div className="flex justify-center mt-2">
                         <Button
                           className=""
@@ -162,6 +165,8 @@ const Page = () => {
                           Participate Now
                         </Button>
                       </div>
+                      
+                      
                     </CardContent>
                   </Card>
                 ))}
@@ -219,14 +224,27 @@ const Page = () => {
                       <p className="text-md text-gray-500 text-center mt-2">
                         Hosted by {contest.HostedBy}
                       </p>
+                      <div className="flex justify-center flex-row gap-2 mx-automt-2">
                       <div className="flex justify-center mt-2">
                         <Button
+                          className=""
                           onClick={() =>
                             handleParticipateContest(contest._id)
                           }
                         >
                           Participate Now
                         </Button>
+                      </div>
+                      <div className="flex justify-center mt-2">
+                        <Button
+                          className=""
+                          onClick={() =>
+                            showLeaderboard(contest._id)
+                          }
+                        >
+                          Leader Board
+                        </Button>
+                      </div>
                       </div>
                     </CardContent>
                   </Card>

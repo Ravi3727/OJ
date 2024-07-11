@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
             status: result,
             codeSubmisionDate: new Date(codeSubmisionDate),
           };
-          console.log("Mill gai language",newProblemSolved)
+        //   console.log("Mill gai language",newProblemSolved)
           user.QuestionsSolved.push(newProblemSolved);
         
         // user.QuestionsSolved.push(newProblemSolved);
