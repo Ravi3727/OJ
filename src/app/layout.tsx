@@ -3,6 +3,7 @@ import AuthProvider from "@/Context/AuthProvider";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
+require('dotenv').config();
 
 export const metadata: Metadata = {
   title: "Online Code Judge",

@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
         }
 
     } catch (error) {
-        console.error('Error updating problem:', error);
+        console.error('Error updating user bio:', error);
         return NextResponse.json(
-            { message: 'Error updating problem', success: false },
+            { message: 'Error updating  user bio', success: false },
             { status: 500 }
         );
     }

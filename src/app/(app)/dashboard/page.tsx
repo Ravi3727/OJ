@@ -9,7 +9,9 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {sendProblemSetterResultEmail} from "@/helpers/sendProblemSetterResultEmail";
 interface Problem {
   statement: string;
   createdAt: Date;
@@ -52,27 +54,27 @@ interface Application {
   codeForces: string;
   codeCheaf: string;
   other: string;
+  verified: boolean;
 }
 
 const Page: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const { username2 } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState<Application[]>([]);
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await axios.get(`/api/getApplications`);
-        console.log("response Problem added by user ", res.data.data);
-        setApplications(res.data.data);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
+  const fetchApplications = async () => {
+    try {
+      const res = await axios.get(`/api/getApplications`);
+      console.log("response Problem added by user ", res.data.data);
+      setApplications(res.data.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
+  useEffect(() => {
     const fetchData = async () => {
       if (session) {
         setLoading(true);
@@ -92,12 +94,120 @@ const Page: React.FC = () => {
         }
       }
     };
-
     fetchData();
     if (session?.user.Admin === true) {
       fetchApplications();
     }
   }, [session]);
+
+  const handelProblemSetterVarification = async (username: string) => {
+    try {
+      const res = await axios.post("/api/problemSetterVerification", {
+        username,
+      });
+      console.log(res);
+      if (res.status === 200) {
+        toast.success("Problem Setter Verification Successful", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        fetchApplications();
+      }
+    } catch (error) {
+      toast.error("Something went wrong", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
+
+  const rejectingApplication = async (username: string) => {
+    console.log(username);
+    try {
+      const email = session?.user.email;
+      const res = await axios.post("/api/rejectionProblemSeter", {
+        username, email, result:false,
+      });
+      console.log(res);
+      if (res.status === 200) {
+        toast.success("Application Rejected Successfully", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        fetchApplications();
+      }
+    } catch (error) {
+      toast.error("Something went wrong", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
+
+  const removeProblemSetter = async (username: string) => {
+    try {
+      const res = await axios.post("/api/removeProblemSetter", {
+        username,
+      });
+      console.log(res);
+      if (res.status === 200) {
+        toast.success("Problem Setter Removed Successfully", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        fetchApplications();
+      }
+    } catch (error) {
+      toast.error("Something went wrong", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
 
   if (loading || !user) {
     return (
@@ -113,10 +223,12 @@ const Page: React.FC = () => {
         <Dashboard user={user} />
       </div>
 
+
+{/* Problem Setter Applications */}
       {session?.user.Admin && (
         <div className="w-full h-full bg-black/[90] flex flex-col justify-center items-center ">
           <div className="w-10/12 text-white text-2xl font-bold leading-6 mx-auto bg-stone-600 rounded-lg p-6 mt-4 shadow-md h-full">
-            Problems Setter Applications
+           Problem Setter Application
           </div>
           {applications.length > 0 ? (
             <div className="w-10/12 h-full">
@@ -154,10 +266,46 @@ const Page: React.FC = () => {
                     </div>
 
                     <div>
-                      <Button  onClick={()=> router.replace(`/dashboard/${app.username}`)}>
-                        verify
+                      <Button
+                        onClick={() =>
+                          router.replace(`/dashboard/${app.username}`)
+                        }
+                      >
+                        Visit
                       </Button>
                     </div>
+
+                    {app.verified === false && <div>
+                      <Button
+                        onClick={() =>
+                          handelProblemSetterVarification(app.username)
+                        }
+                      >
+                        Allow
+                      </Button>
+                    </div>}
+
+                    {app.verified === false && <div>
+                      <Button
+                        onClick={() =>
+                          rejectingApplication(app.username)
+                        }
+                      >
+                        Reject
+                      </Button>
+                    </div>}
+
+                    {
+                      app.verified === true && <div>
+                        <Button
+                          onClick={() =>
+                            removeProblemSetter(app.username)
+                          }
+                        >
+                          Remove from PS
+                        </Button>
+                      </div>
+                    }
                   </div>
                 ))}
               </div>
@@ -169,6 +317,9 @@ const Page: React.FC = () => {
           )}
         </div>
       )}
+
+
+      <ToastContainer />
     </>
   );
 };
