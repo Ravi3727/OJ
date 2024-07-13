@@ -144,7 +144,8 @@ int main() {
 
   const submitCodeStatusToUser: CodeSubmissionStatus = {
     codeSubmisionData: [],
-    codeSubmisionDate: new Date().toLocaleDateString("en-GB"),
+    // codeSubmisionDate: new Date().toLocaleDateString("en-GB"),
+    codeSubmisionDate: new Date().toISOString(),
     problemId: problem._id,
     title: problem.title,
     difficulty: problem.difficulty,
@@ -164,8 +165,7 @@ int main() {
 
       try {
         const response = await axios.post(
-          // "http://localhost:8000/execute",
-          "https://oj-compiler-2old.onrender.com/execute",
+          "https://aws.ravikant.tech/execute",
           payload
         );
 
@@ -276,8 +276,7 @@ int main() {
       try {
         if (output.length === 0) {
           const response = await axios.post(
-            // "https://oj-compiler-2old.onrender.com/execute",
-            "http://localhost:8000/execute",
+            "https://aws.ravikant.tech/",
             payload
           );
           if (
@@ -463,6 +462,7 @@ int main() {
     }
   };
 
+
   const highlightCode = (code: string) => (
     <SyntaxHighlighter language={language} style={dark}>
       {code}
@@ -491,7 +491,7 @@ int main() {
                 onClick={() => {
                   navigator.clipboard.writeText(code);
                   setCopyCode(true);
-                  setTimeout(() => {
+                  setTimeout(() => {  
                     setCopyCode(false);
                   }, 3000);
                 }}
@@ -530,12 +530,13 @@ int main() {
             padding={10}
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 16,
+              fontSize: 14,
               outline: "none",
               border: "none",
               // backgroundColor: "#2d2d2d",
               backgroundColor: "#1C1917",
               color: "#f8f8f2",
+              overflowY:"auto",
             }}
           />
         </div>

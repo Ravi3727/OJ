@@ -26,6 +26,14 @@ export async function POST(request: NextRequest) {
         );
     }
 
+
+    const parsedDate = new Date(codeSubmisionDate);
+    if (isNaN(parsedDate.valueOf())) {
+        return NextResponse.json(
+            { success: false, message: 'Invalid date format' },
+            { status: 400 }
+        );
+    }
     try {
         const user = await UserModel.findOne({ email: userEmail });
         if (!user) {
@@ -37,10 +45,10 @@ export async function POST(request: NextRequest) {
 
         let testCaseFailed: number | undefined;
         let result: string;
-        if(codeSubmisionData.length === 1){
+        if (codeSubmisionData.length === 1) {
             result = "Failed to compile"
         }
-        else{
+        else {
             for (let i = 0; i < codeSubmisionData.length; i++) {
                 if (!codeSubmisionData[i].passed) {
                     testCaseFailed = i + 1;
@@ -58,11 +66,11 @@ export async function POST(request: NextRequest) {
             title,
             difficulty,
             status: result,
-            codeSubmisionDate: new Date(codeSubmisionDate),
-          };
+            codeSubmisionDate: parsedDate,
+        };
         //   console.log("Mill gai language",newProblemSolved)
-          user.QuestionsSolved.push(newProblemSolved);
-        
+        user.QuestionsSolved.push(newProblemSolved);
+
         // user.QuestionsSolved.push(newProblemSolved);
 
         await user.save();
