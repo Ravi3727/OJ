@@ -13,7 +13,7 @@ import Autoplay from "embla-carousel-autoplay";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
-import ContestImage from "../../public/Contest.png";
+import ContestImage from "../../public/contestDemo.png";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
