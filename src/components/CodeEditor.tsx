@@ -159,13 +159,16 @@ int main() {
     code,
     testCases: transformedTestCases,
   };
+
+  // Run code 
   const handleRun = async () => {
     if (session.status === "authenticated") {
       setloadingRun(true);
 
       try {
         const response = await axios.post(
-          "https://aws.ravikant.tech/execute",
+          // "https://aws.ravikant.tech/execute",
+          "http://localhost:8000/execute",
           payload
         );
 
@@ -270,13 +273,17 @@ int main() {
     }
   };
 
+
+  // Submit Code
+  
   const handleSubmit = async () => {
     if (session.status === "authenticated") {
       setloadingSubmit(true);
       try {
         if (output.length === 0) {
           const response = await axios.post(
-            "https://aws.ravikant.tech/",
+            // "https://aws.ravikant.tech/execute",
+            "http://localhost:8000/execute",
             payload
           );
           if (
