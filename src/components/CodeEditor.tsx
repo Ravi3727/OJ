@@ -167,12 +167,12 @@ int main() {
 
       try {
         const response = await axios.post(
-          // "https://aws.ravikant.tech/execute",
-          "http://localhost:8000/execute",
+          "https://aws.ravikant.tech/execute",
+          // "http://localhost:8000/execute",
           payload
         );
 
-        if (response.data.results[0].passed === false) {
+        if (response.data.results[0].passed !== false && response.data.results[0].passed !== true) {
           switch (response.data.results[0].language) {
             case "cpp" || "c":
               const errorMessagecp = response.data.results[0].actualOutput;
@@ -282,12 +282,12 @@ int main() {
       try {
         if (output.length === 0) {
           const response = await axios.post(
-            // "https://aws.ravikant.tech/execute",
-            "http://localhost:8000/execute",
+            "https://aws.ravikant.tech/execute",
+            // "http://localhost:8000/execute",
             payload
           );
           if (
-            response.data.results[0].passed !== false ||
+            response.data.results[0].passed !== false &&
             response.data.results[0].passed !== true
           ) {
             switch (response.data.results[0].language) {
