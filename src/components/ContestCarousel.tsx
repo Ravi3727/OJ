@@ -10,7 +10,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
 import ContestImage from "../../public/contestDemo.png";
