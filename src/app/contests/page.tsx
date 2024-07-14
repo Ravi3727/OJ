@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
-import ContestImage from "../../../public/Contest.png";
+import ContestImage from "../../../public/contestDemo.png";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -61,10 +61,7 @@ const Page = () => {
         const response = await axios.post(
           "/api/AddContestIdToUserContestModel/" + contest_id
         );
-        console.log(
-          "Response from AddContestIdToUserContestModel",
-          response
-        );
+        console.log("Response from AddContestIdToUserContestModel", response);
         router.replace(`/contests/${contest_id}`);
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
@@ -76,7 +73,7 @@ const Page = () => {
   };
   const showLeaderboard = async (contest_id: string) => {
     router.replace(`/contests/leaderboard/${contest_id}`);
-  }
+  };
   return (
     <>
       <div className="bg-black min-h-screen w-full">
@@ -154,19 +151,15 @@ const Page = () => {
                       <p className="text-md text-gray-500 text-center mt-2">
                         Hosted by {contest.HostedBy}
                       </p>
-                    
+
                       <div className="flex justify-center mt-2">
                         <Button
                           className=""
-                          onClick={() =>
-                            handleParticipateContest(contest._id)
-                          }
+                          onClick={() => handleParticipateContest(contest._id)}
                         >
                           Participate Now
                         </Button>
                       </div>
-                      
-                      
                     </CardContent>
                   </Card>
                 ))}
@@ -225,26 +218,24 @@ const Page = () => {
                         Hosted by {contest.HostedBy}
                       </p>
                       <div className="flex justify-center flex-row gap-2 mx-automt-2">
-                      <div className="flex justify-center mt-2">
-                        <Button
-                          className=""
-                          onClick={() =>
-                            handleParticipateContest(contest._id)
-                          }
-                        >
-                          Participate Now
-                        </Button>
-                      </div>
-                      <div className="flex justify-center mt-2">
-                        <Button
-                          className=""
-                          onClick={() =>
-                            showLeaderboard(contest._id)
-                          }
-                        >
-                          Leader Board
-                        </Button>
-                      </div>
+                        <div className="flex justify-center mt-2">
+                          <Button
+                            className=""
+                            onClick={() =>
+                              handleParticipateContest(contest._id)
+                            }
+                          >
+                            Participate Now
+                          </Button>
+                        </div>
+                        <div className="flex justify-center mt-2">
+                          <Button
+                            className=""
+                            onClick={() => showLeaderboard(contest._id)}
+                          >
+                            Leader Board
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
