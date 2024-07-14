@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+##The Online Judge
+The Online Judge is a web platform designed for students and coding enthusiasts to practice Data Structures and Algorithms (DSA) without the distractions of advertisements or online courses. It provides features for both regular users and admins, ensuring a seamless experience for problem-solving and contest organization.
 
-## Getting Started
+##Features
+User Authentication: Secure login and registration with OTP validation.
+Unified Dashboard: A single dashboard catering to regular users, problem creators, and contest organizers.
+Problem Management: Customizable problems table and detailed problem-solving pages.
+Contest Management: Features for creating and participating in coding contests, with enhanced security for contest operations.
 
-First, run the development server:
+##Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+#Frontend:
+TypeScript
+Next.js
+TailwindCSS
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#Backend:
+Node.js
+Express.js
+Docker
+Zod
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#Database:
+MongoDB
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#Deployment:
+Vercel (Frontend)
+AWS (Code Compiler)
 
-## Learn More
+##Installation
 
-To learn more about Next.js, take a look at the following resources:
+#Clone the repository:
+```git clone https://github.com/Ravi3727/OJ.git```
+```cd OJ```
+##Install frontend dependencies:
+```npm install```
+##Set up environment variables:
+Create a .env file in the OJ folder.
+DATABASE_URL = ""
+RESEND_API_KEY = ""
+NEXTAUTH_SECRET_KEY = ""
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+##Run the OJ project:
+```npm run dev```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+##Usage
 
-## Deploy on Vercel
+#Users:
+Register and log in to access the dashboard.
+Browse and solve problems.
+Participate in contests.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+$Admins:
+Log in to access admin functionalities.
+Create and manage problems.
+Organize and oversee contests.
+Future Enhancements
+Security: Enhancing security features for contest operations.
+Scalability: Improving the platform to handle a larger number of users and problems.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+##Contributing
+#I welcome contributions to enhance The Online Judge. Please follow these steps to contribute:
+#Fork the repository.
+Create a new branch: ```git checkout -b feature-name```.
+Make your changes and commit them: ```git commit -m 'Add some feature'```.
+Push to the branch:``` git push origin feature-name.```
+Open a pull request.
+
+##Contact
+For any questions or feedback, please reach out to me at rk3727000@gmail.com.
