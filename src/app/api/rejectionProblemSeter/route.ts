@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
             );
         } else {
             return NextResponse.json(
-                { message: `User Not Verified for Problem Setter`, success: false, ApplicationResult: result },
-                { status: 400 }
+                { message: `User Not Verified for Problem Setter`, success: true, ApplicationResult: result },
+                { status: 200 }
             );
         }
 

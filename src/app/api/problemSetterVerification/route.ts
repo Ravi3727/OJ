@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
                 );
             }else{
                 return NextResponse.json(
-                    { message: `User Not Verified for Problem Setter`, success: false, ApplicationResult: User.isProblemSetter },
-                    { status: 400 }
+                    { message: `User Not Verified for Problem Setter`, success: true, ApplicationResult: User.isProblemSetter },
+                    { status: 200 }
                 );
             }
         }
