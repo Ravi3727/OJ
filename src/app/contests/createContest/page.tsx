@@ -227,7 +227,9 @@ const CreateContest = () => {
                 name="HostedBy"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Your Username</FormLabel>
+                    <FormLabel className="text-gray-700">
+                      Your Username
+                    </FormLabel>
                     <FormControl>
                       <Input
                         className="bg-gray-200 border-black"
@@ -273,7 +275,6 @@ const CreateContest = () => {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="difficulty"
@@ -291,7 +292,6 @@ const CreateContest = () => {
                   </FormItem>
                 )}
               />
-
               <div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -320,7 +320,6 @@ const CreateContest = () => {
                   </PopoverContent>
                 </Popover>
               </div>
-
               <FormField
                 control={form.control}
                 name="duration"
@@ -339,13 +338,14 @@ const CreateContest = () => {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="problems"
                 render={() => (
                   <FormItem className="flex flex-col gap-2">
-                    <FormLabel className="text-gray-700">Add Problems ID</FormLabel>
+                    <FormLabel className="text-gray-700">
+                      Add Problems ID
+                    </FormLabel>
                     {problems.map((problem, index) => (
                       <div
                         key={problem.id}
@@ -378,11 +378,10 @@ const CreateContest = () => {
                   </FormItem>
                 )}
               />
-
               <Button
                 className="bg-violet-900 text-white hover:bg-red-600"
                 type="submit"
-                disabled={isSubmitting}
+                // disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <>

@@ -10,7 +10,7 @@ function HeroSection() {
         <p className="mt-4 font-normal text-base md:text-lg text-neutral-300 max-w-lg mx-auto">
           Step into the ultimate coding arena, where each challenge ignites your
           passion and hones your problem-solving prowess, transforming every
-          line of code into a masterpiece of logic and creativity&quot;
+          line of code into a masterpiece of logic and creativity
         </p>
       </div>
     </div>

@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/Types/ApiResponse";
 import { Button } from "@/components/ui/button";
+import { Divide } from "lucide-react";
 
 type Contest = {
   _id: string;
@@ -74,6 +75,15 @@ const Page = () => {
   const showLeaderboard = async (contest_id: string) => {
     router.replace(`/contests/leaderboard/${contest_id}`);
   };
+
+  const upComingContests = contests.filter(
+    (contest) => new Date(contest.eventDate).getTime() >= Date.now()
+  );
+
+  const completedContests = contests.filter(
+    (contest) => new Date(contest.eventDate).getTime() < Date.now()
+  );
+
   return (
     <>
       <div className="bg-black min-h-screen w-full">
@@ -102,14 +112,9 @@ const Page = () => {
                 </div>
               )}
             </div>
-
             <div className="grid grid-cols-3 gap-4 md:gap-8 w-full h-full mt-6">
-              {contests
-                .filter(
-                  (contest) =>
-                    new Date(contest.eventDate).getTime() >= Date.now()
-                )
-                .map((contest, index) => (
+              {upComingContests.length > 0 ? (
+                upComingContests.map((contest, index) => (
                   <Card
                     key={index}
                     className="shadow-sm rounded-lg shadow-white overflow-hidden hover:scale-105 transition-all duration-500"
@@ -162,7 +167,13 @@ const Page = () => {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                ))
+              ) : (
+                <div className="text-md md:text-md font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                  No upcoming contests are scheduled at the moment. In the
+                  meantime, you can solve problems from previous contests
+                </div>
+              )}
             </div>
           </div>
 
@@ -172,12 +183,8 @@ const Page = () => {
             </div>
             {/* Cards */}
             <div className="grid grid-cols-3 gap-4 md:gap-8 w-full h-full mt-6">
-              {contests
-                .filter(
-                  (contest) =>
-                    new Date(contest.eventDate).getTime() < Date.now()
-                )
-                .map((contest, index) => (
+              {completedContests.length > 0 ? (
+                completedContests.map((contest, index) => (
                   <Card
                     key={index}
                     className="shadow-sm rounded-lg shadow-white overflow-hidden hover:scale-105 transition-all duration-500"
@@ -239,7 +246,11 @@ const Page = () => {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                ))) :(
+                  <div className="text-md md:text-md font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                    No past contests are available at the moment. In the meantime, you can solve problems from problems table
+                  </div>
+                )}
             </div>
           </div>
         </div>

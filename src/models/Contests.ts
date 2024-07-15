@@ -3,13 +3,13 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface Contest extends Document {
     title: string;
     description: string;
-    eventDate: string;
+    eventDate: Date;
     HostedBy: string;
     problems: string[];
     difficulty: string;
     createdAt: Date;
     duration: string;
-    users: { username: string; score: string }[]; // Update this line
+    users: { username: string; score: string }[];
     time: string;
 }
 
@@ -25,11 +25,11 @@ const ContestSchema: Schema<Contest> = new mongoose.Schema({
     },
     HostedBy: {
         type: String,
-        required: true
+        required: true,
     },
     problems: {
         type: [String],
-        required: true
+        required: true,
     },
     difficulty: {
         type: String,
@@ -40,7 +40,7 @@ const ContestSchema: Schema<Contest> = new mongoose.Schema({
         required: [true, "Duration of contest is required"],
     },
     eventDate: {
-        type: String,
+        type: Date, // Changed to Date
         required: [true, "Event date of contest is required"],
     },
     users: {
