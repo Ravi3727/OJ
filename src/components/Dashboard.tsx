@@ -231,7 +231,11 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
           <h2 className="text-xl font-semibold mb-2">Problems Solved</h2>
           {user.QuestionsSolved.length > 0 ? (
             <ul className="list-disc pl-1 md:pl-5">
-              {user.QuestionsSolved.map((problem, index) => (
+              {user.QuestionsSolved.sort((a, b) => {
+                const dateA = new Date(a.codeSubmisionDate);
+                const dateB = new Date(b.codeSubmisionDate);
+                return dateB.getTime() - dateA.getTime();
+              }).map((problem, index) => (
                 <li key={index} className="mb-2">
                   <div className="grid grid-cols-6 w-full overflow-x-auto md:overflow-x-auto gap-20 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
                     <div className="items-start">{problem.title}</div>
@@ -308,46 +312,50 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                   <h5 className="mt-4 mb-4 ">Contest problems</h5>
                   <ul className="list-disc pl-5">
                     {contest.problemsSolved.length > 0 ? (
-                      contest.problemsSolved.map((problem) => (
-                        <li key={problem.problemId} className="mb-2">
-                          <div className="grid grid-cols-4 gap-16 md:gap-4 items-center">
-                            <div className="items-start">
-                              {problem.title}
+                      contest
+                        .problemsSolved.sort((a, b) => {
+                          const dateA = new Date(a.codeSubmisionDate);
+                          const dateB = new Date(b.codeSubmisionDate);
+                          return dateB.getTime() - dateA.getTime();
+                        })
+                        .map((problem) => (
+                          <li key={problem.problemId} className="mb-2">
+                            <div className="grid grid-cols-4 gap-16 md:gap-4 items-center">
+                              <div className="items-start">{problem.title}</div>
+                              <div
+                                className={`font-bold items-start ${
+                                  problem.difficulty === "Easy"
+                                    ? "text-green-500"
+                                    : problem.difficulty === "Medium"
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                }`}
+                              >
+                                {problem.difficulty}
+                              </div>
+
+                              <div
+                                className={`items-start text-${
+                                  problem.status === "Accepted"
+                                    ? "green-500"
+                                    : "red-600"
+                                }`}
+                              >
+                                {problem.status}
+                              </div>
+                              <div>
+                                {(() => {
+                                  const formattedDate = formatDate(
+                                    problem.codeSubmisionDate.toString()
+                                  );
+                                  const parts = formattedDate.split("/");
+                                  const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
+                                  return modifiedDate;
+                                })()}
+                              </div>
                             </div>
-                            <div
-                              className={`font-bold items-start ${
-                                problem.difficulty === "Easy"
-                                  ? "text-green-500"
-                                  : problem.difficulty === "Medium"
-                                  ? "text-yellow-500"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {problem.difficulty}
-                            </div>
-                            
-                            <div
-                              className={`items-start text-${
-                                problem.status === "Accepted"
-                                  ? "green-500"
-                                  : "red-600"
-                              }`}
-                            >
-                              {problem.status}
-                            </div>
-                            <div>
-                              {(() => {
-                                const formattedDate = formatDate(
-                                  problem.codeSubmisionDate.toString()
-                                );
-                                const parts = formattedDate.split("/");
-                                const modifiedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
-                                return modifiedDate;
-                              })()}
-                            </div>
-                          </div>
-                        </li>
-                      ))
+                          </li>
+                        ))
                     ) : (
                       <p>No problems solved in this contest yet.</p>
                     )}
@@ -371,37 +379,43 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
           {userAddedProblems.length > 0 ? (
             <ul className="list-disc pl-5">
-              {userAddedProblems.map((problem, index) => (
-                <li key={index} className="mb-2">
-                  <div className="flex flex-row w-[600px] md:w-full overflow-x-auto md:overflow-x-hidden justify-between items-center p-2 rounded-lg bg-black/[70] ">
-                    <div className="items-start max-w-[20%] text-red-600">
-                      {problem.title}
+              {userAddedProblems
+                .sort((a, b) => {
+                  const dateA = new Date(a.createdAt);
+                  const dateB = new Date(b.createdAt);
+                  return dateB.getTime() - dateA.getTime();
+                })
+                .map((problem, index) => (
+                  <li key={index} className="mb-2">
+                    <div className="flex flex-row w-[600px] md:w-full overflow-x-auto md:overflow-x-hidden justify-between items-center p-2 rounded-lg bg-black/[70] ">
+                      <div className="items-start max-w-[20%] text-red-600">
+                        {problem.title}
+                      </div>
+                      <div className="items-start text-start max-w-[40%] max-h-20  overflow-x-hidden text-red-500 overflow-y-auto">
+                        {problem.statement}
+                      </div>
+                      <div
+                        className={`font-bold max-w-[15%] items-start ${
+                          problem.difficulty === "Easy"
+                            ? "text-green-500"
+                            : problem.difficulty === "Medium"
+                            ? "text-yellow-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </div>
+                      <div className="items-start max-w-[15%]">
+                        {formatDate(problem.createdAt.toString())}
+                      </div>
+                      <div>
+                        <Link href={`/editProblemui/${problem._id}`}>
+                          <Button>Edit</Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="items-start text-start max-w-[40%] max-h-20  overflow-x-hidden text-red-500 overflow-y-auto">
-                      {problem.statement}
-                    </div>
-                    <div
-                      className={`font-bold max-w-[15%] items-start ${
-                        problem.difficulty === "Easy"
-                          ? "text-green-500"
-                          : problem.difficulty === "Medium"
-                          ? "text-yellow-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {problem.difficulty}
-                    </div>
-                    <div className="items-start max-w-[15%]">
-                      {formatDate(problem.createdAt.toString())}
-                    </div>
-                    <div>
-                      <Link href={`/editProblemui/${problem._id}`}>
-                        <Button>Edit</Button>
-                      </Link>
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           ) : (
             <p>No problems added yet.</p>
