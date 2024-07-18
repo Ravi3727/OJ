@@ -17,32 +17,32 @@ const Home = () => {
 
   return (
     <>
-      <div className="flex min-h-screen h-full flex-col items-center justify-between p-2 bg-black/[90] text-white">
+      <div className="flex min-h-screen h-full flex-col w-full overflow-x-hidden items-start md:items-center justify-between p-2 bg-black/[90] text-white">
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="flex min-h-screen flex-col items-center justify-between p-2 bg-black/[90] text-white"
+          className="flex h-full md:min-h-screen flex-col items-center justify-between p-1 md:p-2 bg-black/[90] text-white"
         >
           <HeroSection />
         </div>
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="h-screen w-full flex flex-col items-center justify-center space-y-20"
+          className="h-screen w-full flex flex-col items-start md:items-center justify-start md:justify-center space-y-4 md:space-y-20"
         >
           <HeroSection2 />
         </div>
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="h-screen w-full flex flex-col items-center justify-center space-y-20"
+          className="h-screen w-full flex flex-col items-center justify-center space-y-6 md:space-y-20 md:mb-0 mb-12"
         >
           <HeroSection3 />
         </div>
-        <div className="h-screen w-full flex flex-col items-center justify-center space-y-20">
+        <div className="h-screen w-full flex flex-col items-center justify-center space-y-1 md:mt-0 mt-16 md:space-y-20">
           <ContestCarousel />
         </div>
-        <div className="h-[24rem] w-full mt-20 mb- 16 mb-flex flex-col items-center justify-center space-y-20">
+        <div className="h-[24rem] w-full mt-20 mb- 16 mb-flex flex-col items-center justify-center space-y-6 md:space-y-20">
           <Fottor />
         </div>
       </div>

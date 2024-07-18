@@ -74,9 +74,9 @@ const ContestCarousel = () => {
       <div
         data-aos="fade-up"
         data-aos-duration="3000"
-        className="p-4 w-10/12 h-full items-center justify-center mx-auto"
+        className="p-2 md:p-4 w-full md:w-10/12 h-full items-center justify-center mx-auto"
       >
-        <h1 className="mt-20 md:mt-0 text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 text-center">
+        <h1 className="mt-10 md:mt-0 text-2xl md:text-6xl md:font-semibold font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
           Dive into the world of coding challenges
         </h1>
       </div>
@@ -88,12 +88,12 @@ const ContestCarousel = () => {
               delay: 2000,
             }),
           ]}
-          className="w-full max-w-4xl mx-auto"
+          className="w-full md:max-w-4xl mx-auto"
         >
           <CarouselContent>
             {contests.map((contest, index) => (
               <CarouselItem key={index}>
-                <div className="lg:max-h-[70vh] sm:w-3/12 lg:w-full p-4 ">
+                <div className="lg:max-h-[70vh] w-56 lg:w-full p-1 md:p-4 ">
                   <Card
                     key={index}
                     className="shadow-sm rounded-lg shadow-white overflow-hidden hover:scale-105 transition-all duration-500"
@@ -103,9 +103,9 @@ const ContestCarousel = () => {
                       width={200}
                       height={150}
                       alt={contest.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-32 md:h-48 object-cover"
                     />
-                    <CardHeader className="text-xl text-center p-4">
+                    <CardHeader className="text-lg md:text-xl text-center p-2 md:p-4">
                       <CardTitle className="text-2xl font-semibold">
                         {contest.title}
                       </CardTitle>

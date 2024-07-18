@@ -12,11 +12,11 @@ const Fottor = () => {
   return (
     <>
       <div className="w-full h-full bg-black/[90] flex flex-col items-center justify-center ">
-        <div className="font-Arizonia flex flex-col items-center justify-center space-y-20 text-7xl font-shadow-2xl shadow-white">
+        <div className="mt-10 md:mt-0 text-3xl md:text-6xl md:font-semibold font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
           Connect With Me
         </div>
 
-        <div className="flex flex-row w-1/2 justify-between items-center p-4  mt-16 text-5xl ">
+        <div className="flex flex-row w-full md:w-1/2 justify-between items-center p-2 md:p-4  mt-10 md:mt-16 text-2xl md:text-5xl">
           <Link
             href="https://www.linkedin.com/in/ravi-kant2705/"
             target="_blank"
