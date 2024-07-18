@@ -168,7 +168,6 @@ int main() {
       try {
         const response = await axios.post(
           "https://aws.ravikant.tech/execute",
-          // "http://localhost:8000/execute",
           payload
         );
 
@@ -283,7 +282,6 @@ int main() {
         if (output.length === 0) {
           const response = await axios.post(
             "https://aws.ravikant.tech/execute",
-            // "http://localhost:8000/execute",
             payload
           );
           if (
@@ -478,8 +476,8 @@ int main() {
 
   return (
     <div className="w-full max-h-screen  h-full justify-evenly flex flex-col overflow-x-hidden">
-      <div className="relative max-h-full h-[100vh] bg-stone-900">
-        <div className="flex flex-row justify-between items-center absolute w-64 z-10 left-[64%]">
+      <div className="relative w-full md:max-h-full h-[100vh] bg-stone-900">
+        <div className="flex flex-row justify-between items-center absolute w-64 z-10 md:left-[64%] mx-auto">
           <div className="w-full -mt-2 h-10 items-center text-center">
             {copyCode ? (
               <button className="inline-flex items-center">
@@ -516,7 +514,7 @@ int main() {
           </div>
           <div>
             <select
-              className="select-box rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
+              className="select-box rounded-lg py-1.5 px-1 md:w-32 w-20 md:mr-0 mr-[70px] md:px-4 mb-1 focus:outline-none focus:border-indigo-500 border-2 border-gray-400"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
@@ -529,7 +527,7 @@ int main() {
           </div>
         </div>
 
-        <div className=" max-h-[60vh] overflow-y-auto overflow-x-hidden mt-9">
+        <div className="max-h-[60vh] overflow-y-auto overflow-x-auto md:overflow-x-hidden mt-9">
           <Editor
             value={code}
             onValueChange={(newCode) => setCode(newCode)}
@@ -544,13 +542,14 @@ int main() {
               backgroundColor: "#1C1917",
               color: "#f8f8f2",
               overflowY:"auto",
+              overflow:"auto",
             }}
           />
         </div>
       </div>
       <div className="min-h-[32vh] mt-1 bg-stone-900  flex flex-col ">
         {/* Buttons  */}
-        <div className="flex justify-end gap-2 max-h-14 flex-row mr-17 items-center ">
+        <div className="flex justify-end mx-auto gap-4 max-h-14 flex-row md:mr-10 mr-16 items-center  ">
           <div className="max-w-[33%] text-center">
             <Button
               onClick={handleRun}

@@ -15,10 +15,12 @@ type Contest = {
   duration: number;
   users: string[];
 };
+
 const Page = () => {
   const params = useParams();
   const contest_id = params.contest_id;
   const [contest, setContest] = useState<Contest | null>(null);
+
   useEffect(() => {
     const getContestById = async () => {
       try {
@@ -39,29 +41,31 @@ const Page = () => {
     return <div>Loading...</div>;
   }
 
-  const ParticipantScors = contest.users.map((user: any) => {
+  const ParticipantScores = contest.users.map((user: any) => {
     return {
       username: user.username,
       score: user.score,
     };
   });
-  const sortedParticipantScors = ParticipantScors.sort(
+
+  const sortedParticipantScores = ParticipantScores.sort(
     (a, b) => b.score - a.score
   );
-  console.log("sortedParticipantScors", sortedParticipantScors);
+
+  console.log("sortedParticipantScores", sortedParticipantScores);
+
   return (
-    <div className="h-full min-h-screen w-full bg-black/[90] ">
-      <div className=" md:mt-0 text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 pt-40 ml-[18rem]">
-        Contest <span className="text-orange-500">{contest.title}</span>{" "}
-        Leaderboard{" "}
+    <div className="h-full min-h-screen w-full bg-black/[90] flex flex-col items-center py-10 px-4">
+      <div className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 pt-20 md:pt-40 text-center">
+        Contest <span className="text-orange-500">{contest.title}</span> Leaderboard
       </div>
-      <div className="p-4 w-6/12 border-2 bg-stone-800 text-center mt-10 mx-auto rounded-xl shadow-white shadow-md">
-        <ul className="list-disc text-center text-white p-4">
-          {sortedParticipantScors.map((user, index) => (
+      <div className="w-full max-w-4xl border-2 bg-stone-800 text-center mt-10 mx-auto rounded-xl shadow-white shadow-md">
+        <ul className="list-disc text-center text-white p-6">
+          {sortedParticipantScores.map((user, index) => (
             <li key={index} className="mb-4 items-start text-center">
-              <div className="flex flex-row justify-between">
+              <div className="flex flex-row justify-between px-4 md:px-10">
                 <div className="text-xl text-yellow-400">{user.username}</div>
-                <div className="text-xl text-yellow-400">{user.score}</div>
+                <div className="text-xl text-yellow-400">{Number(user.score).toFixed(4)}</div>
               </div>
             </li>
           ))}
