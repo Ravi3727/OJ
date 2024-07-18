@@ -21,28 +21,28 @@ const Home = () => {
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="flex h-full md:min-h-screen flex-col items-center justify-between p-1 md:p-2 bg-black/[90] text-white"
+          className="flex h-full md:h-screen flex-col items-center justify-between p-1 md:p-2 bg-black/[90] text-white"
         >
           <HeroSection />
         </div>
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="h-screen w-full flex flex-col items-start md:items-center justify-start md:justify-center space-y-4 md:space-y-20"
+          className="h-full md:h-screen w-full flex flex-col items-start md:items-center justify-start md:justify-center space-y-4 md:space-y-20"
         >
           <HeroSection2 />
         </div>
         <div
           data-aos="fade-up"
           data-aos-duration="3000"
-          className="h-screen w-full flex flex-col items-center justify-center space-y-6 md:space-y-20 md:mb-0 mb-12"
+          className="h-full md:h-screen w-full flex flex-col items-center justify-center space-y-6 md:space-y-12"
         >
           <HeroSection3 />
         </div>
-        <div className="h-screen w-full flex flex-col items-center justify-center space-y-1 md:mt-0 mt-16 md:space-y-20">
+        <div className="h-full md:h-screen w-full flex flex-col items-center justify-center space-y-1 md:mt-0 md:space-y-10">
           <ContestCarousel />
         </div>
-        <div className="h-[24rem] w-full mt-20 mb- 16 mb-flex flex-col items-center justify-center space-y-6 md:space-y-20">
+        <div className="h-[24rem] w-full mb- 16 mb-flex flex-col items-center justify-center md:space-y-20">
           <Fottor />
         </div>
       </div>

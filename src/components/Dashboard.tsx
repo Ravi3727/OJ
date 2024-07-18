@@ -157,7 +157,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
   return (
     <div className="p-8 bg-black/[90] min-h-screen h-full text-white">
-      <div className="w-10/12 mx-auto bg-stone-600 rounded-lg p-6 mt-28 shadow-md h-full">
+      <div className="w-full md:w-10/12 mx-auto bg-stone-600 rounded-lg p-6 mt-28 shadow-md h-full">
         <div className="flex items-center justify-center mx-auto mb-6">
           <div className="flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold">{user.username}</h1>
@@ -227,13 +227,13 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
         {/* Problem Solved */}
 
-        <div className="mb-6  max-h-[50vh] overflow-y-auto">
+        <div className="mb-6  w-full overflow-x-auto md:overflow-x-hidden max-h-[50vh] overflow-y-auto">
           <h2 className="text-xl font-semibold mb-2">Problems Solved</h2>
           {user.QuestionsSolved.length > 0 ? (
-            <ul className="list-disc pl-5">
+            <ul className="list-disc pl-1 md:pl-5">
               {user.QuestionsSolved.map((problem, index) => (
                 <li key={index} className="mb-2">
-                  <div className="grid grid-cols-6 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
+                  <div className="grid grid-cols-6 w-full overflow-x-auto md:overflow-x-auto gap-20 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
                     <div className="items-start">{problem.title}</div>
                     <div
                       className={`font-bold items-start ${
@@ -291,7 +291,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
               return foundContest ? (
                 <div
                   key={contest.contestId}
-                  className="mb-4 border-1 rounded-lg shadow-md p-4"
+                  className="mb-4 md:border-1 md:rounded-lg md:shadow-md p-4"
                 >
                   <div className="flex flex-row justify-between items-center p-2 rounded-lg ">
                     <div>
@@ -310,7 +310,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                     {contest.problemsSolved.length > 0 ? (
                       contest.problemsSolved.map((problem) => (
                         <li key={problem.problemId} className="mb-2">
-                          <div className="grid grid-cols-4 gap-4 items-center">
+                          <div className="grid grid-cols-4 gap-16 md:gap-4 items-center">
                             <div className="items-start">
                               {problem.title}
                             </div>
@@ -373,7 +373,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
             <ul className="list-disc pl-5">
               {userAddedProblems.map((problem, index) => (
                 <li key={index} className="mb-2">
-                  <div className="flex flex-row justify-between items-center p-2 rounded-lg bg-black/[70] ">
+                  <div className="flex flex-row w-[600px] md:w-full overflow-x-auto md:overflow-x-hidden justify-between items-center p-2 rounded-lg bg-black/[70] ">
                     <div className="items-start max-w-[20%] text-red-600">
                       {problem.title}
                     </div>

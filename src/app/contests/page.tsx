@@ -89,14 +89,14 @@ const Page = () => {
       <div className="bg-black min-h-screen w-full">
         <div className="h-full w-full md:w-auto relative overflow-auto overflow-x-hidden mx-auto md:py-0 bg-black">
           <div className="p-4 relative z-10 w-full text-center mt-28">
-            <h1 className="mt-5 md:mt-0 text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+            <h1 className="mt-5 md:mt-0 text-2xl  md:text-6xl md:font-semibold font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
               Welcome to the Coding Battles
             </h1>
           </div>
         </div>
 
         {/* Cards */}
-        <div className="flex flex-col gap-24 p-4 w-10/12 h-full mt-12 mx-auto">
+        <div className="flex flex-col md:gap-24 gap-16 p-4 w-full md:w-10/12 h-full mt-12 mx-auto">
           <div className="w-full mx-auto h-full flex flex-col gap-4 text-white">
             <div className="flex flex-row justify-between items-center">
               <div className="text-lg md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
@@ -112,7 +112,7 @@ const Page = () => {
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-4 md:gap-8 w-full h-full mt-6">
+            <div className="grid md:grid-cols-3 grid-cols-1  gap-4 md:gap-8 w-[70%] mx-auto md:w-full h-full mt-6">
               {upComingContests.length > 0 ? (
                 upComingContests.map((contest, index) => (
                   <Card
@@ -170,19 +170,19 @@ const Page = () => {
                 ))
               ) : (
                 <div className="text-md md:text-md font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-                  No upcoming contests are scheduled at the moment. In the
-                  meantime, you can solve problems from previous contests
-                </div>
+                No upcoming contests are scheduled at the moment. In the
+                meantime, you can solve problems from previous contests
+              </div>
               )}
             </div>
           </div>
 
           <div className="w-full mx-auto h-full flex flex-col gap-4 text-white">
-            <div className="text-lg md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+            <div className="text-xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
               Past Contests
             </div>
             {/* Cards */}
-            <div className="grid grid-cols-3 gap-4 md:gap-8 w-full h-full mt-6">
+            <div className="grid md:grid-cols-3 grid-cols-1 gap-4 md:gap-8 w-[80%] mx-auto md:mx-none md:w-full h-full mt-6">
               {completedContests.length > 0 ? (
                 completedContests.map((contest, index) => (
                   <Card
@@ -194,7 +194,7 @@ const Page = () => {
                       width={200}
                       height={150}
                       alt={contest.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-40 md:h-48 object-cover"
                     />
                     <CardHeader className="text-xl text-center p-4">
                       <CardTitle className="text-2xl font-semibold">
@@ -247,7 +247,7 @@ const Page = () => {
                     </CardContent>
                   </Card>
                 ))) :(
-                  <div className="text-md md:text-md font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                  <div className="text-md md:text-md font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 ">
                     No past contests are available at the moment. In the meantime, you can solve problems from problems table
                   </div>
                 )}

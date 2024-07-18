@@ -47,7 +47,7 @@ const Navbar = () => {
             isOpen ? "block" : "hidden"
           }`}
         >
-          <div className="p-2 lg:p-0 lg:mr-52">
+          <div className="p-2 ml-10 mt-4 md:mt-0 md:ml-0 lg:p-0 lg:mr-52">
             <Link href="/dashboard">
               <div className="group relative">
                 Dashboard
@@ -56,7 +56,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="p-2 lg:p-0 lg:mr-52">
+          <div className="p-2 ml-10 md:mt-0 md:ml-0 lg:p-0 lg:mr-52">
             <Link href="/allproblems">
               <div className="group relative">
                 Problems
@@ -65,7 +65,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="p-2 lg:p-0 lg:mr-52">
+          <div className="p-2  ml-10 md:mt-0 md:ml-0 lg:p-0 lg:mr-52">
             <Link href="/contests">
               <div className="group relative">
                 Contests
@@ -74,7 +74,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="p-2 lg:p-0">
+          <div className="p-2 ml-10 md:mt-0 md:ml-0 lg:p-0">
             {session ? (
               <Button
                 onClick={() => signOut()}
