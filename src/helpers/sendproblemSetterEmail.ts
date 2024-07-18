@@ -13,10 +13,9 @@ export async function sendproblemSetterEmail(
 ): Promise<ApiResponse> {
     try {
         await resend.emails.send({
-            // from:'rk3727000@gmail.com',
-            from: 'onboarding@resend.dev',
+            from: 'TheOnlineJudge@ravik.me',
             to: "rk3727000@gmail.com",
-            subject: "OJ verification Otp",
+            subject: "OJ Problems Setter Application ",
             react: FormSubmitEmail({ leetCode, codeForces, codeCheaf, other, username })
         });
 

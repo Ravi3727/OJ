@@ -16,8 +16,8 @@ export async function sendProblemSetterResultEmail(
             fianalResult = "You are removed from Problem Setter Position ";
         }
         const { data, error } = await resend.emails.send({
-            from: 'OJ <onboarding@resend.dev>',
-            to: "rk3727000@gmail.com",
+            from: 'TheOnlineJudge@ravik.me',
+            to: email,
             subject: "OJ Problem Setter Result",
             react: ProblemSetterResultEmail({ username, fianalResult: fianalResult, boolresult: result }),
         });
