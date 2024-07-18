@@ -55,6 +55,7 @@ interface Application {
   codeCheaf: string;
   other: string;
   verified: boolean;
+  
 }
 
 const Page: React.FC = () => {
@@ -219,24 +220,24 @@ const Page: React.FC = () => {
 
   return (
     <>
-      <div>
+      <div className="overflow-x-hidden">
         <Dashboard user={user} />
       </div>
 
 
 {/* Problem Setter Applications */}
       {session?.user.Admin && (
-        <div className="w-full h-full bg-black/[90] flex flex-col justify-center items-center ">
-          <div className="w-10/12 text-white text-2xl font-bold leading-6 mx-auto bg-stone-600 rounded-lg p-6 mt-4 shadow-md h-full">
+        <div className="w-full h-full bg-black/[90] flex flex-col overflow-x-hidden justify-center items-center ">
+          <div className="w-10/12 text-white text-xl md:text-2xl font-bold leading-6 mx-auto bg-stone-600 rounded-lg p-6 mt-4 shadow-md h-full">
            Problem Setter Application
           </div>
           {applications.length > 0 ? (
-            <div className="w-10/12 h-full">
+            <div className="w-full md:w-10/12 h-full">
               <div className="w-full h-full">
                 {applications.map((app, index) => (
                   <div
                     key={index}
-                    className="w-11/12 p-4 text-white text-lg leading-6 bg-stone-600 mx-auto flex flex-row justify-evenly items-center rounded-xl mt-4 mb-6 h-16"
+                    className="overflow-x-auto md:overflow-x-hidden w-11/12 p-4  text-white text-sm md:text-lg leading-6 bg-stone-600 mx-auto flex flex-row justify-evenly md:gap-0 gap-4 items-center rounded-md md:rounded-xl mt-4 mb-6 h-full"
                   >
                     <div className="text-orange-500">{app.username}</div>
                     <div className="">

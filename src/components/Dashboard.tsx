@@ -156,7 +156,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
   // console.log("user Problems added ", userAddedProblems);
 
   return (
-    <div className="p-8 bg-black/[90] min-h-screen h-full text-white">
+    <div className="p-8 bg-black/[90] min-h-screen h-full text-white overflow-x-hidden">
       <div className="w-full md:w-10/12 mx-auto bg-stone-600 rounded-lg p-6 mt-28 shadow-md h-full">
         <div className="flex items-center justify-center mx-auto mb-6">
           <div className="flex flex-col items-center justify-center">
