@@ -1,5 +1,3 @@
-// import { resend } from '@/lib/resend';
-// import VerificationEmail from '../../Emails/verficationEmail';
 import nodemailer from 'nodemailer';
 import { ApiResponse } from '@/Types/ApiResponse';
 
@@ -12,7 +10,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASS,
   },
 });
-
 
 export async function sendVerificationEmail(
   email: string,
@@ -67,17 +64,12 @@ export async function sendVerificationEmail(
       `,
     };
 
+    const sendEmailStatus = await transporter.sendMail(mailOptions);
+    console.log("Email sent: ", sendEmailStatus);
+    return { success: true, message: "Verification email sent successfully" };
 
-
-    const sendEmailStatus = await transporter.sendMail(mailOptions).then(() => {
-      return { success: true, message: "Verification email sent successfully" }
-    }).catch(error => {
-      console.error("Error One sending verification email", error);
-    })
-
-    return { success: true, message: "Verification email sent successfully second" }
   } catch (error) {
-    console.error("Error sending verification email", error);
-    return { success: false, message: "failed Error sending verification email" }
+    console.error("Error sending verification email: ", error);
+    return { success: false, message: "Error sending verification email" };
   }
 }
