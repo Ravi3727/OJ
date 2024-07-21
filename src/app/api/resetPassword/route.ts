@@ -1,4 +1,4 @@
-import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import { sendVerificationEmailToResetPassword } from "@/helpers/sendVerificationEmailToResetPassword";
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
         // console.log("added restPasswordVerifyCode", existingUserByEmail);
 
-        const verifyEmailResponse = await sendVerificationEmail(
+        const verifyEmailResponse = await sendVerificationEmailToResetPassword(
             identifier, username, verifyCodeOtp
         )
 

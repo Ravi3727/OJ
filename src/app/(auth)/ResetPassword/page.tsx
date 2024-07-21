@@ -44,7 +44,7 @@ const Page = () => {
     data.username = await session?.data?.user.username;
     const result = await axios.post<ApiResponse>("/api/resetPassword", data);
     if (result.data.success) {
-      toast.success("Password reset successfully", {
+      toast.success("Please enter OTP to reset password", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -79,7 +79,7 @@ const Page = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center h-screen bg-black/[90]">
-        <div className="flex flex-col items-center justify-center w-8/12 max-w-md bg-white rounded-lg mt-20">
+        <div className="flex flex-col items-center justify-center w-8/12 max-w-md bg-white  rounded-lg mt-20">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-5 text-black opacity-90 mt-4">
               Reset Password
@@ -87,7 +87,7 @@ const Page = () => {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
               <FormField
                 control={form.control}
                 name="identifier"
