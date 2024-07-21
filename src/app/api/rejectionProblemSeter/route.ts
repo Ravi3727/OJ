@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         const sendResultEmailResponse = await sendProblemSetterResultEmail(
             result, username, email
         );
-        console.log(sendResultEmailResponse.success);
+        // console.log(sendResultEmailResponse.success);
         if (sendResultEmailResponse.success === true) {
             return NextResponse.json(
                 { message: `User Verified for Problem Setter`, success: true, ApplicationResult: result },

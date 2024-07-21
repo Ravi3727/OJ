@@ -39,7 +39,7 @@ const ContestCarousel = () => {
       try {
         if (contests.length === 0) {
           const response = await axios.get("/api/getContests");
-          console.log("Contest", response.data.data);
+          // console.log("Contest", response.data.data);
           setContests(response.data.data);
         }
       } catch (error) {

@@ -203,7 +203,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
             </div>
           ) : (
             <div className="flex justify-between items-center w-full p-1">
-              <p>{user.userBio ? user.userBio : "No bio available."}</p>
+              <p className="  text-sm md:text-lg md:leading-6">{user.userBio ? user.userBio : "No bio available."}</p>
               <button
                 onClick={() => setIsEditingBio(true)}
                 className="mt-2 text-white py-1 px-3 rounded text-2xl"
@@ -227,15 +227,11 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
 
         {/* Problem Solved */}
 
-        <div className="mb-6  w-full overflow-x-auto md:overflow-x-hidden max-h-[50vh] overflow-y-auto">
+        <div className="mb-6  w-full overflow-x-auto md:overflow-x-hidden max-h-[50vh] overflow-y-auto no-scrollbar">
           <h2 className="text-xl font-semibold mb-2">Problems Solved</h2>
           {user.QuestionsSolved.length > 0 ? (
             <ul className="list-disc pl-1 md:pl-5">
-              {user.QuestionsSolved.sort((a, b) => {
-                const dateA = new Date(a.codeSubmisionDate);
-                const dateB = new Date(b.codeSubmisionDate);
-                return dateB.getTime() - dateA.getTime();
-              }).map((problem, index) => (
+              {user.QuestionsSolved.map((problem, index) => (
                 <li key={index} className="mb-2">
                   <div className="grid grid-cols-6 w-full overflow-x-auto md:overflow-x-auto gap-20 lg:gap-x-36 md:gap-x-12  items-center p-2 rounded-lg bg-black/[70]">
                     <div className="items-start">{problem.title}</div>
@@ -250,7 +246,6 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
                     >
                       {problem.difficulty}
                     </div>
-
                     <div
                       className={`items-start text-${
                         problem.status === "Accepted" ? "green-500" : "red-600"
@@ -285,7 +280,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         {/* Contest Solved Data */}
-        <div className="mb-6 mt-10 max-h-[50vh] overflow-y-auto">
+        <div className="mb-6 mt-10 max-h-[50vh] overflow-y-auto no-scrollbar">
           <h2 className="text-xl font-semibold mb-2">Contests Participated</h2>
           {user.ParticipatedContests.length > 0 ? (
             user.ParticipatedContests.map((contest) => {
@@ -374,7 +369,7 @@ const Dashboard: React.FC<UserProfileProps> = ({ user }) => {
         </div>
 
         {/* Problems Added By You */}
-        <div className=" mb-6 mt-10 max-h-[50vh] overflow-y-auto">
+        <div className=" mb-6 mt-10 max-h-[50vh] overflow-y-auto no-scrollbar">
           <h2 className="text-xl font-semibold mb-2">Problems Added By You</h2>
 
           {userAddedProblems.length > 0 ? (

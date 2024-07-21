@@ -67,13 +67,13 @@ const Page = () => {
       password: data.password,
     });
 
-    console.log(result);
+    // console.log(result);
 
     if (result?.error != null) {
       handleSignInError(result.error);
     } else {
-      setIsSubmitting(false);
       router.replace("/dashboard");
+      setIsSubmitting(false);
     }
   };
 

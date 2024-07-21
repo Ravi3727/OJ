@@ -160,121 +160,82 @@ int main() {
     testCases: transformedTestCases,
   };
 
-  // Run code 
-  const handleRun = async () => {
-    if (session.status === "authenticated") {
-      setloadingRun(true);
+  // Run code
+const handleRun = async () => {
+  if (session.status === "authenticated") {
+    setloadingRun(true);
 
-      try {
-        const response = await axios.post(
-          "https://aws.ravikant.tech/execute",
-          payload
-        );
+    try {
+      const response = await axios.post(
+        "https://aws.ravikant.tech/execute",
+        payload
+      );
 
-        if (response.data.results[0].passed !== false && response.data.results[0].passed !== true) {
-          switch (response.data.results[0].language) {
-            case "cpp" || "c":
-              const errorMessagecp = response.data.results[0].actualOutput;
-              const errorRegexcp = /\.cpp:(\d+:\d+: .*)/;
-              // Extract the error message
-              const matchcp = errorMessagecp.match(errorRegexcp);
-              const errorCppMessage = matchcp
-                ? matchcp[1]
-                : "Something went wrong, please check your code";
+      const result = response.data.results[0];
 
-              console.log("Error Message CPP", errorCppMessage);
+      if (result.expectedOutput.length < result.actualOutput.length) {
+        let errorMessage;
+        let errorRegex;
 
-              if (errorCppMessage.length > 0) {
-                setCompileError(errorCppMessage);
-              } else {
-                setOutput(response.data.results);
-              }
-              break;
+        switch (result.language) {
+          case "cpp":
+          case "c":
+            errorRegex = /\.cpp:(\d+:\d+: .*)/;
+            break;
+          case "java":
+            errorRegex = /Error: ([^\n\r]*)/;
+            break;
+          case "py":
+            errorRegex = /SyntaxError: ([^\r\n]*)/;
+            break;
+          case "js":
+            errorRegex = /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
+            break;
+          default:
+            errorRegex = null;
+        }
 
-            case "java":
-              const errorMessagejava = response.data.results[0].actualOutput;
-              const errorRegexjava = /Error: ([^\n\r]*)/;
-              // Extract the error message
-              const matchjava = errorMessagejava.match(errorRegexjava);
-              const errorJavaMessage = matchjava
-                ? matchjava[1]
-                : "Something went wrong, please check your code";
+        if (errorRegex) {
+          const match = result.actualOutput.match(errorRegex);
+          errorMessage = match ? match[1] : "Something went wrong, please check your code";
+        } else {
+          errorMessage = "Something went wrong, please check your code";
+        }
 
-              console.log("Error Message Java", errorJavaMessage);
+        console.log("Error Message", errorMessage);
 
-              if (errorJavaMessage.length > 0) {
-                setCompileError(errorJavaMessage);
-              } else {
-                setOutput(response.data.results);
-              }
-              break;
-
-            case "py":
-              const errorMessagepy = response.data.results[0].actualOutput;
-              const errorRegexpy = /SyntaxError: ([^\r\n]*)/;
-              // Extract the error message
-              const matchpy = errorMessagepy.match(errorRegexpy);
-              const errorPyMessage = matchpy
-                ? matchpy[1]
-                : "Something went wrong, please check your code";
-
-              console.log("Error Message Python", errorPyMessage);
-
-              if (errorPyMessage.length > 0) {
-                setCompileError(errorPyMessage);
-              } else {
-                setOutput(response.data.results);
-              }
-              break;
-
-            case "js":
-              const errorMessagejs = response.data.results[0].actualOutput;
-              const errorRegexjs =
-                /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
-              // Extract the error message
-              const matchjs = errorMessagejs.match(errorRegexjs);
-              const errorJsMessage = matchjs
-                ? matchjs[1]
-                : "Something went wrong, please check your code";
-
-              console.log("Error Message JS", errorJsMessage);
-
-              if (errorJsMessage.length > 0) {
-                setCompileError(errorJsMessage);
-              } else {
-                setOutput(response.data.results);
-              }
-              break;
-
-            default:
-              break;
-          }
+        if (errorMessage.length > 0) {
+          setCompileError(errorMessage);
         } else {
           setOutput(response.data.results);
         }
-        setloadingRun(false);
-      } catch (error: any) {
-        console.error(error.response?.data);
-        setloadingRun(false);
+      } else {
+        setOutput(response.data.results);
       }
-    } else {
-      toast.error("Please sign in to run your code", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+
+      setloadingRun(false);
+    } catch (error:any) {
+      console.error(error.response?.data);
+      setloadingRun(false);
     }
-  };
+  } else {
+    toast.error("Please sign in to run your code", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  }
+};
 
 
   // Submit Code
-  
+
   const handleSubmit = async () => {
     if (session.status === "authenticated") {
       setloadingSubmit(true);
@@ -284,90 +245,50 @@ int main() {
             "https://aws.ravikant.tech/execute",
             payload
           );
-          if (
-            response.data.results[0].passed !== false &&
-            response.data.results[0].passed !== true
-          ) {
-            switch (response.data.results[0].language) {
-              case "cpp" || "c":
-                const errorMessagecp = response.data.results[0].actualOutput;
-                const errorRegexcp = /\.cpp:(\d+:\d+: .*)/;
-                // Extract the error message
-                const matchcp = errorMessagecp.match(errorRegexcp);
-                const errorCppMessage = matchcp
-                  ? matchcp[1]
-                  : "Something went wrong, please check your code";
 
-                console.log("Error Message CPP", errorCppMessage);
+           const result = response.data.results[0];
 
-                if (errorCppMessage.length > 0) {
-                  setCompileError(errorCppMessage);
-                } else {
-                  setOutput(response.data.results);
-                }
-                break;
+      if (result.expectedOutput.length < result.actualOutput.length) {
+        let errorMessage;
+        let errorRegex;
 
-              case "java":
-                const errorMessagejava = response.data.results[0].actualOutput;
-                const errorRegexjava = /Error: ([^\n\r]*)/;
-                // Extract the error message
-                const matchjava = errorMessagejava.match(errorRegexjava);
-                const errorJavaMessage = matchjava
-                  ? matchjava[1]
-                  : "Something went wrong, please check your code";
+        switch (result.language) {
+          case "cpp":
+          case "c":
+            errorRegex = /\.cpp:(\d+:\d+: .*)/;
+            break;
+          case "java":
+            errorRegex = /Error: ([^\n\r]*)/;
+            break;
+          case "py":
+            errorRegex = /SyntaxError: ([^\r\n]*)/;
+            break;
+          case "js":
+            errorRegex = /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
+            break;
+          default:
+            errorRegex = null;
+        }
 
-                console.log("Error Message Java", errorJavaMessage);
+        if (errorRegex) {
+          const match = result.actualOutput.match(errorRegex);
+          errorMessage = match ? match[1] : "Something went wrong, please check your code";
+        } else {
+          errorMessage = "Something went wrong, please check your code";
+        }
 
-                if (errorJavaMessage.length > 0) {
-                  setCompileError(errorJavaMessage);
-                } else {
-                  setOutput(response.data.results);
-                }
-                break;
+        console.log("Error Message", errorMessage);
 
-              case "py":
-                const errorMessagepy = response.data.results[0].actualOutput;
-                const errorRegexpy = /SyntaxError: ([^\r\n]*)/;
-                // Extract the error message
-                const matchpy = errorMessagepy.match(errorRegexpy);
-                const errorPyMessage = matchpy
-                  ? matchpy[1]
-                  : "Something went wrong, please check your code";
+        if (errorMessage.length > 0) {
+          setCompileError(errorMessage);
+        } else {
+          setOutput(response.data.results);
+        }
+      } else {
+        setOutput(response.data.results);
+      }
 
-                console.log("Error Message Python", errorPyMessage);
-
-                if (errorPyMessage.length > 0) {
-                  setCompileError(errorPyMessage);
-                } else {
-                  setOutput(response.data.results);
-                }
-                break;
-
-              case "js":
-                const errorMessagejs = response.data.results[0].actualOutput;
-                const errorRegexjs =
-                  /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
-                // Extract the error message
-                const matchjs = errorMessagejs.match(errorRegexjs);
-                const errorJsMessage = matchjs
-                  ? matchjs[1]
-                  : "Something went wrong, please check your code";
-
-                console.log("Error Message JS", errorJsMessage);
-
-                if (errorJsMessage.length > 0) {
-                  setCompileError(errorJsMessage);
-                } else {
-                  setOutput(response.data.results);
-                }
-                break;
-
-              default:
-                break;
-            }
-          } else {
-            setOutput(response.data.results);
-          }
+      setloadingRun(false);
         }
         submitCodeStatusToUser.codeSubmisionData = output;
         // submitCodeStatusToUser.language = output[0].language;
@@ -467,7 +388,6 @@ int main() {
     }
   };
 
-
   const highlightCode = (code: string) => (
     <SyntaxHighlighter language={language} style={dark}>
       {code}
@@ -496,7 +416,7 @@ int main() {
                 onClick={() => {
                   navigator.clipboard.writeText(code);
                   setCopyCode(true);
-                  setTimeout(() => {  
+                  setTimeout(() => {
                     setCopyCode(false);
                   }, 3000);
                 }}
@@ -541,8 +461,8 @@ int main() {
               // backgroundColor: "#2d2d2d",
               backgroundColor: "#1C1917",
               color: "#f8f8f2",
-              overflowY:"auto",
-              overflow:"auto",
+              overflowY: "auto",
+              overflow: "auto",
             }}
           />
         </div>
