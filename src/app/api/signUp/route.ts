@@ -81,7 +81,7 @@ export async function POST(request: Request) {
 
         return Response.json({
             success: true,
-            message: "User registerd successfully please verify your email",
+            message: "Please verify your email to complete signup",
         }, { status: 201 });
 
 

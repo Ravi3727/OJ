@@ -9,11 +9,12 @@ export async function POST(request:Request){
 
         const decodedUsername = decodeURIComponent(username)
         
+
         const user = await UserModel.findOne({
             username:decodedUsername
         })
 
-        console.log(user);
+      
 
         if(!user){
             return Response.json({
@@ -22,7 +23,7 @@ export async function POST(request:Request){
             },{ status: 500})
         }
 
-        console.log(user.verifyCode,code);
+        
         const isOtpValid = user.verifyCode === code
         const isCodeExpired = new Date(user.verifyCodeExpiry) > new Date()
 
