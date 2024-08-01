@@ -24,7 +24,11 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/getAllProblems");
+        setLoading(true);
+        const response = await axios.get("/api/getAllProblems", {
+          headers: { 'Cache-Control': 'no-store' }
+        });
+        setLoading(false);
         if (response.data.success) {
           const problems = response.data.data;
           const transformedData: Allproblems[] = problems.map(
@@ -35,23 +39,23 @@ const Page = () => {
               Difficulty: problem.difficulty,
             })
           );
-
           setData(transformedData);
         } else {
           console.error("Failed to fetch problems:", response.data.message);
         }
       } catch (error) {
+        setLoading(false);
         console.error("Error fetching problems:", error);
       }
     };
-    const checkProblemSetter = () => {
-      setIsProblemSetter(session?.user.isProblemSetter || false);
-    };
 
-    fetchData();
+    const checkProblemSetter = () => {
+      setIsProblemSetter(session?.user.isProblemSetter);
+    };
 
     if (status === "authenticated") {
       checkProblemSetter();
+      fetchData();
     }
   }, [session?.user.isProblemSetter, status]);
 

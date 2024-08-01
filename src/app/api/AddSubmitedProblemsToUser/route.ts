@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         await user.save();
 
         return NextResponse.json(
-            { message: `Problem submission updated successfully`, success: true, QuestionsSolved: user.QuestionsSolved },
+            { message: `Problem submission updated successfully`, success: true, QuestionsSolved: newProblemSolved },
             { status: 200 }
         );
     } catch (error) {

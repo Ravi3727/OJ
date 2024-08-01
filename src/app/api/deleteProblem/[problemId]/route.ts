@@ -30,8 +30,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { probl
     const updatedProblems = await ProblemsModel.find({}).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(
-      { message: `Problem ${problemID} deleted successfully`, success: true, data: updatedProblems },
-      { status: 200 }
+      { message: `Problem ${problemID} deleted successfully`, success: true, data: problemID },
+      { status: 200, headers: { 'Cache-Control': 'no-store' } }
     );
   } catch (error) {
     console.error('Error deleting problem:', error);

@@ -11,32 +11,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
+import useSWR, { mutate } from 'swr';
 import { ApiResponse } from "@/Types/ApiResponse";
 
+// Fetcher function for SWR
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
-async function deleteProblem(problemId: string) {
+// Fetcher function for deletion
+const deleteFetcher = async (url: string) => {
   try {
-    const response = await axios.delete<ApiResponse>(`/api/deleteProblem/${problemId}`);
-    console.log("delete problem", response.data);
+    const response = await axios.delete<ApiResponse>(url);
+    return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
-    console.log("delete problem", error);
-    return axiosError.response?.data.message ?? "Error on deleting problem";
-  } 
-}
+    throw new Error(axiosError.response?.data.message ?? 'Error on deleting problem');
+  }
+};
 
+// Function to handle problem deletion
+const deleteProblem = async (problemId: string) => {
+  try {
+    await deleteFetcher(`/api/deleteProblem/${problemId}`);
+    // Revalidate the data after deletion
+    mutate('/api/data'); // Ensure the data key matches your SWR fetcher key
+  } catch (err) {
+    const axiosError = err as AxiosError<ApiResponse>;
+//     console.log("delete problem", error);
+//     return axiosError.response?.data.message ?? "Error on deleting problem";
+  }
+};
 
 // Function to handle problem editing (redirecting)
 async function editProblem(problemId: string) {
-
   window.location.href = `/editProblemui/${problemId}`;
 }
 
-
+// Function to redirect to compiler
 async function redirectToCompiler(problemId: string) {
   window.location.href = `/solveProblem/${problemId}`;
 }
