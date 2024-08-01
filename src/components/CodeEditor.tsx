@@ -82,12 +82,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ problems, contestId }) => {
     localStorage.setItem(language, code);
   }, [language, code]);
 
-  const transformedTestCases = problem.testCases.map((testCase: TestCase) => {
-    const input = testCase.input;
-    const expectedOutput = testCase.output;
-    return { input, expectedOutput };
-  });
-
   localStorage.removeItem("userCode");
 
   setTimeout(() => {
@@ -144,7 +138,6 @@ int main() {
 
   const submitCodeStatusToUser: CodeSubmissionStatus = {
     codeSubmisionData: [],
-    // codeSubmisionDate: new Date().toLocaleDateString("en-GB"),
     codeSubmisionDate: new Date().toISOString(),
     problemId: problem._id,
     title: problem.title,
@@ -152,53 +145,47 @@ int main() {
     tags: problem.tags,
     userEmail: userEmail,
     contestId: contestId,
-    // language: "",
   };
   const payload = {
     language,
     code,
-    // testCases: transformedTestCases,
-    problemId : problem._id,
+    problemId: problem._id,
   };
 
-
-
   // Run code
-const handleRun = async () => {
-  if (session.status === "authenticated") {
-    setloadingRun(true);
-    try {
-      const response =  await axios.post(
-        "http://localhost:8000/execute",
-        // "https://aws.ravikant.tech/execute",
-        payload
-      );
-      if(typeof(response.data.results) === "string"){
-        setCompileError(response.data.results);
-      }else{
-        setOutput(response.data.results);
+  const handleRun = async () => {
+    if (session.status === "authenticated") {
+      setloadingRun(true);
+      try {
+        const response = await axios.post(
+          "https://aws.ravikant.tech/execute",
+          payload
+        );
+        if (typeof response.data.results === "string") {
+          setCompileError(response.data.results);
+        } else {
+          setOutput(response.data.results);
+        }
+        console.log("data from compiler", response.data.results);
+        setloadingRun(false);
+      } catch (error: any) {
+        console.error(error.response?.data);
+        setloadingRun(false);
       }
-      console.log("data from compiler",response.data.results);
-      setloadingRun(false);
-    } catch (error:any) {
-      console.error(error.response?.data);
-      setloadingRun(false);
+    } else {
+      toast.error("Please sign in to run your code", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
-  } else {
-    toast.error("Please sign in to run your code", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-    });
-  }
-};
-
+  };
 
   // Submit Code
 
@@ -207,68 +194,21 @@ const handleRun = async () => {
       setloadingSubmit(true);
       try {
         if (output.length === 0) {
-
           const response = await axios.post(
-            "http://localhost:8000/execute",
-            // "https://aws.ravikant.tech/execute",
+            "https://aws.ravikant.tech/execute",
             payload
           );
-      
-          // const result = response.data.results[0];
 
-    //   if (result.expectedOutput.length < result.actualOutput.length) {
-    //     let errorMessage;
-    //     let errorRegex;
-
-    //     switch (result.language) {
-    //       case "cpp":
-    //       case "c":
-    //         errorRegex = /\.cpp:(\d+:\d+: .*)/;
-    //         break;
-    //       case "java":
-    //         errorRegex = /Error: ([^\n\r]*)/;
-    //         break;
-    //       case "py":
-    //         errorRegex = /SyntaxError: ([^\r\n]*)/;
-    //         break;
-    //       case "js":
-    //         errorRegex = /codes\\24821276-3d92-4029-b6ec-1a19d64925e1\.js:\d+\r?\n([\s\S]*)/;
-    //         break;
-    //       default:
-    //         errorRegex = null;
-    //     }
-
-    //     if (errorRegex) {
-    //       const match = result.actualOutput.match(errorRegex);
-    //       errorMessage = match ? match[1] : "Something went wrong, please check your code";
-    //     } else {
-    //       errorMessage = "Something went wrong, please check your code";
-    //     }
-
-    //     console.log("Error Message", errorMessage);
-
-    //     if (errorMessage.length > 0) {
-    //       setCompileError(errorMessage);
-    //     } else {
-    //       setOutput(response.data.results);
-    //     }
-    //   } else {
-    //     setOutput(response.data.results);
-    //   }
-    //   setloadingRun(false);
-    // }
-
-    if(typeof(response.data.results) === "string"){
-      setCompileError(response.data.results);
-    }else{
-      setOutput(response.data.results);
-    }
-    console.log("data from compiler",response.data.results);
-    setloadingRun(false);
-  }
+          if (typeof response.data.results === "string") {
+            setCompileError(response.data.results);
+          } else {
+            setOutput(response.data.results);
+          }
+          console.log("data from compiler", response.data.results);
+          setloadingRun(false);
+        }
 
         submitCodeStatusToUser.codeSubmisionData = output;
-        // submitCodeStatusToUser.language = output[0].language;
         const addProblemToUser = await axios.post(
           "/api/AddSubmitedProblemsToUser",
           submitCodeStatusToUser
@@ -320,7 +260,7 @@ const handleRun = async () => {
         }
         setTimeout(() => {
           localStorage.removeItem(uniqueId);
-        }, 1000 * 60 );
+        }, 1000 * 60);
         // console.log("submitCodeStatusToUser", submitCodeStatusToUser);
 
         setloadingSubmit(false);
