@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: { problemI
                 success: true,
                 data: problems,
                 message: "Problems by Id fetched successfully"
-            }, { status: 200 });
+            }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
         }
     } catch (error: any) {
         return NextResponse.json({

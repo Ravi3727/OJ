@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: { username
             success: true,
             data: user,
             message: "User by username fetched successfully"
-        }, { status: 200 });
+        }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
 
     } catch (error: any) {
         return NextResponse.json({

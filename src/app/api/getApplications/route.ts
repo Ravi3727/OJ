@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
             success: true,
             data: verifiedApplications,
             message: "All verified problem setter applications fetched successfully"
-        }, { status: 200 });
+        }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
     } catch (error: any) {
         return NextResponse.json({
             success: false,

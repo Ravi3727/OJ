@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             success: true,
             data: contest,
             message: "contest by Id fetched successfully"
-        }, { status: 200 });
+        }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
 
     }
     catch (error: any) {

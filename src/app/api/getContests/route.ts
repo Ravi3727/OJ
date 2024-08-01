@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
             success: true,
             data: contest,
             message: "All contests fetched successfully"
-        }, { status: 200 });
+        }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
 
     }
     catch (error: any) {

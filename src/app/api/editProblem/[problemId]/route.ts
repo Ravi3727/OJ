@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: { problemI
 
         return NextResponse.json(
             { message: `Problem ${problemID} updated successfully`, success: true, data: updatedProblems },
-            { status: 200 }
+            { status: 200, headers: { 'Cache-Control': 'no-store' } }
         );
     } catch (error) {
         console.error('Error updating problem:', error);
