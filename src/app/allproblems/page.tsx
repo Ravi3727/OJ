@@ -55,8 +55,8 @@ const Page = () => {
 
     if (status === "authenticated") {
       checkProblemSetter();
-      fetchData();
     }
+    fetchData();
   }, [session?.user.isProblemSetter, status]);
 
   return (
