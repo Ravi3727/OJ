@@ -158,7 +158,8 @@ int main() {
       setloadingRun(true);
       try {
         const response = await axios.post(
-          "https://aws.ravikant.tech/execute",
+          // "https://aws.ravikant.tech/execute",
+          "https://oj-onlinecompiler.onrender.com/execute",
           payload
         );
         if (typeof response.data.results === "string") {
@@ -195,7 +196,8 @@ int main() {
       try {
         if (output.length === 0) {
           const response = await axios.post(
-            "https://aws.ravikant.tech/execute",
+            // "https://aws.ravikant.tech/execute",
+            "https://oj-onlinecompiler.onrender.com/execute",
             payload
           );
 
